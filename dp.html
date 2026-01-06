@@ -9,21 +9,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Nav (copied from index.html) -->
-    <nav id="main-nav">
-        <div class="container nav-container">
-            <div class="nav-brand">
-                <h2><i class="fas fa-code"></i>FAANG Algorithms</h2>
-            </div>
-            <div class="nav-links">
-                <a href="index.html#home"><i class="fas fa-home"></i>Home</a>
-                <a href="index.html#algorithms"><i class="fas fa-cubes"></i>Problems</a>
-                <a href="#dp"><i class="fas fa-route"></i>DP</a>
-                <a href="index.html#concepts"><i class="fas fa-lightbulb"></i>Concepts</a>
-                <a href="index.html#resources"><i class="fas fa-book"></i>Resources</a>
-            </div>
-        </div>
-    </nav>
+    <!-- Header Mount Point -->
+    <div id="header-mount"></div>
 
     <main>
         <!-- Category Hero -->
@@ -43,224 +30,17 @@
         <section class="problems-section">
             <div class="container">
                 <h2>Key DP Problems</h2>
-                <div class="problems-grid">
-
-                    <!-- Problem 1: Edit Distance -->
-                    <div class="problem-card">
-                        <div class="card-header">
-                            <h3>Edit Distance (Levenshtein)</h3>
-                            <div class="card-difficulty difficulty-hard">1700</div>
-                        </div>
-                        <div class="cf-meta">
-                            <span class="cf-tags">dp, strings, edit-distance</span>
-                            <span class="cf-contest">LeetCode Hard / CF Representative</span>
-                        </div>
-                        <p><strong>Problem:</strong> Min operations (insert/delete/replace) to convert word1 to word2.</p>
-                        <p><strong>Constraints:</strong> Length up to 500.</p>
-                        <div class="sample-io">
-                            <strong>Sample:</strong><br>
-                            Input: <code>intention execution</code><br>
-                            Output: <code>5</code>
-                        </div>
-                        <p><strong>Walkthrough:</strong> 2D DP table dp[i][j] = min ops for s1[0..i) and s2[0..j). Base: dp[i][0]=i, dp[0][j]=j. Recurrence: if equal dp[i-1][j-1], else 1+min(up,left,diag).</p>
-                        <p><strong>Time:</strong> O(mn) | <strong>Space:</strong> O(min(m,n)) optimized</p>
-                        <div class="code-snippet">
-<pre><code>function editDistance(s1, s2) {
-  let [m, n] = [s1.length, s2.length];
-  if (m &lt; n) { [s1, s2] = [s2, s1]; [m, n] = [n, m]; } // Optimize space
-  const dp = Array(n+1).fill(0);
-  for (let j = 0; j &lt;= n; j++) dp[j] = j;
-  for (let i = 1; i &lt;= m; i++) {
-    let prev = i;
-    for (let j = 1; j &lt;= n; j++) {
-      let temp = dp[j];
-      dp[j] = s1[i-1] === s2[j-1] ? dp[j-1] : 1 + Math.min(dp[j-1], prev, dp[j]);
-      prev = temp;
-    }
-  }
-  return dp[n];
-}
-// Test: editDistance('intention', 'execution') === 5</code></pre>
-                        </div>
-                        <div class="insights">
-                            <strong>Key Insight:</strong> Two rows for space optimization; roll forward.
-                        </div>
-                    </div>
-
-                    <!-- Problem 2: LIS O(N^2) -->
-                    <div class="problem-card">
-                        <div class="card-header">
-                            <h3>Longest Increasing Subsequence</h3>
-                            <div class="card-difficulty difficulty-hard">1700</div>
-                        </div>
-                        <div class="cf-meta">
-                            <span class="cf-tags">dp, binary-search, lis</span>
-                            <span class="cf-contest">LeetCode Medium / CF Representative</span>
-                        </div>
-                        <p><strong>Problem:</strong> Length of longest strictly increasing subseq.</p>
-                        <p><strong>Constraints:</strong> N ≤ 2500.</p>
-                        <div class="sample-io">
-                            <strong>Sample:</strong><br>
-                            Input: <code>10 9 2 5 3 7 101 18</code><br>
-                            Output: <code>4</code>
-                        </div>
-                        <p><strong>Walkthrough:</strong> dp[i] = LIS ending at i. dp[i] = max(dp[j]+1 for j&lt;i where nums[j]&lt;nums[i]), else 1.</p>
-                        <p><strong>Time:</strong> O(N^2) | <strong>Space:</strong> O(N)</p>
-                        <div class="code-snippet">
-<pre><code>function lengthOfLIS(nums) {
-  const n = nums.length;
-  const dp = new Array(n).fill(1);
-  for (let i = 1; i &lt; n; i++) {
-    for (let j = 0; j &lt; i; j++) {
-      if (nums[j] &lt; nums[i]) dp[i] = Math.max(dp[i], dp[j] + 1);
-    }
-  }
-  return Math.max(...dp);
-}
-// Test: lengthOfLIS([10,9,2,5,3,7,101,18]) === 4 ([2,3,7,101])</code></pre>
-                        </div>
-                        <div class="insights">
-                            <strong>Key Insight:</strong> Patience sorting + binary search for O(N log N).
-                        </div>
-                    </div>
-
-                    <!-- Problem 3: Coin Change -->
-                    <div class="problem-card">
-                        <div class="card-header">
-                            <h3>Coin Change (Min Coins)</h3>
-                            <div class="card-difficulty difficulty-hard">1900</div>
-                        </div>
-                        <div class="cf-meta">
-                            <span class="cf-tags">dp, knapsack, greedy</span>
-                            <span class="cf-contest">LeetCode Medium / CF Representative</span>
-                        </div>
-                        <p><strong>Problem:</strong> Min coins to make amount (unlimited supply).</p>
-                        <p><strong>Constraints:</strong> Amount ≤ 10^4, coins ≤ 12.</p>
-                        <div class="sample-io">
-                            <strong>Sample:</strong><br>
-                            Input: <code>[1,2,5] 11</code><br>
-                            Output: <code>3</code>
-                        </div>
-                        <p><strong>Walkthrough:</strong> dp[amount+1], dp[0]=0. For each coin, for amt>=coin, dp[amt] = min(dp[amt], dp[amt-coin]+1).</p>
-                        <p><strong>Time:</strong> O(amount * coins) | <strong>Space:</strong> O(amount)</p>
-                        <div class="code-snippet">
-<pre><code>function coinChange(coins, amount) {
-  const dp = new Array(amount + 1).fill(Infinity);
-  dp[0] = 0;
-  for (let coin of coins) {
-    for (let x = coin; x &lt;= amount; x++) {
-      dp[x] = Math.min(dp[x], dp[x - coin] + 1);
-    }
-  }
-  return dp[amount] === Infinity ? -1 : dp[amount];
-}
-// Test: coinChange([1,2,5], 11) === 3 ([5,5,1])</code></pre>
-                        </div>
-                        <div class="insights">
-                            <strong>Key Insight:</strong> Complete knapsack; optimize by coin order.
-                        </div>
-                    </div>
-
-                    <!-- Problem 4: Burst Balloons -->
-                    <div class="problem-card">
-                        <div class="card-header">
-                            <h3>Burst Balloons</h3>
-                            <div class="card-difficulty difficulty-hard">2100</div>
-                        </div>
-                        <div class="cf-meta">
-                            <span class="cf-tags">dp, interval-dp, optimization</span>
-                            <span class="cf-contest">LeetCode Hard / CF Representative</span>
-                        </div>
-                        <p><strong>Problem:</strong> Max coins bursting balloons nums[1..n], adj multiply nums[i-1]*nums[i]*nums[i+1].</p>
-                        <p><strong>Constraints:</strong> N ≤ 500.</p>
-                        <div class="sample-io">
-                            <strong>Sample:</strong><br>
-                            Input: <code>[3,1,5,8]</code><br>
-                            Output: <code>167</code>
-                        </div>
-                        <p><strong>Walkthrough:</strong> dp[l][r] = max coins bursting in l..r (last burst k). dp[l][r] = max(nums[l-1]*nums[k]*nums[r+1] + dp[l][k-1] + dp[k+1][r]).</p>
-                        <p><strong>Time:</strong> O(N^3) | <strong>Space:</strong> O(N^2)</p>
-                        <div class="code-snippet">
-<pre><code>function maxCoins(nums) {
-  const n = nums.length;
-  nums = [1, ...nums, 1];
-  const dp = Array(n+2).fill().map(() => Array(n+2).fill(0));
-  for (let len = 1; len &lt;= n; len++) {
-    for (let i = 1; i + len - 1 &lt;= n; i++) {
-      const j = i + len - 1;
-      for (let k = i; k &lt;= j; k++) {
-        dp[i][j] = Math.max(dp[i][j], nums[i-1]*nums[k]*nums[j+1] + dp[i][k-1] + dp[k+1][j]);
-      }
-    }
-  }
-  return dp[1][n];
-}
-// Test: maxCoins([3,1,5,8]) === 167</code></pre>
-                        </div>
-                        <div class="insights">
-                            <strong>Key Insight:</strong> Interval DP; boundaries fixed.
-                        </div>
-                    </div>
-
-                    <!-- Problem 5: RegEx Matching -->
-                    <div class="problem-card">
-                        <div class="card-header">
-                            <h3>Regular Expression Matching</h3>
-                            <div class="card-difficulty difficulty-hard">2200</div>
-                        </div>
-                        <div class="cf-meta">
-                            <span class="cf-tags">dp, regex, strings</span>
-                            <span class="cf-contest">LeetCode Hard / CF Representative</span>
-                        </div>
-                        <p><strong>Problem:</strong> True if p matches whole s (., *, multi-char).</p>
-                        <p><strong>Constraints:</strong> Lengths up to 20-30.</p>
-                        <div class="sample-io">
-                            <strong>Sample:</strong><br>
-                            Input: <code>aa a*</code><br>
-                            Output: <code>true</code>
-                        </div>
-                        <p><strong>Walkthrough:</strong> dp[i][j] if p[0..i) matches s[0..j). Handle * as 0 or many matches.</p>
-                        <p><strong>Time:</strong> O(mn) | <strong>Space:</strong> O(mn)</p>
-                        <div class="code-snippet">
-<pre><code>function isMatch(s, p) {
-  const m = s.length, n = p.length;
-  const dp = Array(m+1).fill().map(() => Array(n+1).fill(false));
-  dp[0][0] = true;
-  for (let j = 1; j &lt;= n; j++) if (p[j-1] === '*') dp[0][j] = dp[0][j-2];
-  for (let i = 1; i &lt;= m; i++) {
-    for (let j = 1; j &lt;= n; j++) {
-      if (p[j-1] === '*') {
-        dp[i][j] = dp[i][j-2] || (matches(p[j-2], s[i-1]) &amp;&amp; (dp[i-1][j] || dp[i][j-1]));
-      } else {
-        dp[i][j] = matches(p[j-1], s[i-1]) &amp;&amp; dp[i-1][j-1];
-      }
-    }
-  }
-  return dp[m][n];
-}
-function matches(c1, c2) { return c1 === '.' || c1 === c2; }
-// Test: isMatch('aa', 'a*') === true</code></pre>
-                        </div>
-                        <div class="insights">
-                            <strong>Key Insight:</strong> * matches 0/1/many of prev char.
-                        </div>
-                    </div>
-
+                <!-- Dynamic Problems Mount Point -->
+                <div id="problems-mount">
+                    <div class="loading">Loading problems...</div>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 L4/L5 FAANG Algorithms Guide</p>
-        </div>
-    </footer>
+    <!-- Footer Mount Point -->
+    <div id="footer-mount"></div>
 
     <script src="script.js"></script>
-    <script>
-        // Override loadAlgorithmPage to just scroll or load static
-        function loadAlgorithmPage(cat) { window.location.href = cat + '.html'; }
-    </script>
 </body>
 </html>
