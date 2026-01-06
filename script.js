@@ -170,7 +170,67 @@ const ProblemRenderer = {
         }
     },
 
-    renderProblemCard(problem) {
+    // Renders the new, detailed walkthrough format
+    renderDetailedProblemCard(problem) {
+        const difficultyClass = this.getDifficultyClass(problem.difficulty);
+        const tagsHtml = problem.tags.join(', ');
+        const explanation = problem.explanation;
+
+        // Helper to format explanation text
+        const format = (text) => text.replace(/\n/g, '<br>');
+
+        return `
+            <div class="problem-card detailed-walkthrough">
+                <div class="card-header">
+                    <h3>${problem.title}</h3>
+                    <div class="card-difficulty ${difficultyClass}">${problem.difficulty}</div>
+                </div>
+                <div class="cf-meta">
+                    <span class="cf-tags">${tagsHtml}</span>
+                </div>
+
+                <div class="explanation-section">
+                    <h4>1. Understanding the Problem</h4>
+                    <p>${problem.explanation.understanding_the_problem.replace(/\n/g, '<br>')}</p>
+                </div>
+
+                <div class="explanation-section">
+                    <h4>2. The Naive Approach & Its Bottleneck</h4>
+                    <p>${explanation.brute_force.replace(/\n/g, '<br>')}</p>
+                    <p><strong>The Bottleneck:</strong> ${explanation.bottleneck.replace(/\n/g, '<br>')}</p>
+                </div>
+
+                <div class="explanation-section">
+                    <h4>3. The Key Insight: Reversing the Flow</h4>
+                    <p>${explanation.optimized_approach.replace(/\n/g, '<br>')}</p>
+                </div>
+                
+                <div class="explanation-section">
+                    <h4>4. The Optimized Algorithm</h4>
+                    <p>${explanation.algorithm_steps.replace(/\n/g, '<br>')}</p>
+                </div>
+
+                <div class="explanation-section">
+                    <h4>5. Code Implementation</h4>
+                    <div class="code-snippet">
+                        <pre><code class="language-javascript">${this.escapeHtml(problem.code)}</code></pre>
+                    </div>
+                </div>
+
+                <div class="explanation-section">
+                    <h4>6. Complexity Analysis</h4>
+                    <p><strong>Time Complexity:</strong> <code class="language-text">${problem.complexity.time}</code></p>
+                    <p>${problem.complexity.explanation_time.replace(/\n/g, '<br>')}</p>
+                    <br>
+                    <p><strong>Space Complexity:</strong> <code class="language-text">${problem.complexity.space}</code></p>
+                    <p>${problem.complexity.explanation_space.replace(/\n/g, '<br>')}</p>
+                </div>
+            </div>
+        `;
+    },
+
+    // Renders the old, simple card format
+    renderSimpleProblemCard(problem) {
         const difficultyClass = this.getDifficultyClass(problem.difficulty);
         const tagsHtml = problem.tags.join(', ');
 
@@ -205,6 +265,7 @@ const ProblemRenderer = {
     },
 
     escapeHtml(text) {
+        if (typeof text !== 'string') return '';
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
@@ -222,8 +283,21 @@ const ProblemRenderer = {
             return;
         }
 
-        const problemsHtml = problemsData[categoryId].map(p => this.renderProblemCard(p)).join('');
-        problemsMount.innerHTML = `<div class="problems-grid">${problemsHtml}</div>`;
+        const problemsHtml = problemsData[categoryId].map(p => {
+            // If the new 'explanation' field exists, use the detailed renderer
+            if (p.explanation) {
+                return this.renderDetailedProblemCard(p);
+            }
+            // Otherwise, use the old simple renderer
+            return this.renderSimpleProblemCard(p);
+        }).join('');
+        
+        // Using 'problem-container' for detailed view, and 'problems-grid' for grid view.
+        // This logic can be improved later. For now, let's see if we have any detailed cards.
+        const hasDetailedCard = problemsData[categoryId].some(p => p.explanation);
+        const containerClass = hasDetailedCard ? 'problem-container' : 'problems-grid';
+
+        problemsMount.innerHTML = `<div class="${containerClass}">${problemsHtml}</div>`;
 
         this.applySyntaxHighlighting();
     },
