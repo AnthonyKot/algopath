@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L4/L5 FAANG Algorithms Guide</title>
+    <meta name="description" content="Interactive guide for senior-level algorithm problems commonly asked at top tech companies like FAANG.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav id="main-nav">
+        <div class="container nav-container">
+            <div class="nav-brand">
+                <h2><i class="fas fa-code"></i>FAANG Algorithms</h2>
+            </div>
+            <div class="nav-links">
+                <a href="#home"><i class="fas fa-home"></i>Home</a>
+                <a href="#algorithms"><i class="fas fa-cubes"></i>Problems</a>
+                <a href="#concepts"><i class="fas fa-lightbulb"></i>Concepts</a>
+                <a href="#resources"><i class="fas fa-book"></i>Resources</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <div class="container hero-container">
+                <h1>Master <span class="highlight">L4/L5 FAANG</span> Algorithms</h1>
+                <p class="hero-text">
+                    Interactive guide for senior-level algorithm problems. From dynamic programming mastery
+                    to system design patterns - everything you need for top tech interviews.
+                </p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label">Problems</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">15</span>
+                        <span class="stat-label">Categories</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">Interactive</span>
+                        <span class="stat-label">Examples</span>
+                    </div>
+                </div>
+                <a href="#algorithms" class="btn btn-primary">
+                    <i class="fas fa-play"></i>Start Learning
+                </a>
+            </div>
+        </section>
+
+        <!-- Algorithms Section -->
+        <section id="algorithms" class="algorithms-section">
+            <div class="container">
+                <h2>Algorithm Categories</h2>
+                <div class="algorithms-grid">
+                    <div class="algorithm-card" data-category="dp">
+                        <div class="card-icon"><i class="fas fa-route"></i></div>
+                        <h3>Dynamic Programming</h3>
+                        <p>Advanced DP techniques including multi-dimensional, optimization, and state compression</p>
+                        <div class="card-difficulty">Hard</div>
+                        <button class="btn btn-outline" onclick="loadAlgorithmPage('dp')">View Problems</button>
+                    </div>
+
+                    <div class="algorithm-card" data-category="graphs">
+                        <div class="card-icon"><i class="fas fa-project-diagram"></i></div>
+                        <h3>Graph Algorithms</h3>
+                        <p>Complex graph problems: flow networks, matching, shortest paths, and topological sorting</p>
+                        <div class="card-difficulty">Hard</div>
+                        <button class="btn btn-outline" onclick="loadAlgorithmPage('graphs')">View Problems</button>
+                    </div>
+
+                    <div class="algorithm-card" data-category="trees">
+                        <div class="card-icon"><i class="fas fa-sitemap"></i></div>
+                        <h3>Advanced Trees</h3>
+                        <p>Segment trees, Fenwick trees, LCAs, and tree decomposition methods</p>
+                        <div class="card-difficulty">Hard</div>
+                        <button class="btn btn-outline" onclick="loadAlgorithmPage('trees')">View Problems</button>
+                    </div>
+
+                    <div class="algorithm-card" data-category="strings">
+                        <div class="card-icon"><i class="fas fa-align-left"></i></div>
+                        <h3>String Algorithms</h3>
+                        <p>Suffix arrays, KMP, Rabin-Karp, and advanced pattern matching</p>
+                        <div class="card-difficulty">Hard</div>
+                        <button class="btn btn-outline" onclick="loadAlgorithmPage('strings')">View Problems</button>
+                    </div>
+
+                    <div class="algorithm-card" data-category="math">
+                        <div class="card-icon"><i class="fas fa-calculator"></i></div>
+                        <h3>Number Theory</h3>
+                        <p>Modular arithmetic, FFT, binary exponentiation, and combinatorial problems</p>
+                        <div class="card-difficulty">Hard</div>
+                        <button class="btn btn-outline" onclick="loadAlgorithmPage('math')">View Problems</button>
+                    </div>
+
+                    <div class="algorithm-card" data-category="geometry">
+                        <div class="card-icon"><i class="fas fa-shapes"></i></div>
+                        <h3>Computational Geometry</h3>
+                        <p>Convex hulls, line intersections, polygon problems, and geometric transformations</p>
+                        <div class="card-difficulty">Hard</div>
+                        <button class="btn btn-outline" onclick="loadAlgorithmPage('geometry')">View Problems</button>
+                    </div>
+
+                    <div class="algorithm-card" data-category="design">
+                        <div class="card-icon"><i class="fas fa-cogs"></i></div>
+                        <h3>System Design</h3>
+                        <p>Rate limiting, caching, scalability, and distributed systems patterns</p>
+                        <div class="card-difficulty">Expert</div>
+                        <button class="btn btn-outline" onclick="loadAlgorithmPage('design')">View Problems</button>
+                    </div>
+
+                    <div class="algorithm-card" data-category="optimization">
+                        <div class="card-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        <h3>Optimization</h3>
+                        <p>Advanced optimization techniques, greedy algorithms, and approximation methods</p>
+                        <div class="card-difficulty">Hard</div>
+                        <button class="btn btn-outline" onclick="loadAlgorithmPage('optimization')">View Problems</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Concepts Section -->
+        <section id="concepts" class="concepts-section">
+            <div class="container">
+                <h2>Core Concepts & Techniques</h2>
+                <div class="concepts-grid">
+                    <div class="concept-item">
+                        <h3><i class="fas fa-brain"></i>State Compression</h3>
+                        <p>Breadth-first search with bitmasks for exponential state reduction</p>
+                    </div>
+                    <div class="concept-item">
+                        <h3><i class="fas fa-crosshairs"></i>Meet in the Middle</h3>
+                        <p>Divide and conquer optimization for exponential time problems</p>
+                    </div>
+                    <div class="concept-item">
+                        <h3><i class="fas fa-random"></i>Monte Carlo Methods</h3>
+                        <p>Probabilistic algorithms with guaranteed correctness bounds</p>
+                    </div>
+                    <div class="concept-item">
+                        <h3><i class="fas fa-compress"></i>Data Compression</h3>
+                        <p>Huffman coding, run-length encoding, and Burrows-Wheeler transform</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resources Section -->
+        <section id="resources" class="resources-section">
+            <div class="container">
+                <h2>Additional Resources</h2>
+                <ul class="resource-list">
+                    <li><a href="https://cp-algorithms.com/">CP Algorithms</a> - Comprehensive algorithm reference</li>
+                    <li><a href="https://www.geeksforgeeks.org/">GeeksforGeeks</a> - Detailed problem solutions</li>
+                    <li><a href="https://leetcode.com/">LeetCode</a> - Practice platform with company problems</li>
+                    <li><a href="https://www.topcoder.com/">TopCoder</a> - Competitive programming tutorials</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 L4/L5 FAANG Algorithms Guide</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
