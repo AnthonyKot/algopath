@@ -32,8 +32,9 @@
                 <h1>Dynamic Programming Mastery</h1>
                 <p class="hero-text">Advanced techniques: multi-dimensional DP, optimization, state compression, and space-optimized solutions for FAANG interviews.</p>
                 <div class="category-stats">
-                    <div class="stat-item"><span class="stat-number">8</span><span class="stat-label">Problems</span></div>
+                    <div class="stat-item"><span class="stat-number">5</span><span class="stat-label">Problems</span></div>
                     <div class="stat-item"><span class="stat-number">O(N^2)</span><span class="stat-label">Avg Time</span></div>
+                    <div class="stat-item"><span class="stat-number">1700-2200</span><span class="stat-label">CF Rating</span></div>
                 </div>
             </div>
         </section>
@@ -48,9 +49,19 @@
                     <div class="problem-card">
                         <div class="card-header">
                             <h3>Edit Distance (Levenshtein)</h3>
-                            <div class="card-difficulty difficulty-hard">Hard</div>
+                            <div class="card-difficulty difficulty-hard">1700</div>
+                        </div>
+                        <div class="cf-meta">
+                            <span class="cf-tags">dp, strings, edit-distance</span>
+                            <span class="cf-contest">LeetCode Hard / CF Representative</span>
                         </div>
                         <p><strong>Problem:</strong> Min operations (insert/delete/replace) to convert word1 to word2.</p>
+                        <p><strong>Constraints:</strong> Length up to 500.</p>
+                        <div class="sample-io">
+                            <strong>Sample:</strong><br>
+                            Input: <code>intention execution</code><br>
+                            Output: <code>5</code>
+                        </div>
                         <p><strong>Walkthrough:</strong> 2D DP table dp[i][j] = min ops for s1[0..i) and s2[0..j). Base: dp[i][0]=i, dp[0][j]=j. Recurrence: if equal dp[i-1][j-1], else 1+min(up,left,diag).</p>
                         <p><strong>Time:</strong> O(mn) | <strong>Space:</strong> O(min(m,n)) optimized</p>
                         <div class="code-snippet">
@@ -80,9 +91,19 @@
                     <div class="problem-card">
                         <div class="card-header">
                             <h3>Longest Increasing Subsequence</h3>
-                            <div class="card-difficulty difficulty-hard">Hard</div>
+                            <div class="card-difficulty difficulty-hard">1700</div>
+                        </div>
+                        <div class="cf-meta">
+                            <span class="cf-tags">dp, binary-search, lis</span>
+                            <span class="cf-contest">LeetCode Medium / CF Representative</span>
                         </div>
                         <p><strong>Problem:</strong> Length of longest strictly increasing subseq.</p>
+                        <p><strong>Constraints:</strong> N ≤ 2500.</p>
+                        <div class="sample-io">
+                            <strong>Sample:</strong><br>
+                            Input: <code>10 9 2 5 3 7 101 18</code><br>
+                            Output: <code>4</code>
+                        </div>
                         <p><strong>Walkthrough:</strong> dp[i] = LIS ending at i. dp[i] = max(dp[j]+1 for j&lt;i where nums[j]&lt;nums[i]), else 1.</p>
                         <p><strong>Time:</strong> O(N^2) | <strong>Space:</strong> O(N)</p>
                         <div class="code-snippet">
@@ -107,9 +128,19 @@
                     <div class="problem-card">
                         <div class="card-header">
                             <h3>Coin Change (Min Coins)</h3>
-                            <div class="card-difficulty difficulty-hard">Hard</div>
+                            <div class="card-difficulty difficulty-hard">1900</div>
+                        </div>
+                        <div class="cf-meta">
+                            <span class="cf-tags">dp, knapsack, greedy</span>
+                            <span class="cf-contest">LeetCode Medium / CF Representative</span>
                         </div>
                         <p><strong>Problem:</strong> Min coins to make amount (unlimited supply).</p>
+                        <p><strong>Constraints:</strong> Amount ≤ 10^4, coins ≤ 12.</p>
+                        <div class="sample-io">
+                            <strong>Sample:</strong><br>
+                            Input: <code>[1,2,5] 11</code><br>
+                            Output: <code>3</code>
+                        </div>
                         <p><strong>Walkthrough:</strong> dp[amount+1], dp[0]=0. For each coin, for amt>=coin, dp[amt] = min(dp[amt], dp[amt-coin]+1).</p>
                         <p><strong>Time:</strong> O(amount * coins) | <strong>Space:</strong> O(amount)</p>
                         <div class="code-snippet">
@@ -130,106 +161,23 @@
                         </div>
                     </div>
 
-                    <!-- Problem 4: Word Break -->
-                    <div class="problem-card">
-                        <div class="card-header">
-                            <h3>Word Break</h3>
-                            <div class="card-difficulty difficulty-hard">Hard</div>
-                        </div>
-                        <p><strong>Problem:</strong> Can s be segmented into dictionary words?</p>
-                        <p><strong>Walkthrough:</strong> dp[i] true if s[0..i) segmentable. For i, check j<i if dp[j] and s[j..i) in dict.</p>
-                        <p><strong>Time:</strong> O(N^2) | <strong>Space:</strong> O(N)</p>
-                        <div class="code-snippet">
-<pre><code>function wordBreak(s, wordDict) {
-  const wordSet = new Set(wordDict);
-  const n = s.length;
-  const dp = new Array(n+1).fill(false);
-  dp[0] = true;
-  for (let i = 1; i &lt;= n; i++) {
-    for (let j = 0; j &lt; i; j++) {
-      if (dp[j] &amp;&amp; wordSet.has(s.slice(j, i))) {
-        dp[i] = true;
-        break;
-      }
-    }
-  }
-  return dp[n];
-}
-// Test: wordBreak('leetcode', ['leet','code']) === true</code></pre>
-                        </div>
-                        <div class="insights">
-                            <strong>Key Insight:</strong> Trie for dict lookup if large.
-                        </div>
-                    </div>
-
-                    <!-- Problem 5: Longest Palindromic Substring DP -->
-                    <div class="problem-card">
-                        <div class="card-header">
-                            <h3>Longest Palindromic Substring (DP)</h3>
-                            <div class="card-difficulty difficulty-hard">Hard</div>
-                        </div>
-                        <p><strong>Problem:</strong> Longest palindromic substr.</p>
-                        <p><strong>Walkthrough:</strong> dp[i][j] true if s[i..j] palindrome. Diag true, len2 check equal, longer if ends equal + inside true.</p>
-                        <p><strong>Time:</strong> O(N^2) | <strong>Space:</strong> O(N^2)</p>
-                        <div class="code-snippet">
-<pre><code>function longestPalindrome(s) {
-  const n = s.length;
-  const dp = Array(n).fill().map(() => Array(n).fill(false));
-  let start = 0, maxLen = 1;
-  for (let i = 0; i &lt; n; i++) dp[i][i] = true;
-  for (let i = 0; i &lt; n-1; i++) if (s[i] === s[i+1]) { dp[i][i+1] = true; maxLen = 2; start = i; }
-  for (let len = 3; len &lt;= n; len++) {
-    for (let i = 0; i + len - 1 &lt; n; i++) {
-      const j = i + len - 1;
-      if (s[i] === s[j] &amp;&amp; dp[i+1][j-1]) {
-        dp[i][j] = true;
-        start = i;
-        maxLen = len;
-      }
-    }
-  }
-  return s.slice(start, start + maxLen);
-}
-// Test: longestPalindrome('babad') === 'bab' or 'aba'</code></pre>
-                        </div>
-                        <div class="insights">
-                            <strong>Key Insight:</strong> Manacher O(N) better.
-                        </div>
-                    </div>
-
-                    <!-- Problem 6: Unique Paths -->
-                    <div class="problem-card">
-                        <div class="card-header">
-                            <h3>Unique Paths</h3>
-                            <div class="card-difficulty difficulty-hard">Hard</div>
-                        </div>
-                        <p><strong>Problem:</strong> Paths from top-left to bottom-right in m x n grid (right/down only).</p>
-                        <p><strong>Walkthrough:</strong> dp[i][j] = paths to [i][j]. dp[i][j] = dp[i-1][j] + dp[i][j-1].</p>
-                        <p><strong>Time:</strong> O(mn) | <strong>Space:</strong> O(n)</p>
-                        <div class="code-snippet">
-<pre><code>function uniquePaths(m, n) {
-  const dp = Array(n).fill(1);
-  for (let i = 1; i &lt; m; i++) {
-    for (let j = 1; j &lt; n; j++) {
-      dp[j] += dp[j-1];
-    }
-  }
-  return dp[n-1];
-}
-// Test: uniquePaths(3,7) === 28</code></pre>
-                        </div>
-                        <div class="insights">
-                            <strong>Key Insight:</strong> Math combo C(m+n-2, m-1).
-                        </div>
-                    </div>
-
-                    <!-- Problem 7: Burst Balloons -->
+                    <!-- Problem 4: Burst Balloons -->
                     <div class="problem-card">
                         <div class="card-header">
                             <h3>Burst Balloons</h3>
-                            <div class="card-difficulty difficulty-hard">Hard</div>
+                            <div class="card-difficulty difficulty-hard">2100</div>
+                        </div>
+                        <div class="cf-meta">
+                            <span class="cf-tags">dp, interval-dp, optimization</span>
+                            <span class="cf-contest">LeetCode Hard / CF Representative</span>
                         </div>
                         <p><strong>Problem:</strong> Max coins bursting balloons nums[1..n], adj multiply nums[i-1]*nums[i]*nums[i+1].</p>
+                        <p><strong>Constraints:</strong> N ≤ 500.</p>
+                        <div class="sample-io">
+                            <strong>Sample:</strong><br>
+                            Input: <code>[3,1,5,8]</code><br>
+                            Output: <code>167</code>
+                        </div>
                         <p><strong>Walkthrough:</strong> dp[l][r] = max coins bursting in l..r (last burst k). dp[l][r] = max(nums[l-1]*nums[k]*nums[r+1] + dp[l][k-1] + dp[k+1][r]).</p>
                         <p><strong>Time:</strong> O(N^3) | <strong>Space:</strong> O(N^2)</p>
                         <div class="code-snippet">
@@ -254,13 +202,23 @@
                         </div>
                     </div>
 
-                    <!-- Problem 8: RegEx Matching -->
+                    <!-- Problem 5: RegEx Matching -->
                     <div class="problem-card">
                         <div class="card-header">
                             <h3>Regular Expression Matching</h3>
-                            <div class="card-difficulty difficulty-hard">Hard</div>
+                            <div class="card-difficulty difficulty-hard">2200</div>
+                        </div>
+                        <div class="cf-meta">
+                            <span class="cf-tags">dp, regex, strings</span>
+                            <span class="cf-contest">LeetCode Hard / CF Representative</span>
                         </div>
                         <p><strong>Problem:</strong> True if p matches whole s (., *, multi-char).</p>
+                        <p><strong>Constraints:</strong> Lengths up to 20-30.</p>
+                        <div class="sample-io">
+                            <strong>Sample:</strong><br>
+                            Input: <code>aa a*</code><br>
+                            Output: <code>true</code>
+                        </div>
                         <p><strong>Walkthrough:</strong> dp[i][j] if p[0..i) matches s[0..j). Handle * as 0 or many matches.</p>
                         <p><strong>Time:</strong> O(mn) | <strong>Space:</strong> O(mn)</p>
                         <div class="code-snippet">

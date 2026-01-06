@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Trees - L4/L5 FAANG Algorithms Guide</title>
+    <meta name="description" content="Advanced Tree algorithms: Segment trees, Fenwick trees, LCA, tree DP for Codeforces problems.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav id="main-nav">
+        <div class="container nav-container">
+            <div class="nav-brand">
+                <h2><i class="fas fa-code"></i>FAANG Algorithms</h2>
+            </div>
+            <div class="nav-links">
+                <a href="index.html#home"><i class="fas fa-home"></i>Home</a>
+                <a href="index.html#algorithms"><i class="fas fa-cubes"></i>Problems</a>
+                <a href="dp.html"><i class="fas fa-route"></i>DP</a>
+                <a href="graphs.html"><i class="fas fa-project-diagram"></i>Graphs</a>
+                <a href="#trees"><i class="fas fa-sitemap"></i>Trees</a>
+                <a href="strings.html"><i class="fas fa-align-left"></i>Strings</a>
+                <a href="math.html"><i class="fas fa-calculator"></i>Math</a>
+                <a href="geometry.html"><i class="fas fa-shapes"></i>Geometry</a>
+                <a href="index.html#concepts"><i class="fas fa-lightbulb"></i>Concepts</a>
+                <a href="index.html#resources"><i class="fas fa-book"></i>Resources</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section id="trees" class="hero category-hero">
+            <div class="container">
+                <h1>Advanced Tree Algorithms</h1>
+                <p class="hero-text">Segment trees, Fenwick trees (BIT), LCA, tree DP, centroid decomposition. Codeforces rating: 1600-2400+.</p>
+                <div class="category-stats">
+                    <div class="stat-item"><span class="stat-number">5</span><span class="stat-label">Problems</span></div>
+                    <div class="stat-item"><span class="stat-number">O(N log N)</span><span class="stat-label">Avg Time</span></div>
+                    <div class="stat-item"><span class="stat-number">1700-2300</span><span class="stat-label">CF Rating</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="problems-section">
+            <div class="container">
+                <h2>Key Tree Problems</h2>
+                <div class="problems-grid">
+
+                    <!-- Problem 1: Segment Tree for Range Sum -->
+                    <div class="problem-card">
+                        <div class="card-header">
+                            <h3>Range Sum Queries (Codeforces EDU)</h3>
+                            <div class="card-difficulty difficulty-hard">1700</div>
+                        </div>
+                        <div class="cf-meta">
+                            <span class="cf-tags">segment-tree, data-structures</span>
+                            <span class="cf-contest">Codeforces EDU Segment Tree Part 1</span>
+                        </div>
+                        <p><strong>Problem:</strong> Process Q queries: (1) update A[pos] = value, (2) sum on interval [l, r].</p>
+                        <p><strong>Constraints:</strong> N ≤ 2×10^5, Q ≤ 2×10^5.</p>
+                        <div class="sample-io">
+                            <strong>Sample:</strong><br>
+                            Input: <code>5 3<br>1 2 3 4 5<br>2 1 5<br>1 2 10<br>2 1 5</code><br>
+                            Output: <code>15<br>19</code>
+                        </div>
+                        <p><strong>Walkthrough:</strong> Build segment tree recursively: build(node, l, r) stores sum. update modifies leaf and ancestors. query sums segments.</p>
+                        <p><strong>Time:</strong> O(N) build, O(log N) per query | <strong>Space:</strong> O(4N)</p>
+                        <div class="code-snippet">
+<pre><code>class SegmentTree {
+  constructor(arr) {
+    this.n = arr.length;
+    this.tree = new Array(4 * this.n);
+    this.build(1, 0, this.n - 1, arr);
+  }
+  build(node, l, r, arr) {
+    if (l === r) this.tree[node] = arr[l];
+    else {
+      const mid = Math.floor((l + r) / 2);
+      this.build(node * 2, l, mid, arr);
+      this.build(node * 2 + 1, mid + 1, r, arr);
+      this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+    }
+  }
+  update(pos, val, node = 1, l = 0, r = this.n - 1) {
+    if (l === r) this.tree[node] = val;
+    else {
+      const mid = Math.floor((l + r) / 2);
+      if (pos <= mid) this.update(pos, val, node * 2, l, mid);
+      else this.update(pos, val, node * 2 + 1, mid + 1, r);
+      this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];
+    }
+  }
+  query(qL, qR, node = 1, l = 0, r = this.n - 1) {
+    if (qL > r || qR < l) return 0;
+    if (qL <= l && r <= qR) return this.tree[node];
+    const mid = Math.floor((l + r) / 2);
+    return this.query(qL, qR, node * 2, l, mid) +
+           this.query(qL, qR, node * 2 + 1, mid + 1, r);
+  }
+}</code></pre>
+                        </div>
+                        <div class="insights">
+                            <strong>Key Insight:</strong> Segment tree supports many operations (min, max, gcd) if associative and has identity.
+                        </div>
+                    </div>
+
+                    <!-- Problem 2: LCA with Binary Lifting -->
+                    <div class="problem-card">
+                        <div class="card-header">
+                            <h3>Distance Queries (CF 609E)</h3>
+                            <div class="card-difficulty difficulty-hard">2000</div>
+                        </div>
+                        <div class="cf-meta">
+                            <span class="cf-tags">lca, binary-lifting, trees</span>
+                            <span class="cf-contest">Codeforces Round #315</span>
+                        </div>
+                        <p><strong>Problem:</strong> Q queries distance between nodes in tree.</p>
+                        <p><strong>Walkthrough:</strong> Precompute parent[k][u] = 2^k ancestor. depth[u]. LCA using binary lifting. dist = depth[u] + depth[v] - 2*depth[lca].</p>
+                        <div class="code-snippet">
+<pre><code>class LCA {
+  constructor(n, edges, root = 0) {
+    this.log = Math.ceil(Math.log2(n)) + 1;
+    this.parent = Array.from({length: this.log}, () => new Array(n).fill(-1));
+    this.depth = new Array(n).fill(0);
+    this.adj = Array(n).fill().map(() => []);
+    for (let [u,v] of edges) {
+      this.adj[u].push(v); this.adj[v].push(u);
+    }
+    this.dfs(root, -1);
+    this.preprocess();
+  }
+  dfs(u, p) {
+    this.parent[0][u] = p;
+    for (let v of this.adj[u]) if (v !== p) {
+      this.depth[v] = this.depth[u] + 1;
+      this.dfs(v, u);
+    }
+  }
+  preprocess() {
+    for (let k=1; k<this.log; k++)
+      for (let v=0; v<this.parent[0].length; v++)
+        if (this.parent[k-1][v] !== -1)
+          this.parent[k][v] = this.parent[k-1][this.parent[k-1][v]];
+  }
+  getLCA(u, v) {
+    if (this.depth[u] < this.depth[v]) [u,v] = [v,u];
+    let diff = this.depth[u] - this.depth[v];
+    for (let k=0; k<this.log; k++)
+      if (diff & (1<<k)) u = this.parent[k][u];
+    if (u === v) return u;
+    for (let k=this.log-1; k>=0; k--)
+      if (this.parent[k][u] !== this.parent[k][v]) {
+        u = this.parent[k][u]; v = this.parent[k][v];
+      }
+    return this.parent[0][u];
+  }
+  getDistance(u, v) {
+    const lca = this.getLCA(u, v);
+    return this.depth[u] + this.depth[v] - 2 * this.depth[lca];
+  }
+}</code></pre>
+                        </div>
+                        <div class="insights">
+                            <strong>Key Insight:</strong> Binary lifting generalizes to many tree queries (k-th ancestor, path aggregates).
+                        </div>
+                    </div>
+
+                    <!-- Problem 3: Tree DP (Diameters) -->
+                    <div class="problem-card">
+                        <div class="card-header">
+                            <h3>Tree Diameter (CF 14D)</h3>
+                            <div class="card-difficulty difficulty-hard">1800</div>
+                        </div>
+                        <div class="cf-meta">
+                            <span class="cf-tags">tree-dp, dfs, diameter</span>
+                            <span class="cf-contest">Codeforces Beta Round #14</span>
+                        </div>
+                        <p><strong>Problem:</strong> Given tree, remove one edge → two subtrees. Maximize product of their diameters.</p>
+                        <p><strong>Walkthrough:</strong> For each edge (u,v), compute diameters of both sides. Tree DP: for each node, store longest path through it and down paths.</p>
+                        <div class="code-snippet">
+<pre><code>function treeDiameterProduct(n, edges) {
+  const adj = Array(n).fill().map(() => []);
+  for (let [u,v] of edges) {
+    adj[u].push(v); adj[v].push(u);
+  }
+
+  // BFS to find farthest node from start
+  function bfs(start) {
+    const dist = new Array(n).fill(-1);
+    const q = [start];
+    dist[start] = 0;
+    let farthest = start;
+    while (q.length) {
+      const u = q.shift();
+      farthest = u;
+      for (let v of adj[u]) if (dist[v] === -1) {
+        dist[v] = dist[u] + 1;
+        q.push(v);
+      }
+    }
+    return {node: farthest, dist};
+  }
+
+  // Get diameter of tree rooted at root, excluding edge to parent
+  function getDiameter(root, parent) {
+    let diameter = 0;
+    function dfs(u, p) {
+      let max1 = 0, max2 = 0;
+      for (let v of adj[u]) if (v !== p && !(u === root && v === parent)) {
+        const h = dfs(v, u) + 1;
+        if (h > max1) { max2 = max1; max1 = h; }
+        else if (h > max2) max2 = h;
+      }
+      diameter = Math.max(diameter, max1 + max2);
+      return max1;
+    }
+    dfs(root, -1);
+    return diameter;
+  }
+
+  let ans = 0;
+  for (let [u,v] of edges) {
+    const d1 = getDiameter(u, v);
+    const d2 = getDiameter(v, u);
+    ans = Math.max(ans, d1 * d2);
+  }
+  return ans;
+}</code></pre>
+                        </div>
+                        <div class="insights">
+                            <strong>Key Insight:</strong> Tree diameter = max of (sum of two longest child depths) at each node.
+                        </div>
+                    </div>
+
+                    <!-- Problem 4: Segment Tree with Lazy Propagation -->
+                    <div class="problem-card">
+                        <div class="card-header">
+                            <h3>Range Add, Range Sum (CF 52C)</h3>
+                            <div class="card-difficulty difficulty-hard">2000</div>
+                        </div>
+                        <div class="cf-meta">
+                            <span class="cf-tags">segment-tree, lazy-propagation</span>
+                            <span class="cf-contest">Codeforces Beta Round #52</span>
+                        </div>
+                        <p><strong>Problem:</strong> Circular array, operations: (1) add val to [l..r], (2) query min on [l..r].</p>
+                        <p><strong>Walkthrough:</strong> Lazy propagation stores pending updates. apply(node, val) updates node sum and lazy. push propagates to children.</p>
+                        <div class="code-snippet">
+<pre><code>class LazySegmentTree {
+  constructor(arr) {
+    this.n = arr.length;
+    this.tree = new Array(4 * this.n).fill(0);
+    this.lazy = new Array(4 * this.n).fill(0);
+    this.build(1, 0, this.n - 1, arr);
+  }
+  build(node, l, r, arr) {
+    if (l === r) this.tree[node] = arr[l];
+    else {
+      const mid = Math.floor((l + r) / 2);
+      this.build(node*2, l, mid, arr);
+      this.build(node*2+1, mid+1, r, arr);
+      this.tree[node] = this.tree[node*2] + this.tree[node*2+1];
+    }
+  }
+  apply(node, l, r, val) {
+    this.tree[node] += val * (r - l + 1);
+    this.lazy[node] += val;
+  }
+  push(node, l, r) {
+    if (this.lazy[node] !== 0) {
+      const mid = Math.floor((l + r) / 2);
+      this.apply(node*2, l, mid, this.lazy[node]);
+      this.apply(node*2+1, mid+1, r, this.lazy[node]);
+      this.lazy[node] = 0;
+    }
+  }
+  rangeAdd(qL, qR, val, node=1, l=0, r=this.n-1) {
+    if (qL > r || qR < l) return;
+    if (qL <= l && r <= qR) {
+      this.apply(node, l, r, val);
+      return;
+    }
+    this.push(node, l, r);
+    const mid = Math.floor((l + r) / 2);
+    this.rangeAdd(qL, qR, val, node*2, l, mid);
+    this.rangeAdd(qL, qR, val, node*2+1, mid+1, r);
+    this.tree[node] = this.tree[node*2] + this.tree[node*2+1];
+  }
+  rangeSum(qL, qR, node=1, l=0, r=this.n-1) {
+    if (qL > r || qR < l) return 0;
+    if (qL <= l && r <= qR) return this.tree[node];
+    this.push(node, l, r);
+    const mid = Math.floor((l + r) / 2);
+    return this.rangeSum(qL, qR, node*2, l, mid) +
+           this.rangeSum(qL, qR, node*2+1, mid+1, r);
+  }
+}</code></pre>
+                        </div>
+                        <div class="insights">
+                            <strong>Key Insight:</strong> Lazy propagation amortizes O(log N) for range updates by deferring work.
+                        </div>
+                    </div>
+
+                    <!-- Problem 5: Centroid Decomposition -->
+                    <div class="problem-card">
+                        <div class="card-header">
+                            <h3>Tree Queries (CF 342E)</h3>
+                            <div class="card-difficulty difficulty-hard">2300</div>
+                        </div>
+                        <div class="cf-meta">
+                            <span class="cf-tags">centroid-decomposition, bfs, trees</span>
+                            <span class="cf-contest">Codeforces Round #199</span>
+                        </div>
+                        <p><strong>Problem:</strong> Two operations: (1) mark node red, (2) query distance to nearest red node.</p>
+                        <p><strong>Walkthrough:</strong> Centroid decomposition stores distances to nearest red in each centroid ancestor. O(log N) per query.</p>
+                        <div class="code-snippet">
+<pre><code>class CentroidDecomposition {
+  constructor(n, edges) {
+    this.n = n;
+    this.adj = Array(n).fill().map(() => []);
+    for (let [u,v] of edges) {
+      this.adj[u].push(v); this.adj[v].push(u);
+    }
+    this.centParent = new Array(n).fill(-1);
+    this.centDist = Array(n).fill().map(() => []); // dist to ancestors
+    this.isRemoved = new Array(n).fill(false);
+    this.best = new Array(n).fill(Infinity);
+    this.decompose(0);
+  }
+  getSubtreeSizes(u, p) {
+    const sizes = new Map();
+    const stack = [[u, p, 0]];
+    sizes.set(u, 1);
+    while (stack.length) {
+      const [v, par, state] = stack[stack.length-1];
+      if (state === this.adj[v].length) {
+        stack.pop();
+        if (par !== -1) sizes.set(par, sizes.get(par) + sizes.get(v));
+      } else {
+        const w = this.adj[v][state];
+        stack[stack.length-1][2] = state+1;
+        if (w !== par && !this.isRemoved[w]) {
+          sizes.set(w, 1);
+          stack.push([w, v, 0]);
+        }
+      }
+    }
+    return sizes;
+  }
+  findCentroid(u, p, total, sizes) {
+    for (let v of this.adj[u]) if (v !== p && !this.isRemoved[v]) {
+      if (sizes.get(v) > total/2) return this.findCentroid(v, u, total, sizes);
+    }
+    return u;
+  }
+  computeDistances(cent, p, d) {
+    this.centDist[cent].push(d);
+    for (let v of this.adj[cent]) if (v !== p && !this.isRemoved[v]) {
+      this.computeDistances(v, cent, d+1);
+    }
+  }
+  decompose(u) {
+    const sizes = this.getSubtreeSizes(u, -1);
+    const cent = this.findCentroid(u, -1, sizes.get(u), sizes);
+    // ... full implementation continues
+  }
+}</code></pre>
+                        </div>
+                        <div class="insights">
+                            <strong>Key Insight:</strong> Centroid decomposition enables O(log N) per query for path problems.
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 L4/L5 FAANG Algorithms Guide | Codeforces problems for educational use</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

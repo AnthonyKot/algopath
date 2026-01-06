@@ -470,3 +470,39 @@ footer {
         font-size: 0.9rem;
     }
 }
+
+/* Codeforces-specific styling */
+.cf-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #4a5568;
+}
+
+.cf-tags {
+    background: #e2e8f0;
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.cf-contest {
+    background: #bee3f8;
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.sample-io {
+    background: #f7fafc;
+    border-left: 4px solid #4299e1;
+    padding: 1rem;
+    margin: 1rem 0;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 0.9rem;
+}
+
+.sample-io code {
+    background: #edf2f7;
+    padding: 2px 4px;
+    border-radius: 3px;
+}

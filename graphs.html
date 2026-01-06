@@ -31,8 +31,9 @@
                 <h1>Graph Algorithms Mastery</h1>
                 <p class="hero-text">Advanced problems: max flow, bipartite matching, shortest paths in weighted graphs, topological sorting with constraints.</p>
                 <div class="category-stats">
-                    <div class="stat-item"><span class="stat-number">7</span><span class="stat-label">Problems</span></div>
-                    <div class="stat-item"><span class="stat-number">O(VE^2)</span><span class="stat-label">Avg Time</span></div>
+                    <div class="stat-item"><span class="stat-number">5</span><span class="stat-label">Problems</span></div>
+                    <div class="stat-item"><span class="stat-number">O(E log V)</span><span class="stat-label">Avg Time</span></div>
+                    <div class="stat-item"><span class="stat-number">1700-2200</span><span class="stat-label">CF Rating</span></div>
                 </div>
             </div>
         </section>
@@ -46,9 +47,19 @@
                     <div class="problem-card">
                         <div class="card-header">
                             <h3>Word Ladder (Shortest Path)</h3>
-                            <div class="card-difficulty difficulty-hard">Hard</div>
+                            <div class="card-difficulty difficulty-hard">1700</div>
+                        </div>
+                        <div class="cf-meta">
+                            <span class="cf-tags">bfs, shortest-path, strings</span>
+                            <span class="cf-contest">LeetCode Hard / CF Representative</span>
                         </div>
                         <p><strong>Problem:</strong> Shortest transformation seq from beginWord to endWord, change 1 letter at a time, words in wordList.</p>
+                        <p><strong>Constraints:</strong> Word length ≤ 10, wordList size ≤ 5000.</p>
+                        <div class="sample-io">
+                            <strong>Sample:</strong><br>
+                            Input: <code>hit cog [hot,dot,dog,lot,log,cog]</code><br>
+                            Output: <code>5</code>
+                        </div>
                         <p><strong>Walkthrough:</strong> Treat words as nodes, adjacent if differ by 1. BFS from beginWord for shortest path.</p>
                         <p><strong>Time:</strong> O(N*26*L^2) | <strong>Space:</strong> O(N)</p>
                         <div class="code-snippet">
@@ -83,9 +94,19 @@
                     <div class="problem-card">
                         <div class="card-header">
                             <h3>Course Schedule II</h3>
-                            <div class="card-difficulty difficulty-hard">Hard</div>
+                            <div class="card-difficulty difficulty-hard">1700</div>
+                        </div>
+                        <div class="cf-meta">
+                            <span class="cf-tags">topological-sort, bfs, dag</span>
+                            <span class="cf-contest">LeetCode Medium / CF Representative</span>
                         </div>
                         <p><strong>Problem:</strong> Return order to take numCourses with prerequisites (detect cycle).</p>
+                        <p><strong>Constraints:</strong> Courses ≤ 2000, prerequisites ≤ 5000.</p>
+                        <div class="sample-io">
+                            <strong>Sample:</strong><br>
+                            Input: <code>4 [[1,0],[2,0],[3,1],[3,2]]</code><br>
+                            Output: <code>[0,1,2,3]</code>
+                        </div>
                         <p><strong>Walkthrough:</strong> Build graph + indegree. Kahn's algo: queue 0-indegree, reduce neighbors.</p>
                         <p><strong>Time:</strong> O(V+E) | <strong>Space:</strong> O(V+E)</p>
                         <div class="code-snippet">
@@ -115,18 +136,182 @@
                         </div>
                     </div>
 
-                    <!-- Add 5 more: Network Delay Time (Dijkstra), Min Cost to Connect Points (Prim), Clone Graph (DFS/BFS), Pacific Atlantic Water Flow (DFS), Find Critical/Non-critical Connections etc. -->
-
+                    <!-- Problem 3: Network Delay Time (Dijkstra) -->
                     <div class="problem-card">
                         <div class="card-header">
                             <h3>Network Delay Time (Dijkstra)</h3>
-                            <div class="card-difficulty difficulty-hard">Hard</div>
+                            <div class="card-difficulty difficulty-hard">1900</div>
                         </div>
-                        <p><strong>Problem:</strong> Max time to reach all nodes from k (inf if impossible).</p>
-                        <p><strong>Walkthrough:</strong> Priority queue Dijkstra: dist, pq with times.</p>
-                        <div class="code-snippet"><pre><code>// Priority queue min-heap for Dijkstra O((V+E)logV)
-// Key: relax all edges from u</code></pre></div>
-                        <div class="insights"><strong>Key:</strong> Use heapq-like in JS.</div>
+                        <div class="cf-meta">
+                            <span class="cf-tags">dijkstra, shortest-path, priority-queue</span>
+                            <span class="cf-contest">LeetCode Medium / CF Representative</span>
+                        </div>
+                        <p><strong>Problem:</strong> Max time to reach all nodes from k (inf if impossible). Given weighted edges, find shortest paths from source k.</p>
+                        <p><strong>Constraints:</strong> N ≤ 100, edges ≤ 6000, times ≤ 100.</p>
+                        <div class="sample-io">
+                            <strong>Sample:</strong><br>
+                            Input: <code>3 [[2,1,1],[2,3,1],[3,4,1]] 4</code><br>
+                            Output: <code>2</code>
+                        </div>
+                        <p><strong>Walkthrough:</strong> Priority queue Dijkstra: dist, pq with times. Initialize dist to infinity, dist[k]=0. Extract min dist node, relax all edges. Return max(dist) or -1 if unreachable.</p>
+                        <p><strong>Time:</strong> O((V+E)logV) | <strong>Space:</strong> O(V+E)</p>
+                        <div class="code-snippet">
+<pre><code>function networkDelayTime(times, N, K) {
+  const adj = Array(N+1).fill().map(() => []);
+  for (let [u,v,w] of times) {
+    adj[u].push([v,w]);
+  }
+  const dist = new Array(N+1).fill(Infinity);
+  dist[K] = 0;
+  const pq = [[0, K]]; // [time, node]
+
+  while (pq.length) {
+    const [d, u] = pq.shift();
+    if (d > dist[u]) continue;
+    for (let [v,w] of adj[u]) {
+      if (dist[v] > d + w) {
+        dist[v] = d + w;
+        pq.push([dist[v], v]);
+        pq.sort((a,b) => a[0] - b[0]);
+      }
+    }
+  }
+  const maxTime = Math.max(...dist.slice(1));
+  return maxTime === Infinity ? -1 : maxTime;
+}
+// Test: networkDelayTime([[2,1,1],[2,3,1],[3,4,1]], 4, 2) === 2</code></pre>
+                        </div>
+                        <div class="insights">
+                            <strong>Key Insight:</strong> Dijkstra's algorithm guarantees shortest path in weighted graphs with non-negative edges.
+                        </div>
+                    </div>
+
+                    <!-- Problem 4: Min Cost to Connect Points (Prim) -->
+                    <div class="problem-card">
+                        <div class="card-header">
+                            <h3>Min Cost to Connect Points (Prim's MST)</h3>
+                            <div class="card-difficulty difficulty-hard">1800</div>
+                        </div>
+                        <div class="cf-meta">
+                            <span class="cf-tags">mst, prim, greedy</span>
+                            <span class="cf-contest">LeetCode Medium / CF Representative</span>
+                        </div>
+                        <p><strong>Problem:</strong> Given points in plane, connect all points with minimum cost. Cost = distance between connected points.</p>
+                        <p><strong>Constraints:</strong> Points ≤ 1000.</p>
+                        <div class="sample-io">
+                            <strong>Sample:</strong><br>
+                            Input: <code>[[0,0],[2,2],[3,10],[5,2],[7,0]]</code><br>
+                            Output: <code>20</code>
+                        </div>
+                        <p><strong>Walkthrough:</strong> Prim's algorithm: Start from any point, greedily add cheapest edge to connect new point. Track visited set and min-heap of frontier edges.</p>
+                        <p><strong>Time:</strong> O(N^2) or O(N log N) with heap | <strong>Space:</strong> O(N)</p>
+                        <div class="code-snippet">
+<pre><code>function minCostConnectPoints(points) {
+  const n = points.length;
+  const visited = new Set();
+  const minCost = 0;
+
+  const dist = (a,b) => {
+    return Math.abs(a[0]-b[0]) + Math.abs(a[1]-b[1]);
+  };
+
+  const minDist = new Array(n).fill(Infinity);
+  minDist[0] = 0;
+
+  for (let i = 0; i < n; i++) {
+    let u = -1;
+    for (let j = 0; j < n; j++) {
+      if (!visited.has(j) && (u === -1 || minDist[j] < minDist[u])) {
+        u = j;
+      }
+    }
+    visited.add(u);
+    minCost += minDist[u];
+    for (let j = 0; j < n; j++) {
+      if (!visited.has(j)) {
+        const d = dist(points[u], points[j]);
+        minDist[j] = Math.min(minDist[j], d);
+      }
+    }
+  }
+  return minCost;
+}
+// Test: minCostConnectPoints([[0,0],[2,2],[3,10],[5,2],[7,0]]) === 20</code></pre>
+                        </div>
+                        <div class="insights">
+                            <strong>Key Insight:</strong> MST connects all vertices with minimum total edge weight. Prim's and Kruskal's are two common approaches.
+                        </div>
+                    </div>
+
+                    <!-- Problem 5: Pacific Atlantic Water Flow -->
+                    <div class="problem-card">
+                        <div class="card-header">
+                            <h3>Pacific Atlantic Water Flow</h3>
+                            <div class="card-difficulty difficulty-hard">2000</div>
+                        </div>
+                        <div class="cf-meta">
+                            <span class="cf-tags">dfs, multi-source, bfs</span>
+                            <span class="cf-contest">LeetCode Medium / CF Representative</span>
+                        </div>
+                        <p><strong>Problem:</strong> Find cells where water can flow to both Pacific (top/left) and Atlantic (bottom/right) oceans. Water flows to equal or lower height.</p>
+                        <p><strong>Constraints:</strong> Matrix up to 200×200.</p>
+                        <div class="sample-io">
+                            <strong>Sample:</strong><br>
+                            Input: <code>[[1,2,2,3,5],[3,2,3,4,4],[2,4,5,3,1],[6,7,1,4,5],[5,1,1,2,4]]</code><br>
+                            Output: <code>[[0,4],[1,3],[1,4],[2,2],[3,0],[3,1],[4,0]]</code>
+                        </div>
+                        <p><strong>Walkthrough:</strong> Multi-source BFS/DFS from all ocean cells. Mark cells reachable from Pacific. Mark cells reachable from Atlantic. Return intersection of both sets.</p>
+                        <p><strong>Time:</strong> O(mn) | <strong>Space:</strong> O(mn)</p>
+                        <div class="code-snippet">
+<pre><code>function pacificAtlantic(heights) {
+  const m = heights.length, n = heights[0].length;
+  const pacific = new Set();
+  const atlantic = new Set();
+
+  const dirs = [[0,1],[0,-1],[1,0],[-1,0]];
+
+  const bfs = (starts, reachable) => {
+    const q = [...starts];
+    for (const [r,c] of starts) reachable.add(`${r},${c}`);
+    while (q.length) {
+      const [r,c] = q.shift();
+      for (const [dr,dc] of dirs) {
+        const nr = r + dr, nc = c + dc;
+        if (nr >= 0 && nr < m && nc >= 0 && nc < n &&
+            !reachable.has(`${nr},${nc}`) &&
+            heights[nr][nc] >= heights[r][c]) {
+          reachable.add(`${nr},${nc}`);
+          q.push([nr,nc]);
+        }
+      }
+    }
+  };
+
+  const pacificStarts = [];
+  for (let c = 0; c < n; c++) pacificStarts.push([0,c]);
+  for (let r = 0; r < m; r++) pacificStarts.push([r,0]);
+  bfs(pacificStarts, pacific);
+
+  const atlanticStarts = [];
+  for (let c = 0; c < n; c++) atlanticStarts.push([m-1,c]);
+  for (let r = 0; r < m; r++) atlanticStarts.push([r,n-1]);
+  bfs(atlanticStarts, atlantic);
+
+  const result = [];
+  for (let r = 0; r < m; r++) {
+    for (let c = 0; c < n; c++) {
+      if (pacific.has(`${r},${c}`) && atlantic.has(`${r},${c}`)) {
+        result.push([r,c]);
+      }
+    }
+  }
+  return result;
+}
+// Test returns cells reachable from both oceans</code></pre>
+                        </div>
+                        <div class="insights">
+                            <strong>Key Insight:</strong> Multi-source BFS from boundaries is O(mn). Alternative: DFS from each cell to ocean is O(mn×mn).
+                        </div>
                     </div>
 
                 </div>
