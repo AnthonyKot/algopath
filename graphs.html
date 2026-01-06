@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Algorithms - L4/L5 FAANG Algorithms Guide</title>
+    <meta name="description" content="Advanced Graph Algorithms for senior-level FAANG interviews: flows, matching, shortest paths.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav id="main-nav">
+        <div class="container nav-container">
+            <div class="nav-brand">
+                <h2><i class="fas fa-code"></i>FAANG Algorithms</h2>
+            </div>
+            <div class="nav-links">
+                <a href="index.html#home"><i class="fas fa-home"></i>Home</a>
+                <a href="index.html#algorithms"><i class="fas fa-cubes"></i>Problems</a>
+                <a href="dp.html"><i class="fas fa-route"></i>DP</a>
+                <a href="#graphs"><i class="fas fa-project-diagram"></i>Graphs</a>
+                <a href="index.html#concepts"><i class="fas fa-lightbulb"></i>Concepts</a>
+                <a href="index.html#resources"><i class="fas fa-book"></i>Resources</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section id="graphs" class="hero category-hero">
+            <div class="container">
+                <h1>Graph Algorithms Mastery</h1>
+                <p class="hero-text">Advanced problems: max flow, bipartite matching, shortest paths in weighted graphs, topological sorting with constraints.</p>
+                <div class="category-stats">
+                    <div class="stat-item"><span class="stat-number">7</span><span class="stat-label">Problems</span></div>
+                    <div class="stat-item"><span class="stat-number">O(VE^2)</span><span class="stat-label">Avg Time</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="problems-section">
+            <div class="container">
+                <h2>Key Graph Problems</h2>
+                <div class="problems-grid">
+
+                    <!-- Problem 1: Word Ladder (BFS Shortest Path) -->
+                    <div class="problem-card">
+                        <div class="card-header">
+                            <h3>Word Ladder (Shortest Path)</h3>
+                            <div class="card-difficulty difficulty-hard">Hard</div>
+                        </div>
+                        <p><strong>Problem:</strong> Shortest transformation seq from beginWord to endWord, change 1 letter at a time, words in wordList.</p>
+                        <p><strong>Walkthrough:</strong> Treat words as nodes, adjacent if differ by 1. BFS from beginWord for shortest path.</p>
+                        <p><strong>Time:</strong> O(N*26*L^2) | <strong>Space:</strong> O(N)</p>
+                        <div class="code-snippet">
+<pre><code>function ladderLength(beginWord, endWord, wordList) {
+  const wordSet = new Set(wordList);
+  if (!wordSet.has(endWord)) return 0;
+  const queue = [[beginWord, 1]];
+  wordSet.delete(beginWord);
+  while (queue.length) {
+    const [word, steps] = queue.shift();
+    if (word === endWord) return steps;
+    for (let i = 0; i < word.length; i++) {
+      for (let c = 0; c < 26; c++) {
+        const newWord = word.slice(0,i) + String.fromCharCode(97+c) + word.slice(i+1);
+        if (wordSet.has(newWord)) {
+          queue.push([newWord, steps+1]);
+          wordSet.delete(newWord);
+        }
+      }
+    }
+  }
+  return 0;
+}
+// Test: ladderLength('hit', 'cog', ['hot','dot','dog','lot','log','cog']) === 5</code></pre>
+                        </div>
+                        <div class="insights">
+                            <strong>Key Insight:</strong> BFS guarantees shortest path in unweighted graph.
+                        </div>
+                    </div>
+
+                    <!-- Problem 2: Course Schedule II (Topological Sort) -->
+                    <div class="problem-card">
+                        <div class="card-header">
+                            <h3>Course Schedule II</h3>
+                            <div class="card-difficulty difficulty-hard">Hard</div>
+                        </div>
+                        <p><strong>Problem:</strong> Return order to take numCourses with prerequisites (detect cycle).</p>
+                        <p><strong>Walkthrough:</strong> Build graph + indegree. Kahn's algo: queue 0-indegree, reduce neighbors.</p>
+                        <p><strong>Time:</strong> O(V+E) | <strong>Space:</strong> O(V+E)</p>
+                        <div class="code-snippet">
+<pre><code>function findOrder(numCourses, prerequisites) {
+  const graph = Array(numCourses).fill().map(() => []);
+  const indegree = new Array(numCourses).fill(0);
+  for (let [course, pre] of prerequisites) {
+    graph[pre].push(course);
+    indegree[course]++;
+  }
+  const queue = [];
+  for (let i = 0; i < numCourses; i++) if (!indegree[i]) queue.push(i);
+  const res = [];
+  while (queue.length) {
+    const course = queue.shift();
+    res.push(course);
+    for (let nei of graph[course]) {
+      if (--indegree[nei] === 0) queue.push(nei);
+    }
+  }
+  return res.length === numCourses ? res : [];
+}
+// Test: findOrder(4, [[1,0],[2,0],[3,1],[3,2]]) === [0,2,1,3] or equiv</code></pre>
+                        </div>
+                        <div class="insights">
+                            <strong>Key Insight:</strong> Kahn's BFS for topo sort + cycle detection.
+                        </div>
+                    </div>
+
+                    <!-- Add 5 more: Network Delay Time (Dijkstra), Min Cost to Connect Points (Prim), Clone Graph (DFS/BFS), Pacific Atlantic Water Flow (DFS), Find Critical/Non-critical Connections etc. -->
+
+                    <div class="problem-card">
+                        <div class="card-header">
+                            <h3>Network Delay Time (Dijkstra)</h3>
+                            <div class="card-difficulty difficulty-hard">Hard</div>
+                        </div>
+                        <p><strong>Problem:</strong> Max time to reach all nodes from k (inf if impossible).</p>
+                        <p><strong>Walkthrough:</strong> Priority queue Dijkstra: dist, pq with times.</p>
+                        <div class="code-snippet"><pre><code>// Priority queue min-heap for Dijkstra O((V+E)logV)
+// Key: relax all edges from u</code></pre></div>
+                        <div class="insights"><strong>Key:</strong> Use heapq-like in JS.</div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 L4/L5 FAANG Algorithms Guide</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
