@@ -4,6 +4,19 @@
       "id": "dp-1",
       "title": "Edit Distance (Levenshtein)",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/edit-distance/",
+      "related": [
+        {
+          "id": "dp-5",
+          "title": "Regular Expression Matching",
+          "category": "dp"
+        },
+        {
+          "id": "graphs-1",
+          "title": "Word Ladder",
+          "category": "graphs"
+        }
+      ],
       "tags": [
         "dp",
         "strings",
@@ -23,12 +36,64 @@
         "space": "O(min(m,n))",
         "explanation_time": "We need to compute the value for each of the m*n cells in our conceptual DP table. Each computation takes constant time. Therefore, the time complexity is O(m*n), where m and n are the lengths of the two strings.",
         "explanation_space": "The standard 2D DP table approach requires O(m*n) space. However, the provided solution is space-optimized. It only stores one row of the DP table at a time, reducing the space complexity to O(n), where n is the length of the shorter string (due to the initial swap)."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            3
+          ],
+          "text": "Swap so s2 is shorter - dp array is smaller for space optimization"
+        },
+        {
+          "lines": [
+            4,
+            5
+          ],
+          "text": "Base case: dp[j] = j means j insertions to transform empty string to s2[0..j]"
+        },
+        {
+          "lines": [
+            7
+          ],
+          "text": "'prev' stores dp[i-1][j-1] from 2D table - the diagonal value we need"
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "'temp' saves dp[j] before overwrite, becomes 'prev' for next column"
+        },
+        {
+          "lines": [
+            10
+          ],
+          "text": "Core recurrence: if chars match use diagonal, else 1 + min(replace, insert, delete)"
+        },
+        {
+          "lines": [
+            14
+          ],
+          "text": "Final answer: min edits to transform s1[0..m] to s2[0..n]"
+        }
+      ]
     },
     {
       "id": "dp-2",
       "title": "Longest Increasing Subsequence",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/longest-increasing-subsequence/",
+      "related": [
+        {
+          "id": "dp-4",
+          "title": "Burst Balloons",
+          "category": "dp"
+        },
+        {
+          "id": "trees-1",
+          "title": "Range Sum Queries",
+          "category": "trees"
+        }
+      ],
       "tags": [
         "dp",
         "binary-search",
@@ -48,12 +113,53 @@
         "space": "O(N)",
         "explanation_time": "The provided code uses a straightforward DP approach. There are two nested loops. The outer loop runs N times, and the inner loop runs up to N times. This gives a time complexity of O(N²).",
         "explanation_space": "We use an additional array `dp` of the same size as the input array `nums`. This requires O(N) space."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            2,
+            3
+          ],
+          "text": "Initialize dp array: dp[i] = 1 means each element is an LIS of length 1 by itself"
+        },
+        {
+          "lines": [
+            4
+          ],
+          "text": "Outer loop: for each position i, find the longest increasing subsequence ending at i"
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Inner loop: check all previous elements j < i to find valid predecessors"
+        },
+        {
+          "lines": [
+            6
+          ],
+          "text": "Core recurrence: if nums[j] < nums[i], we can extend LIS ending at j. Take the maximum"
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Answer is the max of all dp values since LIS could end at any index"
+        }
+      ]
     },
     {
       "id": "dp-3",
       "title": "Coin Change (Min Coins)",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/coin-change/",
+      "related": [
+        {
+          "id": "dp-2",
+          "title": "Longest Increasing Subsequence",
+          "category": "dp"
+        }
+      ],
       "tags": [
         "dp",
         "knapsack",
@@ -73,12 +179,51 @@
         "space": "O(A)",
         "explanation_time": "Let A be the target amount and C be the number of coin denominations. We have two nested loops. The outer loop iterates through the coins (C times in the provided code, though it can be swapped), and the inner loop iterates up to the amount (A times). This gives a total time complexity of O(A * C).",
         "explanation_space": "We use a `dp` array of size `amount + 1` to store the intermediate solutions for all amounts from 0 to `amount`. This requires O(A) space."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            2
+          ],
+          "text": "Create dp array of size amount+1, initialize with Infinity (unreachable)"
+        },
+        {
+          "lines": [
+            3
+          ],
+          "text": "Base case: 0 coins needed to make amount 0"
+        },
+        {
+          "lines": [
+            4
+          ],
+          "text": "Outer loop: iterate through each coin denomination"
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Inner loop: for each amount >= coin, check if using this coin improves the solution"
+        },
+        {
+          "lines": [
+            6
+          ],
+          "text": "Core recurrence: dp[x] = min(dp[x], 1 + dp[x-coin]) - use coin if it gives fewer coins"
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Return answer, or -1 if amount is still unreachable (Infinity)"
+        }
+      ]
     },
     {
       "id": "dp-4",
       "title": "Burst Balloons",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/burst-balloons/",
       "tags": [
         "dp",
         "interval-dp",
@@ -98,7 +243,48 @@
         "space": "O(N²)",
         "explanation_time": "Let N be the number of balloons in the original array. We have three nested loops to fill the DP table: one for the interval length, one for the start position, and one for the 'last balloon' `k`. Each of these loops runs approximately N times, leading to a cubic time complexity of O(N³).",
         "explanation_space": "We use a 2D DP table of size roughly (N+2) x (N+2) to store the results of the subproblems. This requires O(N²) space."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            2,
+            3
+          ],
+          "text": "Pad array with 1s at both ends to handle boundary cases. Original balloon indices become 1 to n"
+        },
+        {
+          "lines": [
+            4
+          ],
+          "text": "Create 2D DP table: dp[i][j] = max coins from bursting balloons in range [i, j]"
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Outer loop: iterate by interval length (smaller intervals first - bottom-up)"
+        },
+        {
+          "lines": [
+            6,
+            7
+          ],
+          "text": "Middle loop: iterate over all possible start positions for current interval length"
+        },
+        {
+          "lines": [
+            8,
+            9
+          ],
+          "text": "Inner loop: try each balloon k as the LAST to burst in interval. Key insight: when k is last, its neighbors are i-1 and j+1"
+        },
+        {
+          "lines": [
+            13
+          ],
+          "text": "Answer: max coins from bursting all balloons (range 1 to n)"
+        }
+      ]
     },
     {
       "id": "dp-5",
@@ -123,7 +309,61 @@
         "space": "O(M * N)",
         "explanation_time": "Let M be the length of the string and N be the length of the pattern. We fill a 2D DP table of size M x N. Calculating the value for each cell takes constant time. This results in a time complexity of O(M * N).",
         "explanation_space": "We use a 2D DP table of size (M+1) x (N+1) to store the results of all subproblems. This requires O(M * N) space."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            2,
+            3
+          ],
+          "text": "Create 2D boolean DP table: dp[i][j] = true if s[0..i-1] matches p[0..j-1]"
+        },
+        {
+          "lines": [
+            4
+          ],
+          "text": "Base case: empty string matches empty pattern"
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Initialize first row: handle patterns like a*, a*b* that can match empty string (via * matching zero elements)"
+        },
+        {
+          "lines": [
+            6,
+            7
+          ],
+          "text": "Main DP loops: fill table for all (i, j) combinations"
+        },
+        {
+          "lines": [
+            8,
+            9
+          ],
+          "text": "Case 1 - Star: match zero (dp[i][j-2]) OR match one+ if char matches (dp[i-1][j])"
+        },
+        {
+          "lines": [
+            10,
+            11
+          ],
+          "text": "Case 2 - No star: simple match. Current chars must match AND previous prefixes must match"
+        },
+        {
+          "lines": [
+            15
+          ],
+          "text": "Return whether entire string matches entire pattern"
+        },
+        {
+          "lines": [
+            17
+          ],
+          "text": "Helper: '.' matches any character, otherwise must be exact match"
+        }
+      ]
     }
   ],
   "graphs": [
@@ -150,7 +390,52 @@
         "space": "O(N * L)",
         "explanation_time": "Let N be the number of words in the list and L be the length of the words. In the worst case, we visit every word (N). For each word, we iterate through its length (L) and try all 26 alphabet characters. In JavaScript, creating the `newWord` by slicing and concatenating strings takes O(L) time. This results in a complexity of O(N * L * 26 * L), which simplifies to O(N * L²).",
         "explanation_space": "The `wordSet` stores N words, each of average length L, contributing O(N * L) to space. The queue, in the worst case, could also hold a large fraction of the words, also contributing to the O(N * L) space complexity."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            2
+          ],
+          "text": "Create a Set for O(1) lookups of valid words. Using Array would be too slow (O(N))."
+        },
+        {
+          "lines": [
+            4
+          ],
+          "text": "Initialize BFS queue with [current_word, level]. Level starts at 1."
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Mark start word as visited immediately to prevent cycles."
+        },
+        {
+          "lines": [
+            6
+          ],
+          "text": "Standard BFS loop: process nodes level by level."
+        },
+        {
+          "lines": [
+            9,
+            10
+          ],
+          "text": "Try changing every character (i) to every letter (a-z) to find neighbors."
+        },
+        {
+          "lines": [
+            12
+          ],
+          "text": "If neighbor is in dictionary (and not visited), it's a valid next step."
+        },
+        {
+          "lines": [
+            14
+          ],
+          "text": "Crucial: Remove from set immediately to mark as visited. This guarantees shortest path."
+        }
+      ]
     },
     {
       "id": "graphs-2",
@@ -175,7 +460,54 @@
         "space": "O(V + E)",
         "explanation_time": "Let V be the number of courses and E be the number of prerequisites. Building the graph and in-degree map takes O(E) time. The initial scan for zero-in-degree nodes takes O(V). The main BFS loop processes each vertex and each edge exactly once, which takes O(V + E). The total time complexity is therefore O(V + E).",
         "explanation_space": "The space is dominated by the data structures used. The adjacency list (`graph`) requires O(V + E) space. The `indegree` array and the `queue` both require O(V) space. Therefore, the total space complexity is O(V + E)."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            2
+          ],
+          "text": "Create Adjacency List to represent the graph (course dependencies)."
+        },
+        {
+          "lines": [
+            3
+          ],
+          "text": "Create In-degree array: counts how many prerequisites each course has."
+        },
+        {
+          "lines": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "text": "Build graph: Pre -> Course. Increment in-degree for the dependent course."
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Kahn's Algorithm: Initialize queue with courses having 0 prerequisites (ready to take)."
+        },
+        {
+          "lines": [
+            11
+          ],
+          "text": "Process courses in queue (BFS-like approach)."
+        },
+        {
+          "lines": [
+            14
+          ],
+          "text": "Decrement in-degree of neighbors. If 0, all prereqs are met -> add to queue."
+        },
+        {
+          "lines": [
+            17
+          ],
+          "text": "If result length equals numCourses, we found a valid order. Otherwise, there's a cycle."
+        }
+      ]
     },
     {
       "id": "graphs-3",
@@ -200,7 +532,54 @@
         "space": "O(V + E)",
         "explanation_time": "Let V be the number of nodes and E be the number of edges. The complexity is dominated by the priority queue operations. In the worst case, we may add an entry to the priority queue for every edge in the graph. Each push or pop operation on a min-priority queue takes O(log V) time. Therefore, the total time complexity is O(E log V). (Note: The sample code simulates a PQ by sorting an array, which is less efficient than a true heap-based priority queue).",
         "explanation_space": "The adjacency list requires O(V + E) space. The `dist` array requires O(V) space, and the priority queue can hold up to V nodes, requiring O(V) space. This results in a total space complexity of O(V + E)."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            2,
+            3,
+            4
+          ],
+          "text": "Build adjacency list: Node -> [[Neighbor, Weight]]."
+        },
+        {
+          "lines": [
+            6
+          ],
+          "text": "Initialize distances to Infinity. Source node distance is 0."
+        },
+        {
+          "lines": [
+            8
+          ],
+          "text": "Min-Priority Queue: stores [time, node]. Simulating with array + sort."
+        },
+        {
+          "lines": [
+            10
+          ],
+          "text": "Dijkstra's main loop: process closest node first."
+        },
+        {
+          "lines": [
+            11
+          ],
+          "text": "Optimization: If current path is longer than already found shortest path, skip."
+        },
+        {
+          "lines": [
+            13
+          ],
+          "text": "Relaxation: If path through u to v is shorter than current known path to v, update it."
+        },
+        {
+          "lines": [
+            15,
+            16
+          ],
+          "text": "Push new shortest path to PQ. Sort to maintain min-heap property (simplification)."
+        }
+      ]
     },
     {
       "id": "graphs-4",
@@ -225,7 +604,55 @@
         "space": "O(N)",
         "explanation_time": "Let N be the number of points. The main loop runs N times. Inside this loop, we have two nested loops: one to find the unvisited node with the minimum distance (which takes O(N) time) and another to update the distances to all other unvisited nodes (also O(N)). This results in a total time complexity of O(N * N) = O(N²).",
         "explanation_space": "We use an array `minDist` of size N and a set `visited` which can grow to size N. Both require O(N) space. Therefore, the total space complexity is O(N)."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            4
+          ],
+          "text": "Helper to calculate Manhattan distance between two points."
+        },
+        {
+          "lines": [
+            5,
+            6
+          ],
+          "text": "Prim's Algorithm: Track min cost to connect each node to MST. Start with node 0 (cost 0)."
+        },
+        {
+          "lines": [
+            7
+          ],
+          "text": "Main loop: add N points to the MST one by one."
+        },
+        {
+          "lines": [
+            9,
+            10,
+            11,
+            12,
+            13
+          ],
+          "text": "Greedy step: Find unvisited node 'u' with smallest connection cost to current MST."
+        },
+        {
+          "lines": [
+            14,
+            15
+          ],
+          "text": "Add 'u' to MST and add its cost to total."
+        },
+        {
+          "lines": [
+            16,
+            17,
+            18,
+            19,
+            21
+          ],
+          "text": "Update step: Update connection costs for all remaining unvisited neighbors of 'u'."
+        }
+      ]
     },
     {
       "id": "graphs-5",
@@ -250,7 +677,56 @@
         "space": "O(MN)",
         "explanation_time": "The time complexity is O(M * N) because we visit each cell a constant number of times. The first pass (Pacific) visits each reachable cell once, the second pass (Atlantic) does the same, and the final pass iterates through all M*N cells to find the intersection. This gives us a linear time complexity relative to the number of cells.",
         "explanation_space": "The space complexity is O(M * N) because we use two additional boolean matrices/sets (`pacific` and `atlantic`) of the same size as the input grid to store the reachability information. The recursion stack (for DFS) or the queue (for BFS) can also take up to O(M*N) space in the worst-case scenario where all cells are reachable from an ocean."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            3
+          ],
+          "text": "Use Sets to track reachable cells (storing 'row,col' strings)."
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Helper BFS: starts from ocean borders and flows 'uphill'."
+        },
+        {
+          "lines": [
+            6,
+            7
+          ],
+          "text": "Add starting border cells queue and mark as reachable."
+        },
+        {
+          "lines": [
+            12,
+            13,
+            14
+          ],
+          "text": "Check bounds, not visited, and height condition (neighbor >= current)."
+        },
+        {
+          "lines": [
+            21,
+            22
+          ],
+          "text": "Initialize starts: Top row and Left col for Pacific."
+        },
+        {
+          "lines": [
+            25,
+            26
+          ],
+          "text": "Initialize starts: Bottom row and Right col for Atlantic."
+        },
+        {
+          "lines": [
+            31
+          ],
+          "text": "Intersection: If cell is in both sets, it can flow to both oceans."
+        }
+      ]
     }
   ],
   "trees": [
@@ -276,7 +752,56 @@
         "space": "O(N)",
         "explanation_time": "The tree is balanced, so its height is O(log N). Both `update` and `query` operations traverse the tree from the root to a leaf or a set of nodes, taking O(log N) time. The initial build takes O(N) time as it visits every node once.",
         "explanation_space": "We use an array to represent the tree. To avoid out-of-bounds issues with indexing, an array of size 4*N is sufficient for a balanced binary tree of N leaves. This results in O(N) space complexity."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            4,
+            5
+          ],
+          "text": "Allocate array of size 4N. This is a safe upper bound for a segment tree."
+        },
+        {
+          "lines": [
+            7,
+            8
+          ],
+          "text": "Build: Leaf node (l == r) holds the array value."
+        },
+        {
+          "lines": [
+            12,
+            13
+          ],
+          "text": "Internal node: sum of left and right children. This is the 'merge' step."
+        },
+        {
+          "lines": [
+            16,
+            21
+          ],
+          "text": "Update: find leaf, update it, then update all parents on the way up."
+        },
+        {
+          "lines": [
+            25
+          ],
+          "text": "Query: Range outside node range -> return 0 (identity for sum)."
+        },
+        {
+          "lines": [
+            26
+          ],
+          "text": "Query: Range completely covers node range -> return pre-calculated answer."
+        },
+        {
+          "lines": [
+            28,
+            29
+          ],
+          "text": "Query: Partial overlap -> recurse on both sides and sum the results."
+        }
+      ]
     },
     {
       "id": "trees-2",
@@ -301,7 +826,62 @@
         "space": "O(N log N)",
         "explanation_time": "The initial DFS to compute depths and parents is O(N). Building the binary lifting table `up` takes O(N log N). Each LCA query then takes O(log N) because it involves a few loops that iterate up to log N times.",
         "explanation_space": "The adjacency list, depth array, etc., take O(N) space. The dominant factor is the `up` table, which has dimensions of roughly (log N) x N, resulting in O(N log N) space complexity."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            2
+          ],
+          "text": "Calculate max height (log N) for binary lifting table."
+        },
+        {
+          "lines": [
+            3
+          ],
+          "text": "Up table: parent[k][u] is the 2^k-th ancestor of u."
+        },
+        {
+          "lines": [
+            10,
+            15
+          ],
+          "text": "DFS: Compute depths and fill 0-th ancestors (direct parents)."
+        },
+        {
+          "lines": [
+            17,
+            18
+          ],
+          "text": "Preprocess: Build table. 2^k-th ancestor is (2^(k-1))-th of (2^(k-1))-th."
+        },
+        {
+          "lines": [
+            21
+          ],
+          "text": "LCA Query: Ensure 'u' is deeper than 'v'."
+        },
+        {
+          "lines": [
+            23,
+            24
+          ],
+          "text": "Lift 'u' to the same depth as 'v' using binary jumps."
+        },
+        {
+          "lines": [
+            27,
+            28,
+            29
+          ],
+          "text": "Lift both up simultaneously by largest powers of 2 as long as ancestors differ."
+        },
+        {
+          "lines": [
+            31
+          ],
+          "text": "After loop, they are just below LCA, so return parent."
+        }
+      ]
     },
     {
       "id": "trees-3",
@@ -326,7 +906,42 @@
         "space": "O(N)",
         "explanation_time": "Both the two-traversal method and the DP on Trees method run in O(N) time. They are based on DFS or BFS, which visit each node and edge in the tree exactly once.",
         "explanation_space": "We need O(N) space for the adjacency list. The recursion stack for the DFS will also be O(H) where H is the height of the tree. In the worst case of a skewed tree, H can be N, so the space complexity is O(N)."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            2,
+            3,
+            4
+          ],
+          "text": "Build adjacency list for undirected tree."
+        },
+        {
+          "lines": [
+            6
+          ],
+          "text": "DFS: returns length of longest path STARTING at 'u' and going DOWN."
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Recursively solve for neighbor. Add 1 for the edge u->v."
+        },
+        {
+          "lines": [
+            10,
+            11
+          ],
+          "text": "Track top 2 longest paths branching from current node."
+        },
+        {
+          "lines": [
+            14
+          ],
+          "text": "Global diameter update: The longest path THROUGH u is max1 + max2."
+        }
+      ]
     },
     {
       "id": "trees-4",
@@ -344,26 +959,59 @@
         "optimized_approach": "We add a `lazy` array, parallel to our `tree` array. `lazy[node]` stores a pending update for that node's interval.\n\n- **During a `rangeAdd`:** When we find a node fully contained in the update range, we update its `sum` and add to its `lazy` tag. We don't go down to its children.\n- **During a `rangeSum` (or any traversal):** Before we access a node's children, we must first check if the node has a lazy tag. If it does, we 'push' the update down to its children, updating their `sum` and `lazy` values. Then, we clear the current node's lazy tag.\n\nThis `pushDown` operation ensures that updates are propagated correctly and only when needed, maintaining the O(log N) performance for all operations.",
         "algorithm_steps": "1.  **Data Structures:** Augment the standard Segment Tree with a `lazy` array of the same size, initialized to zeros.\n\n2.  **`pushDown(node, ...)` function:** This is the core of the technique. It applies the `lazy[node]` value to its two children's `sum` and `lazy` fields, then resets `lazy[node]` to 0.\n\n3.  **`rangeAdd(l, r, val)` function:**\n    a.  Follows the standard segment tree traversal.\n    b.  Before recursing to children, it calls `pushDown` on the current node.\n    c.  If a node is fully contained in the update range, update its `sum` and `lazy` tag and return.\n    d.  On the way back up the recursion, update parent sums based on their children.\n\n4.  **`rangeSum(l, r)` function:**\n    a.  Follows the standard segment tree query logic.\n    b.  Crucially, before recursing to children, it calls `pushDown` on the current node to ensure its information is up-to-date."
       },
-      "code": "class LazySegmentTree {\n  constructor(arr) {\n    this.n = arr.length;\n    this.tree = new Array(4 * this.n).fill(0);\n    this.lazy = new Array(4 * this.n).fill(0);\n    this.build(1, 0, this.n - 1, arr);\n  }\n  build(node, l, r, arr) {\n    if (l === r) this.tree[node] = arr[l];\n    else {\n      const mid = Math.floor((l + r) / 2);\n      this.build(node*2, l, mid, arr);\n      this.build(node*2+1, mid+1, r, arr);\n      this.tree[node] = this.tree[node*2] + this.tree[node*2+1];\n    }\n  }\n  apply(node, l, r, val) {\n    this.tree[node] += val * (r - l + 1);\n    this.lazy[node] += val;\n  }\n  push(node, l, r) {\n    if (this.lazy[node] !== 0) {\n      const mid = Math.floor((l + r) / 2);\n      this.apply(node*2, l, mid, this.lazy[node]);\n      this.apply(node*2+1, mid+1, r, this.lazy[node]);\n      this.lazy[node] = 0;\n    }\n  }\n  rangeAdd(qL, qR, val, node=1, l=0, r=this.n-1) {\n    if (qL > r || qR < l) return;\n    if (qL <= l && r <= qR) {\n      this.apply(node, l, r, val);\n      return;\n    }\n    this.push(node, l, r);\n    const mid = Math.floor((l + r) / 2);
-    this.rangeAdd(qL, qR, val, node*2, l, mid);
-    this.rangeAdd(qL, qR, val, node*2+1, mid+1, r);
-    this.tree[node] = this.tree[node*2] + this.tree[node*2+1];
-  }
-  rangeSum(qL, qR, node=1, l=0, r=this.n-1) {
-    if (qL > r || qR < l) return 0;
-    if (qL <= l && r <= qR) return this.tree[node];
-    this.push(node, l, r);
-    const mid = Math.floor((l + r) / 2);
-    return this.rangeSum(qL, qR, node*2, l, mid) +
-           this.rangeSum(qL, qR, node*2+1, mid+1, r);
-  }
-}",
+      "code": "class LazySegmentTree {\n  constructor(arr) {\n    this.n = arr.length;\n    this.tree = new Array(4 * this.n).fill(0);\n    this.lazy = new Array(4 * this.n).fill(0);\n    this.build(1, 0, this.n - 1, arr);\n  }\n  build(node, l, r, arr) {\n    if (l === r) this.tree[node] = arr[l];\n    else {\n      const mid = Math.floor((l + r) / 2);\n      this.build(node*2, l, mid, arr);\n      this.build(node*2+1, mid+1, r, arr);\n      this.tree[node] = this.tree[node*2] + this.tree[node*2+1];\n    }\n  }\n  apply(node, l, r, val) {\n    this.tree[node] += val * (r - l + 1);\n    this.lazy[node] += val;\n  }\n  push(node, l, r) {\n    if (this.lazy[node] !== 0) {\n      const mid = Math.floor((l + r) / 2);\n      this.apply(node*2, l, mid, this.lazy[node]);\n      this.apply(node*2+1, mid+1, r, this.lazy[node]);\n      this.lazy[node] = 0;\n    }\n  }\n  rangeAdd(qL, qR, val, node=1, l=0, r=this.n-1) {\n    if (qL > r || qR < l) return;\n    if (qL <= l && r <= qR) {\n      this.apply(node, l, r, val);\n      return;\n    }\n    this.push(node, l, r);\n    const mid = Math.floor((l + r) / 2);\n    this.rangeAdd(qL, qR, val, node*2, l, mid);\n    this.rangeAdd(qL, qR, val, node*2+1, mid+1, r);\n    this.tree[node] = this.tree[node*2] + this.tree[node*2+1];\n  }\n  rangeSum(qL, qR, node=1, l=0, r=this.n-1) {\n    if (qL > r || qR < l) return 0;\n    if (qL <= l && r <= qR) return this.tree[node];\n    this.push(node, l, r);\n    const mid = Math.floor((l + r) / 2);\n    return this.rangeSum(qL, qR, node*2, l, mid) +\n           this.rangeSum(qL, qR, node*2+1, mid+1, r);\n  }\n}",
       "complexity": {
         "time": "O(log N) per operation",
         "space": "O(N)",
         "explanation_time": "Thanks to lazy propagation, range updates no longer need to touch every node in the range. Both `rangeAdd` and `rangeSum` operations only need to traverse a logarithmic number of nodes down the tree. This gives them an amortized time complexity of O(log N).",
         "explanation_space": "We need an array for the tree itself (O(N)) and an additional array of the same size for the lazy tags (O(N)). This results in a total space complexity of O(N)."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            5
+          ],
+          "text": "Lazy array: stores pending additions for children."
+        },
+        {
+          "lines": [
+            17,
+            18
+          ],
+          "text": "Apply: Update node sum AND add to its lazy tag."
+        },
+        {
+          "lines": [
+            21
+          ],
+          "text": "Push: Propagate lazy value to children only when needed."
+        },
+        {
+          "lines": [
+            23,
+            24
+          ],
+          "text": "Update children and reset current lazy tag to 0."
+        },
+        {
+          "lines": [
+            31
+          ],
+          "text": "Range Add: If fully covered, update node & lazy, then STOP. Don't recurse."
+        },
+        {
+          "lines": [
+            34
+          ],
+          "text": "Crucial: Push pending updates before recursing."
+        },
+        {
+          "lines": [
+            47
+          ],
+          "text": "Query: Push before checking children to ensure fresh data."
+        }
+      ]
     },
     {
       "id": "trees-5",
@@ -388,7 +1036,45 @@
         "space": "O(N)",
         "explanation_time": "Both the `update` and `query` operations involve a loop that 'jumps' through the tree array. The number of jumps is determined by the number of set bits in the index, which is at most O(log N).",
         "explanation_space": "The Fenwick Tree requires a single array of size N+1 to store its state, resulting in O(N) space complexity. This is more space-efficient than a standard Segment Tree, which typically requires 4N space."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            4
+          ],
+          "text": "Tree array is 1-indexed for bit manipulation magic."
+        },
+        {
+          "lines": [
+            7
+          ],
+          "text": "Update: Start at index+1. Loop until end of array."
+        },
+        {
+          "lines": [
+            8
+          ],
+          "text": "i += i & -i: Jumps to the next parent range coverage."
+        },
+        {
+          "lines": [
+            13
+          ],
+          "text": "Query: Start at index+1. Loop backwards to 0."
+        },
+        {
+          "lines": [
+            14
+          ],
+          "text": "i -= i & -i: Jumps to the previous non-overlapping sub-range."
+        },
+        {
+          "lines": [
+            19
+          ],
+          "text": "Range Sum [L, R] = PrefixSum(R) - PrefixSum(L-1)."
+        }
+      ]
     }
   ],
   "strings": [
@@ -415,7 +1101,40 @@
         "space": "O(M)",
         "explanation_time": "The algorithm has two parts: building the LPS array, which takes O(M) time, and searching the text, which takes O(N) time because the text pointer `i` never moves backward. This gives a total linear time complexity.",
         "explanation_space": "We need to store the LPS array, which is the same size as the pattern, resulting in O(M) space."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            6
+          ],
+          "text": "LPS mismatch case: backtrack `len` using previous LPS values."
+        },
+        {
+          "lines": [
+            7
+          ],
+          "text": "Match case: extend the current prefix length."
+        },
+        {
+          "lines": [
+            16
+          ],
+          "text": "Search loop: i scans text, j scans pattern."
+        },
+        {
+          "lines": [
+            19,
+            20
+          ],
+          "text": "Full match found! Record index and use LPS to prepare for next match."
+        },
+        {
+          "lines": [
+            22
+          ],
+          "text": "Mismatch after some matches: Smart jump. Set j to LPS[j-1]."
+        }
+      ]
     },
     {
       "id": "strings-2",
@@ -440,7 +1159,33 @@
         "space": "O(M)",
         "explanation_time": "On average, with a good hash function, collisions are rare. The algorithm runs in O(N+M) time. In the worst case (many hash collisions), the complexity can degrade to O(N*M) because of the repeated character-by-character checks.",
         "explanation_space": "We only need to store the pattern and a few variables for the hashes, so the space is O(M)."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            8
+          ],
+          "text": "Initial window hash calculation."
+        },
+        {
+          "lines": [
+            13
+          ],
+          "text": "Hash match: Potential collision, verify with exact string comparison."
+        },
+        {
+          "lines": [
+            17
+          ],
+          "text": "Rolling hash: Remove leading char, add new trailing char in O(1)."
+        },
+        {
+          "lines": [
+            18
+          ],
+          "text": "Correction: Handle negative result from JS modulo operator."
+        }
+      ]
     },
     {
       "id": "strings-3",
@@ -465,7 +1210,33 @@
         "space": "O(N + M)",
         "explanation_time": "The Z-array construction algorithm cleverly reuses information to achieve a single pass over the combined string, giving a linear time complexity.",
         "explanation_space": "We need to store the combined string and the Z-array, which both have a size of N + M + 1."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            6
+          ],
+          "text": "Optimization: Inside Z-box [l,r], use pre-computed mirror value."
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Naive expansion: Extend match beyond known Z-box."
+        },
+        {
+          "lines": [
+            12
+          ],
+          "text": "Update Z-box: Expand [l, r] boundary to cover new match."
+        },
+        {
+          "lines": [
+            20
+          ],
+          "text": "Check Z-value: If length equals pattern length, exact match found."
+        }
+      ]
     },
     {
       "id": "strings-4",
@@ -490,7 +1261,27 @@
         "space": "O(N)",
         "explanation_time": "The main loop runs log(N) times. Inside the loop, the dominant operation is sorting, which takes O(N log N) time. This gives a total time complexity of O(N log² N). (Note: More advanced O(N) algorithms like SA-IS exist but are much more complex).",
         "explanation_space": "We need space for the suffix array itself, plus a couple of arrays for ranks, all of which are O(N)."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            6
+          ],
+          "text": "Main loop: Logarithmic steps, doubling prefix length k each time."
+        },
+        {
+          "lines": [
+            8
+          ],
+          "text": "Sorting: Compare suffixes using pair (current rank, next rank)."
+        },
+        {
+          "lines": [
+            21
+          ],
+          "text": "Re-rank: Assign new equivalence classes based on sorted order."
+        }
+      ]
     },
     {
       "id": "strings-5",
@@ -515,7 +1306,39 @@
         "space": "O(N)",
         "explanation_time": "Although there is a `while` loop inside the main `for` loop, the right boundary `R` only ever moves forward through the string. The total number of character comparisons performed by the expansion `while` loop across the entire algorithm is amortized to O(N).",
         "explanation_space": "We need to store the transformed string `t` and the palindrome radius array `P`, both of which are proportional to the length of the original string `s`."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            2
+          ],
+          "text": "Transform string: 'aba' -> '#a#b#a#' to handle even/odd lengths."
+        },
+        {
+          "lines": [
+            7
+          ],
+          "text": "Mirror property: Find index 'mirror' symmetric to 'i' around 'C'."
+        },
+        {
+          "lines": [
+            8
+          ],
+          "text": "Optimization: Use mirror's P value to skip known palindromic region."
+        },
+        {
+          "lines": [
+            10
+          ],
+          "text": "Expand: Check characters beyond the known radius."
+        },
+        {
+          "lines": [
+            13
+          ],
+          "text": "Update: New palindrome goes beyond R, so move center C."
+        }
+      ]
     }
   ],
   "math": [
@@ -542,7 +1365,34 @@
         "space": "O(1)",
         "explanation_time": "The loop runs as many times as there are bits in the exponent `b`, which is approximately log₂(b). Each step inside the loop is a constant time operation.",
         "explanation_space": "The algorithm uses only a few variables to store its state, requiring constant O(1) space."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            2,
+            3
+          ],
+          "text": "Modulus Op: Reduce 'a' immediately. 'result' initialized to 1 (identity)."
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Bit Set: If current bit is 1 (b is odd), multiply current power of 'a' into result."
+        },
+        {
+          "lines": [
+            8
+          ],
+          "text": "Squaring: Move to next power of 2 (a^2, a^4, etc.) by squaring base."
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Shift: Move to next bit of exponent (divide by 2)."
+        }
+      ]
     },
     {
       "id": "math-2",
@@ -567,7 +1417,27 @@
         "space": "O(N)",
         "explanation_time": "The time complexity is a result of the harmonic series of prime reciprocals. For each prime p, we do N/p work. The sum over all primes gives O(N log log N), which is very close to linear.",
         "explanation_space": "We need a boolean array of size N to store the primality information for each number."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            4
+          ],
+          "text": "Skip Composite: If isPrime[p] is false, we already processed its factors."
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Optimization: Start marking multiples from p*p. Smaller multiples (k*p where k < p) are already handled."
+        },
+        {
+          "lines": [
+            6
+          ],
+          "text": "Mark: Set multiple to false (composite)."
+        }
+      ]
     },
     {
       "id": "math-3",
@@ -592,7 +1462,27 @@
         "space": "O(log(min(a,b)))",
         "explanation_time": "The number of recursive calls is the same as the standard Euclidean algorithm, which is logarithmic in the size of the smaller input.",
         "explanation_space": "The space complexity is determined by the depth of the recursion stack, which is also logarithmic."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            2
+          ],
+          "text": "Base Case: gcd(a, 0) = a. Solution: 1*a + 0*0 = a."
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Recursive Call: Solve for gcd(b, a % b). Returns [g, x1, y1]."
+        },
+        {
+          "lines": [
+            6
+          ],
+          "text": "Update Coefficients: x = y1, y = x1 - floor(a/b)*y1. (Based on b*x1 + (a%b)*y1 = g)"
+        }
+      ]
     },
     {
       "id": "math-4",
@@ -617,7 +1507,27 @@
         "space": "O(k)",
         "explanation_time": "Where `k` is the number of equations and `M` is the product of the moduli. Each of the `k-1` merge steps involves a call to the Extended Euclidean Algorithm, which is logarithmic in the size of the moduli.",
         "explanation_space": "The inputs are stored in arrays of size k."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            3
+          ],
+          "text": "Modular Inverse: Solve for 'p' in Bezout equation relative to moduli."
+        },
+        {
+          "lines": [
+            7
+          ],
+          "text": "Merge: Combine two congruences into one. New x satisfies both."
+        },
+        {
+          "lines": [
+            12
+          ],
+          "text": "Iterative Merge: Combine current answer with next congruence."
+        }
+      ]
     },
     {
       "id": "math-5",
@@ -642,7 +1552,28 @@
         "space": "O(N)",
         "explanation_time": "The FFT algorithm is a divide-and-conquer algorithm. The recurrence relation is T(N) = 2*T(N/2) + O(N), which solves to O(N log N).",
         "explanation_space": "The algorithm requires space to hold the input arrays and various temporary values, proportional to the degree of the polynomials, resulting in O(N) space."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            5
+          ],
+          "text": "Bit-Reversal Permutation: Reorder array so recursion can be done iteratively."
+        },
+        {
+          "lines": [
+            10
+          ],
+          "text": "Roots of Unity: Calculate complex angle for current level of recursion."
+        },
+        {
+          "lines": [
+            15,
+            16
+          ],
+          "text": "Butterfly: Update pairs in place using the 'twiddle factor' wlen."
+        }
+      ]
     }
   ],
   "geometry": [
@@ -669,7 +1600,33 @@
         "space": "O(1)",
         "explanation_time": "For each query, we must iterate through all N edges of the polygon once.",
         "explanation_space": "The algorithm uses only a few variables to store state, requiring constant space."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            4
+          ],
+          "text": "Ray Casting: For each edge (i, j), check intersection with horizontal ray from point P."
+        },
+        {
+          "lines": [
+            7
+          ],
+          "text": "Y-Condition: Checks if point P's y-coord is between edge endpoints' y-coords."
+        },
+        {
+          "lines": [
+            8
+          ],
+          "text": "X-Condition: Checks if the edge intersection, at P's y-level, is to the right of P."
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Parity Flip: If intersect, toggle 'inside' state (odd=in, even=out)."
+        }
+      ]
     },
     {
       "id": "geometry-2",
@@ -694,7 +1651,27 @@
         "space": "O(1)",
         "explanation_time": "The check involves a constant number of orientation tests and comparisons, regardless of the coordinates.",
         "explanation_space": "No extra space is needed."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            7
+          ],
+          "text": "Cross Product: Calculates Z-component. Sign indicates orientation (CW/CCW/Collinear)."
+        },
+        {
+          "lines": [
+            16
+          ],
+          "text": "General Case: Segments straddle each other iff orientations differ for both pairs."
+        },
+        {
+          "lines": [
+            17
+          ],
+          "text": "Collinear Case: If 3 points are collinear, check if point lies ON segment."
+        }
+      ]
     },
     {
       "id": "geometry-3",
@@ -719,7 +1696,27 @@
         "space": "O(N)",
         "explanation_time": "The algorithm is dominated by the initial sort of the points, which takes O(N log N). The subsequent passes to build the hulls each take O(N) time.",
         "explanation_space": "In the worst case, all points could be on the convex hull, so we need O(N) space to store the result."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            2
+          ],
+          "text": "Sort: Crucial step. Sort by X, then Y, to process points in a 'monotone' order."
+        },
+        {
+          "lines": [
+            7
+          ],
+          "text": "Cross Product Check: If <= 0, we made a right/straight turn (for lower hull), so pop (keep expanding left)."
+        },
+        {
+          "lines": [
+            13
+          ],
+          "text": "Reverse Logic: Building the upper hull works identically but processes points in reverse sorted order."
+        }
+      ]
     },
     {
       "id": "geometry-4",
@@ -744,7 +1741,33 @@
         "space": "O(N)",
         "explanation_time": "The recurrence relation for the algorithm is T(N) = 2*T(N/2) + O(N) (for the strip processing), which solves to O(N log N).",
         "explanation_space": "The space complexity depends on the implementation of the recursion and sorting, but is typically O(N) or O(N log N)."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            7
+          ],
+          "text": "Divide: Split sorted points into left and right halves."
+        },
+        {
+          "lines": [
+            12
+          ],
+          "text": "Conquer: Recursively find min dist in both halves. Let d = min(dl, dr)."
+        },
+        {
+          "lines": [
+            13
+          ],
+          "text": "Filter Strip: Only points within distance 'd' of midline can form a closer pair spanning the cut."
+        },
+        {
+          "lines": [
+            16
+          ],
+          "text": "Magic Constant: Geometry guarantees we only need to check next 7 points in sorted Y strip."
+        }
+      ]
     },
     {
       "id": "geometry-5",
@@ -769,7 +1792,27 @@
         "space": "O(N)",
         "explanation_time": "The complexity is dominated by the initial convex hull computation, which is O(N log N). The rotating calipers algorithm itself runs in O(H) time, where H is the number of vertices on the hull (H <= N).",
         "explanation_space": "We need O(H) or O(N) space to store the vertices of the convex hull."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            7
+          ],
+          "text": "Init Calipers: Start with min-Y and max-Y vertices as the antipodal pair."
+        },
+        {
+          "lines": [
+            16
+          ],
+          "text": "Caliper Rotation: Use cross product to decide which caliper advances to next vertex to maintain parallel support lines."
+        },
+        {
+          "lines": [
+            20
+          ],
+          "text": "Update: Advance 'q' or 'p' based on which edge is closer to parallel."
+        }
+      ]
     }
   ],
   "design": [
@@ -796,7 +1839,35 @@
         "space": "O(capacity)",
         "explanation_time": "All `get` and `put` operations involve a hash map lookup/insertion (O(1)) and a few pointer re-assignments in the doubly linked list (O(1)).",
         "explanation_space": "The hash map and the linked list both store up to the `capacity` number of items."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            6,
+            7
+          ],
+          "text": "Sentinel Nodes: Head and Tail dummies simplify add/remove logic (no null checks)."
+        },
+        {
+          "lines": [
+            11,
+            12
+          ],
+          "text": "Add Node: Always add to front (right after head). Most recently used."
+        },
+        {
+          "lines": [
+            23
+          ],
+          "text": "Pop Tail: Remove from back (right before tail). Least recently used."
+        },
+        {
+          "lines": [
+            30
+          ],
+          "text": "Get: If found, move to head to refresh 'recently used' status."
+        }
+      ]
     },
     {
       "id": "design-2",
@@ -821,7 +1892,27 @@
         "space": "O(Tweets + Follows)",
         "explanation_time": "The provided code uses the naive sorting approach, where `k` is the number of followees and `T` is their average number of tweets. The complexity is dominated by sorting the collected feed. A heap-based approach would improve this significantly to O(k log k + 10 log k).",
         "explanation_space": "We need to store all tweets and all follow relationships."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            3
+          ],
+          "text": "Data Store: Map<UserId, List<Tweet>> for O(1) access to a user's tweets."
+        },
+        {
+          "lines": [
+            16
+          ],
+          "text": "Aggregation: Collect tweets from user and everyone they follow."
+        },
+        {
+          "lines": [
+            21
+          ],
+          "text": "Sort: Naive approach sorts all gathered tweets. Heap merge would be better here."
+        }
+      ]
     },
     {
       "id": "design-3",
@@ -846,7 +1937,34 @@
         "space": "O(S*L)",
         "explanation_time": "Let S be the number of sentences, L be their average length, P be the prefix length, and C be the number of candidates for a prefix. Build time is O(S*L). Each input takes O(P) to traverse the trie, then O(C log C) to sort the candidates. ",
         "explanation_space": "The space is dominated by the Trie, which in the worst case stores every character of every sentence, leading to O(S*L) space."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            2,
+            10
+          ],
+          "text": "Trie Structure: Root node stores children chars and a map of full sentences passing through it."
+        },
+        {
+          "lines": [
+            13
+          ],
+          "text": "Hotness Map: Each node stores {sentence: frequency} for all words in its subtree."
+        },
+        {
+          "lines": [
+            32
+          ],
+          "text": "Traversal: Follow path down the Trie based on input characters."
+        },
+        {
+          "lines": [
+            40
+          ],
+          "text": "Ranking: Sort candidates at the constant-time node lookup level."
+        }
+      ]
     },
     {
       "id": "design-4",
@@ -871,7 +1989,35 @@
         "space": "O(1)",
         "explanation_time": "`hit` is O(1). `getHits` requires iterating over a fixed-size array of 300 elements, which is a constant amount of work, making it O(1) as well.",
         "explanation_space": "We use two arrays of a fixed size (300), which is constant space, O(1)."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            2,
+            3
+          ],
+          "text": "Circular Buffer: Fixed size 300 for 5-minute window. Saves space vs storing all timestamps."
+        },
+        {
+          "lines": [
+            7,
+            8
+          ],
+          "text": "Index Mapping: Modulo 300 maps indefinite time to fixed buckets."
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Reset: If bucket's timestamp is old, it belongs to a previous cycle. Overwrite it."
+        },
+        {
+          "lines": [
+            18
+          ],
+          "text": "Sum: Aggregate hits only from buckets falling within the last 300s window."
+        }
+      ]
     },
     {
       "id": "design-5",
@@ -889,8 +2035,7 @@
         "brute_force": "Storing words in a simple list or hash set would make `addWord` easy. However, searching for a word with a wildcard like 'b.d' would require iterating through every word in the dictionary and checking it against the pattern, which would be very slow.",
         "bottleneck": "The search operation is the bottleneck for simple data structures when wildcards are involved.",
         "optimized_approach": "A **Trie** allows us to search prefix-by-prefix. When we encounter a normal character, we traverse to the corresponding child node. When we encounter a `.` wildcard, it means we can match any character. Therefore, we must explore *all* children of the current node and see if any of them lead to a valid match.",
-        "algorithm_steps": "1.  **Trie Node Structure:** Each node has `children` (a map or array) and a boolean `isEndOfWord`.\n\n2.  **`addWord(word)`:** This is a standard Trie insertion. Traverse the Trie character by character, creating nodes as needed. At the final node, set `isEndOfWord = true`.\n\n3.  **`search(word)`:** This is a recursive DFS-style search.\n    a.  Define `dfs(index, node)` which searches for `word` starting from `index` in the subtree rooted at `node`.\n    b.  **Base Case:** If `index` reaches the end of the word, a match is found if `node.isEndOfWord` is true.\n    c.  Get the current character `c = word[index]`.
-    d.  **If `c` is a `.`:** Iterate through all children of the current `node`. For each `child`, if a recursive call `dfs(index + 1, child)` returns true, then we have found a match, so return true.\n    e.  **If `c` is a normal character:** Check if `node.children` has `c`. If not, no match. If yes, recurse on that child: `dfs(index + 1, node.children[c])`."
+        "algorithm_steps": "1.  **Trie Node Structure:** Each node has `children` (a map or array) and a boolean `isEndOfWord`.\n\n2.  **`addWord(word)`:** This is a standard Trie insertion. Traverse the Trie character by character, creating nodes as needed. At the final node, set `isEndOfWord = true`.\n\n3.  **`search(word)`:** This is a recursive DFS-style search.\n    a.  Define `dfs(index, node)` which searches for `word` starting from `index` in the subtree rooted at `node`.\n    b.  **Base Case:** If `index` reaches the end of the word, a match is found if `node.isEndOfWord` is true.\n    c.  Get the current character `c = word[index]`.\n    d.  **If `c` is a `.`:** Iterate through all children of the current `node`. For each `child`, if a recursive call `dfs(index + 1, child)` returns true, then we have found a match, so return true.\n    e.  **If `c` is a normal character:** Check if `node.children` has `c`. If not, no match. If yes, recurse on that child: `dfs(index + 1, node.children[c])`."
       },
       "code": "class WordDictionary {\n  constructor() {\n    this.root = {};\n  }\n  \n  addWord(word) {\n    let node = this.root;\n    for (const char of word) {\n      if (!node[char]) node[char] = {};\n      node = node[char];\n    }\n    node.isEnd = true;\n  }\n  \n  search(word) {\n    return this.dfs(word, 0, this.root);\n  }\n  \n  dfs(word, index, node) {\n    if (index === word.length) {\n      return !!node.isEnd;\n    }\n    \n    const char = word[index];\n    if (char === '.') {\n      for (const key in node) {\n        if (key !== 'isEnd' && this.dfs(word, index + 1, node[key])) {\n          return true;\n        }\n      }\n      return false;\n    } else {\n      if (!node[char]) return false;\n      return this.dfs(word, index + 1, node[char]);\n    }\n  }\n}",
       "complexity": {
@@ -898,7 +2043,27 @@
         "space": "O(Total Chars)",
         "explanation_time": "`addWord` takes O(M) where M is the word length. `search` also takes O(M) for words without wildcards. With wildcards, the search can branch. In the worst case (a search for '....'), we might have to explore a large portion of the Trie.",
         "explanation_space": "The space is proportional to the total number of characters in all words stored in the Trie."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            7
+          ],
+          "text": "Add: Standard Trie insertion. Create path if missing."
+        },
+        {
+          "lines": [
+            22
+          ],
+          "text": "Wildcard: ' . ' matches any char. Must try ALL children of current node recursively."
+        },
+        {
+          "lines": [
+            29
+          ],
+          "text": "Standard Match: Proceed down specific child path."
+        }
+      ]
     }
   ],
   "optimization": [
@@ -925,7 +2090,33 @@
         "space": "O(k)",
         "explanation_time": "Each index from the input array is pushed onto and popped from the deque at most once. This gives an amortized O(1) cost for each of the N elements, leading to a total linear time complexity.",
         "explanation_space": "The deque will store at most `k` indices, so the space complexity is O(k)."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            2
+          ],
+          "text": "Deque stores indices, not values. It maintains a decreasing order of values."
+        },
+        {
+          "lines": [
+            6
+          ],
+          "text": "Clean Front: Remove indices that have fallen out of the current window (i - k)."
+        },
+        {
+          "lines": [
+            10
+          ],
+          "text": "Clean Back: Remove indices whose values are smaller than current num. They can't be max anymore."
+        },
+        {
+          "lines": [
+            16
+          ],
+          "text": "Result: The front of the deque always holds the index of the max value for the current window."
+        }
+      ]
     },
     {
       "id": "optimization-2",
@@ -950,7 +2141,33 @@
         "space": "O(N)",
         "explanation_time": "Each bar's index is pushed onto and popped from the stack exactly once, leading to a linear time complexity.",
         "explanation_space": "In the worst case (a histogram with increasing heights), the stack could hold all N indices."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            4
+          ],
+          "text": "Sentinel: Add 0 height at the end to force processing remaining bars in stack."
+        },
+        {
+          "lines": [
+            7
+          ],
+          "text": "Condition: Current bar is shorter than stack top? Stack top is the 'height' of the rect."
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Width Calc: i is right boundary (exclusive), new stack top is left boundary (exclusive)."
+        },
+        {
+          "lines": [
+            10
+          ],
+          "text": "Area: height * width. Update maxArea if this rectangle is bigger."
+        }
+      ]
     },
     {
       "id": "optimization-3",
@@ -975,7 +2192,27 @@
         "space": "O(N)",
         "explanation_time": "We iterate through M rows, and for each row, we perform an O(N) operation (updating the heights array and running the histogram algorithm). This gives a total time complexity of O(M * N).",
         "explanation_space": "We need O(N) space to store the `heights` array for each row. The stack used in the histogram algorithm also takes O(N) space."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            7
+          ],
+          "text": "Row Scan: Treat each row as the base of a histogram."
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Build Histogram: If '1', add to height. If '0', reset height to 0."
+        },
+        {
+          "lines": [
+            11
+          ],
+          "text": "Solve Subproblem: Run 'Largest Rectangle in Histogram' on current row's heights."
+        }
+      ]
     },
     {
       "id": "optimization-4",
@@ -1000,7 +2237,33 @@
         "space": "O(|s| + |t|)",
         "explanation_time": "The `left` and `right` pointers each traverse the string `s` only once. The initial scan of `t` takes O(|t|) time. This gives a total linear time complexity.",
         "explanation_space": "In the worst case, the `need` and `window` hash maps could store all unique characters from both strings."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            2
+          ],
+          "text": "Map 'need': Count frequency of each char in target string t."
+        },
+        {
+          "lines": [
+            12
+          ],
+          "text": "Expand: Add char at 'right' to current window counts."
+        },
+        {
+          "lines": [
+            18
+          ],
+          "text": "Valid Check: If we have enough valid characters, try to shrink."
+        },
+        {
+          "lines": [
+            25
+          ],
+          "text": "Shrink: Remove char at 'left' to find smaller valid window."
+        }
+      ]
     },
     {
       "id": "optimization-5",
@@ -1025,7 +2288,33 @@
         "space": "O(1)",
         "explanation_time": "The two pointers, `left` and `right`, traverse the array once, meeting in the middle. This results in a single pass and linear time complexity.",
         "explanation_space": "We only use a few variables to keep track of pointers and maximums, giving us constant space complexity."
-      }
+      },
+      "annotations": [
+        {
+          "lines": [
+            8
+          ],
+          "text": "Key Insight: The shorter wall determines water level. If left < right, we trust leftMax."
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Update Left Max: We found a taller wall, so no water trapped here."
+        },
+        {
+          "lines": [
+            11
+          ],
+          "text": "Trap Water: Current bar is shorter than leftMax, so it holds water."
+        },
+        {
+          "lines": [
+            15
+          ],
+          "text": "Symmetric: Same logic for the right side if right wall is shorter."
+        }
+      ]
     }
   ]
 }

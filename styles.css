@@ -608,3 +608,718 @@ footer {
     border-radius: 3px;
     transition: background-color 0.3s ease;
 }
+
+/* Annotated Code Lines */
+.annotated-line {
+    cursor: help;
+    border-radius: 3px;
+    display: inline;
+    transition: background-color 0.2s ease;
+}
+
+.annotated-line:hover,
+.annotated-line.annotation-hover {
+    background-color: rgba(102, 126, 234, 0.3);
+}
+
+[data-theme="dark"] .annotated-line:hover,
+[data-theme="dark"] .annotated-line.annotation-hover {
+    background-color: rgba(102, 126, 234, 0.4);
+}
+
+/* Code Tooltip */
+.code-tooltip {
+    position: absolute;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid #667eea;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px var(--shadow-heavy);
+    max-width: 400px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    z-index: 10000;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+.code-tooltip::before {
+    content: '💡';
+    margin-right: 8px;
+}
+
+/* ============================================
+   Explanation Section Styling
+   ============================================ */
+
+.explanation-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.explanation-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.explanation-section h4 {
+    color: var(--text-primary);
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.explanation-section h4::before {
+    content: '';
+    width: 4px;
+    height: 1.15rem;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+}
+
+.explanation-section>div,
+.explanation-section>p {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    font-size: 0.95rem;
+}
+
+/* Paragraph styling within explanations */
+.explanation-section p {
+    margin-bottom: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.explanation-section p:last-child {
+    margin-bottom: 0;
+}
+
+/* Strong text in explanations */
+.explanation-section strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Inline code in explanations - softer styling */
+.explanation-section code {
+    background: rgba(102, 126, 234, 0.12);
+    color: var(--text-primary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 0.85em;
+    font-weight: 500;
+}
+
+[data-theme="dark"] .explanation-section code {
+    background: rgba(102, 126, 234, 0.25);
+    color: #e0e7ff;
+}
+
+/* List styling - flowing, connected design */
+.explanation-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    padding: 0.5rem 0;
+    border-left: 3px solid #667eea;
+}
+
+.explanation-section ul li {
+    position: relative;
+    padding: 0.5rem 1rem 0.5rem 2rem;
+    color: var(--text-secondary);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.explanation-section ul li:last-child {
+    border-bottom: none;
+}
+
+.explanation-section ul li::before {
+    content: '›';
+    position: absolute;
+    left: 0.75rem;
+    color: #667eea;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+/* Nested lists */
+.explanation-section ul ul {
+    margin: 0.5rem 0 0.5rem 0;
+    padding: 0;
+    background: transparent;
+    border-left: none;
+    padding-left: 1rem;
+}
+
+.explanation-section ul ul li {
+    padding: 0.25rem 0.5rem 0.25rem 1.5rem;
+    border-bottom: none;
+    font-size: 0.9em;
+    opacity: 0.9;
+}
+
+.explanation-section ul ul li::before {
+    content: '–';
+    color: var(--text-tertiary);
+}
+
+/* Callout box for key insights - unified container */
+.explanation-section .callout-box {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    border-left: 3px solid #667eea;
+    margin: 0.75rem 0;
+}
+
+/* Remove excessive blank lines */
+.explanation-section br+br {
+    display: none;
+}
+
+/* Detailed walkthrough card styling */
+.problem-card.detailed-walkthrough {
+    max-width: 900px;
+    margin: 0 auto 2rem;
+}
+
+.problem-card.detailed-walkthrough .card-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.problem-card.detailed-walkthrough .card-header:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+    border-radius: 8px;
+    margin: -0.5rem;
+    padding: 0.5rem 0.5rem calc(0.5rem + 1rem) 0.5rem;
+}
+
+.problem-card.detailed-walkthrough .card-header h3 {
+    margin: 0;
+    flex: 1;
+}
+
+.problem-card.detailed-walkthrough .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.problem-card.detailed-walkthrough .collapse-chevron {
+    font-size: 0.75rem;
+    transition: transform 0.3s ease;
+    color: var(--text-tertiary);
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border-radius: 50%;
+}
+
+.problem-card.detailed-walkthrough.collapsed .collapse-chevron {
+    transform: rotate(-90deg);
+}
+
+.problem-card.detailed-walkthrough .card-body {
+    overflow: hidden;
+    max-height: 5000px;
+    transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+    opacity: 1;
+}
+
+.problem-card.detailed-walkthrough.collapsed .card-body {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+}
+
+.problem-card.detailed-walkthrough.collapsed .card-header {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.problem-card.detailed-walkthrough.collapsed:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px var(--shadow-medium);
+}
+
+.problem-container {
+    max-width: 950px;
+    margin: 0 auto;
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .explanation-section ul li {
+    background: rgba(45, 55, 72, 0.5);
+}
+
+[data-theme="dark"] .explanation-section ul li:hover {
+    background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .explanation-section .callout-box {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+}
+
+/* ============================================
+   Related Problems Section
+   ============================================ */
+.related-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed var(--border-color);
+}
+
+.related-header {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.related-header i {
+    color: #667eea;
+}
+
+.related-chips {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.related-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.related-chip:hover {
+    background: var(--gradient-primary);
+    color: white;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.related-chip i {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+/* ============================================
+   Practice Actions (LeetCode / Codeforces)
+   ============================================ */
+.practice-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    /* border-top: 1px dashed var(--border-color); */
+    /* Optional if related section is present */
+}
+
+.btn-leetcode {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.7rem 1.4rem;
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px var(--shadow-light);
+}
+
+.btn-leetcode i {
+    color: #ffa116;
+    /* LeetCode Orange */
+    font-size: 1.1rem;
+}
+
+.btn-leetcode:hover {
+    background-color: #ffa116;
+    color: white;
+    border-color: #ffa116;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255, 161, 22, 0.3);
+}
+
+.btn-leetcode:hover i {
+    color: white;
+}
+
+/* ============================================
+   Global Search
+   ============================================ */
+.nav-search {
+    position: relative;
+    margin-left: auto;
+    margin-right: 1.5rem;
+}
+
+/* Glassmorphism Input Style */
+.search-input {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.6rem 1rem 0.6rem 2.6rem;
+    border-radius: 20px;
+    color: #ffffff;
+    /* White text for header contrast */
+    width: 220px;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(4px);
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.search-input:focus {
+    width: 300px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: transparent;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    pointer-events: none;
+    transition: color 0.3s;
+}
+
+.search-input:focus+.search-icon {
+    color: #667eea;
+}
+
+.search-results {
+    position: absolute;
+    top: 130%;
+    right: 0;
+    width: 340px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    max-height: 450px;
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.25s ease;
+}
+
+.search-results.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.nav-search .search-result-item {
+    padding: 0.9rem 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: background 0.2s;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.search-result-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.search-result-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.search-result-category {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.search-no-results {
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   Print Styles - Cheat Sheet Mode
+   ============================================ */
+
+/* Print button in header */
+.print-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.print-btn:hover {
+    background: var(--gradient-primary);
+    color: white;
+    border-color: transparent;
+}
+
+.print-btn i {
+    font-size: 0.875rem;
+}
+
+@media print {
+
+    /* Reset basics */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    body {
+        background: white !important;
+        color: #1a1a1a !important;
+        font-size: 10pt !important;
+        line-height: 1.4 !important;
+    }
+
+    /* Hide non-essential elements */
+    .navbar,
+    .header,
+    .footer,
+    .print-btn,
+    .collapse-chevron,
+    .cf-meta,
+    .card-difficulty,
+    .header-right,
+    #theme-toggle,
+    .hero-section,
+    .breadcrumb,
+    .filter-section,
+    .cta-section,
+    button,
+    .btn {
+        display: none !important;
+    }
+
+    /* Category header - keep but simplify */
+    .category-header {
+        background: none !important;
+        padding: 0 !important;
+        margin-bottom: 1rem !important;
+        page-break-after: avoid;
+    }
+
+    .category-header h1 {
+        font-size: 16pt !important;
+        color: #1a1a1a !important;
+        -webkit-text-fill-color: #1a1a1a !important;
+        background: none !important;
+        margin: 0 !important;
+    }
+
+    .category-header .subtitle {
+        font-size: 10pt !important;
+        color: #666 !important;
+    }
+
+    /* Reset page container */
+    .problem-container,
+    .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Force expand all cards */
+    .problem-card.detailed-walkthrough {
+        background: white !important;
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+        padding: 0.75rem !important;
+        margin-bottom: 1rem !important;
+        page-break-inside: avoid;
+    }
+
+    .problem-card.detailed-walkthrough.collapsed .card-body {
+        max-height: none !important;
+        opacity: 1 !important;
+        display: block !important;
+    }
+
+    /* Card headers */
+    .card-header {
+        margin-bottom: 0.5rem !important;
+        padding-bottom: 0.25rem !important;
+        border-bottom: 1px solid #ddd !important;
+    }
+
+    .card-header h3 {
+        font-size: 12pt !important;
+        color: #1a1a1a !important;
+        margin: 0 !important;
+    }
+
+    /* Explanation sections - compact */
+    .explanation-section {
+        margin-bottom: 0.75rem !important;
+        padding-bottom: 0.5rem !important;
+        border-bottom: 1px solid #eee !important;
+    }
+
+    .explanation-section h4 {
+        font-size: 10pt !important;
+        color: #333 !important;
+        -webkit-text-fill-color: #333 !important;
+        background: none !important;
+        margin-bottom: 0.25rem !important;
+    }
+
+    .explanation-section h4::before {
+        background: #667eea !important;
+    }
+
+    .explanation-section p,
+    .explanation-section>div,
+    .explanation-section li {
+        font-size: 9pt !important;
+        line-height: 1.4 !important;
+        color: #333 !important;
+    }
+
+    /* Lists - simplified */
+    .explanation-section ul {
+        margin: 0.25rem 0 !important;
+        padding: 0.25rem 0 0.25rem 0.5rem !important;
+        background: #f8f9fa !important;
+        border-left: 2px solid #667eea !important;
+    }
+
+    .explanation-section ul li {
+        padding: 0.15rem 0.5rem !important;
+        border-bottom: none !important;
+    }
+
+    /* Code blocks - high contrast */
+    pre[class*="language-"] {
+        background: #f4f4f4 !important;
+        border: 1px solid #ddd !important;
+        padding: 0.5rem !important;
+        font-size: 8pt !important;
+        line-height: 1.3 !important;
+        overflow: visible !important;
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        page-break-inside: avoid;
+    }
+
+    code[class*="language-"],
+    pre[class*="language-"] code {
+        color: #1a1a1a !important;
+        text-shadow: none !important;
+    }
+
+    /* Inline code */
+    .explanation-section code {
+        background: #e8e8e8 !important;
+        color: #1a1a1a !important;
+        padding: 1px 3px !important;
+        font-size: 8pt !important;
+    }
+
+    /* Annotations - simpler */
+    .annotated-line {
+        background: #fff3cd !important;
+    }
+
+    .annotation-indicator {
+        display: none !important;
+    }
+
+    /* Page breaks */
+    .problem-card.detailed-walkthrough {
+        page-break-inside: avoid;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        page-break-after: avoid;
+    }
+
+    /* Header for print */
+    @page {
+        margin: 1cm;
+    }
+}
