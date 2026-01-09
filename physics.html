@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathematical Physics - L4/L5 FAANG Algorithms Guide</title>
+    <meta name="description"
+        content="Advanced Mathematical Physics problems with detailed walkthroughs and LaTeX formulas.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- KaTeX for LaTeX rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+</head>
+
+<body>
+    <!-- Header Mount Point -->
+    <div id="header-mount"></div>
+
+    <main>
+        <!-- Category Hero -->
+        <section id="physics" class="hero category-hero">
+            <div class="container">
+                <h1><i class="fas fa-atom" style="margin-right: 0.5rem;"></i>Mathematical Physics</h1>
+                <p class="hero-text">Bridge the gap between abstract mathematics and physical reality. Master
+                    relativistic
+                    mechanics, coupled differential equations, and thermodynamic state functions through rigorous
+                    problem-solving.</p>
+                <div class="category-stats">
+                    <div class="stat-item"><span class="stat-number">5</span><span class="stat-label">Problems</span>
+                    </div>
+                    <div class="stat-item"><span class="stat-number" style="color: #9b59b6;">Advanced</span><span
+                            class="stat-label">Math Level</span></div>
+                    <div class="stat-item"><span class="stat-number">Irodov</span><span class="stat-label">Problem
+                            Source</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Problems Grid -->
+        <section class="problems-section">
+            <div class="container">
+                <h2>Key Physics Problems</h2>
+                <!-- Dynamic Problems Mount Point -->
+                <div id="problems-mount">
+                    <div class="loading">Loading problems...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Mount Point -->
+    <div id="footer-mount"></div>
+
+    <script src="script.js"></script>
+    <script>
+        // Re-render math after dynamic content loads
+        document.addEventListener('problemsLoaded', () => {
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false }
+                    ]
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

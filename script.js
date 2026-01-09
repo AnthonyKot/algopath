@@ -714,6 +714,9 @@ const ProblemRenderer = {
 
         this.handleDeepLink();
         setTimeout(() => this.applySyntaxHighlighting(), 50);
+
+        // Dispatch event for any page-specific post-processing (e.g., KaTeX rendering)
+        document.dispatchEvent(new Event('problemsLoaded'));
     },
 
     applySyntaxHighlighting() {
@@ -790,7 +793,8 @@ const ProblemRenderer = {
             'math.html': 'math',
             'geometry.html': 'geometry',
             'design.html': 'design',
-            'optimization.html': 'optimization'
+            'optimization.html': 'optimization',
+            'physics.html': 'physics'
         };
         return categoryMap[filename] || null;
     },

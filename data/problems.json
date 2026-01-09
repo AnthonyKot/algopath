@@ -4927,5 +4927,564 @@
         }
       ]
     }
+  ],
+  "physics": [
+    {
+      "id": "physics-1",
+      "title": "Relativistic Collision (Four-Momentum)",
+      "difficulty": "Hard",
+      "related": [
+        {
+          "id": "physics-2",
+          "title": "Angular Momentum Conservation",
+          "category": "physics"
+        },
+        {
+          "id": "math-1",
+          "title": "Modular Exponentiation",
+          "category": "math"
+        }
+      ],
+      "tags": [
+        "relativity",
+        "four-momentum",
+        "invariant"
+      ],
+      "problem_statement": "A particle of rest mass $m_0$ with kinetic energy $T$ strikes a **stationary particle** of the same rest mass. Find the **rest mass** $M$ and the **velocity** $V$ of the compound particle formed as a result of the collision.\n\n**Given:**\n- Rest mass of each particle: $m_0$\n- Kinetic energy of striking particle: $T$\n- Stationary target particle\n\n**Find:**\n- Rest mass $M$ of compound particle\n- Velocity $V$ of compound particle",
+      "explanation": {
+        "understanding_the_problem": "This is a classic relativistic collision problem. Unlike Newtonian mechanics where kinetic energy can be converted to other forms, in relativity we must use the **four-momentum invariant** $s = E^2/c^2 - p^2$.\n\nThe key insight is that this invariant quantity is the same in all reference frames. We can calculate it in the lab frame (where one particle is stationary) and set it equal to the rest frame of the compound particle.",
+        "brute_force": "The four-momentum for a single particle is $(E/c, \\vec{p})$. Its magnitude squared is:\n\n$$s = \\frac{E^2}{c^2} - p^2 = m_0^2 c^2$$\n\nThis is the **invariant mass** relation: $E^2 = (pc)^2 + (m_0 c^2)^2$\n\nFor a system of particles, the total four-momentum is conserved, and its invariant is related to the total rest mass $M$ of the system.",
+        "bottleneck": "The challenge is correctly handling the relativistic relations. We cannot simply add kinetic energies or momenta like in classical mechanics.",
+        "optimized_approach": "**Step 1: Initial State**\n\nStriking particle:\n- Total energy: $E_1 = T + m_0 c^2$\n- Momentum: From $E_1^2 = (p_1 c)^2 + (m_0 c^2)^2$, we get $p_1 = \\frac{1}{c}\\sqrt{E_1^2 - m_0^2 c^4}$\n\nStationary particle:\n- Total energy: $E_2 = m_0 c^2$\n- Momentum: $p_2 = 0$\n\n**Step 2: Total Four-Momentum Invariant**\n\n$$s = \\frac{(E_1 + E_2)^2}{c^2} - (p_1 + p_2)^2 = M^2 c^2$$\n\nSubstituting:\n$$M^2 c^4 = (T + 2m_0 c^2)^2 - (E_1^2 - m_0^2 c^4)$$\n\nSimplifying:\n$$M = \\sqrt{2m_0^2 + \\frac{2m_0 T}{c^2}}$$\n\n**Step 3: Velocity from Momentum Conservation**\n\nUsing $p_{total} = p_1 = \\gamma M V$:\n$$V = \\frac{p_1 c^2}{E_1 + E_2}$$",
+        "algorithm_steps": "1. Calculate total energy of striking particle: $E_1 = T + m_0 c^2$\n2. Calculate momentum: $p_1 = \\frac{1}{c}\\sqrt{T(T + 2m_0 c^2)}$\n3. Apply invariant: $M^2 c^4 = (E_1 + m_0 c^2)^2 - (p_1 c)^2$\n4. Solve for $M = m_0\\sqrt{2 + \\frac{2T}{m_0 c^2}}$\n5. Find velocity: $V = \\frac{p_1 c^2}{E_1 + m_0 c^2}$"
+      },
+      "code": "// Relativistic Collision Calculator\n// Units: c = 1 (natural units)\n\nfunction relativisticCollision(m0, T) {\n  // Striking particle\n  const E1 = T + m0;           // Total energy (c=1)\n  const p1 = Math.sqrt(T * (T + 2 * m0));  // Momentum\n  \n  // Stationary particle\n  const E2 = m0;\n  const p2 = 0;\n  \n  // Invariant mass of compound particle\n  const Etotal = E1 + E2;\n  const ptotal = p1 + p2;\n  const M = Math.sqrt(Etotal * Etotal - ptotal * ptotal);\n  \n  // Velocity of compound particle (as fraction of c)\n  const V = ptotal / Etotal;\n  \n  return {\n    restMass: M,\n    velocity: V,\n    gamma: 1 / Math.sqrt(1 - V * V)\n  };\n}\n\n// Example: m0 = 1 GeV, T = 1 GeV\nconst result = relativisticCollision(1, 1);\nconsole.log('Rest Mass M:', result.restMass.toFixed(4), 'm0');\nconsole.log('Velocity V:', result.velocity.toFixed(4), 'c');",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)",
+        "explanation_time": "This is a direct calculation with no iteration. All operations are constant time.",
+        "explanation_space": "Only a fixed number of variables are needed regardless of input values."
+      },
+      "annotations": [
+        {
+          "lines": [
+            6,
+            7
+          ],
+          "text": "Relativistic energy-momentum relation: E² = (pc)² + (m₀c²)²"
+        },
+        {
+          "lines": [
+            15,
+            16
+          ],
+          "text": "Four-momentum invariant: s = E² - p² = M²c⁴ (with c=1)"
+        },
+        {
+          "lines": [
+            19
+          ],
+          "text": "Velocity from relativistic momentum: V = p/E"
+        }
+      ],
+      "quizzes": [
+        {
+          "question": "What quantity is invariant in all reference frames?",
+          "options": [
+            "Kinetic energy",
+            "Momentum magnitude",
+            "E² - (pc)²",
+            "Total energy"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "For a stationary particle, what is its total relativistic energy?",
+          "options": [
+            "0",
+            "m₀c²",
+            "½m₀v²",
+            "pc"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why can't we just add kinetic energies in relativity?",
+          "options": [
+            "Energy isn't conserved",
+            "Rest mass energy must be included",
+            "Momentum is more important",
+            "Time dilation prevents it"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What is the four-momentum of a particle?",
+          "options": [
+            "(m, v)",
+            "(E/c, p)",
+            "(t, x)",
+            "(γ, β)"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "If T = 0 (no kinetic energy), what is M?",
+          "options": [
+            "m₀",
+            "2m₀",
+            "√2 m₀",
+            "0"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "physics-2",
+      "title": "Angular Momentum Conservation (Rotating Disc)",
+      "difficulty": "Medium",
+      "related": [
+        {
+          "id": "physics-1",
+          "title": "Relativistic Collision",
+          "category": "physics"
+        },
+        {
+          "id": "physics-3",
+          "title": "Viscous Flow in Cylinders",
+          "category": "physics"
+        }
+      ],
+      "tags": [
+        "mechanics",
+        "angular-momentum",
+        "conservation"
+      ],
+      "problem_statement": "A horizontally oriented uniform disc of mass $M$ and radius $R$ rotates freely about a stationary vertical axis passing through its centre. The disc has a radial guide along which a small body of mass $m$ can slide without friction.\n\nInitially the body was located at the edge of the disc and the whole system rotated with angular velocity $\\omega_0$. Then by means of a force $F$ applied to a thread, the body was **slowly pulled to the rotation axis**.\n\n**Find:**\n(a) The angular velocity $\\omega$ of the system in its final state\n(b) The work $W$ performed by the force $F$",
+      "explanation": {
+        "understanding_the_problem": "This is a classic problem involving **conservation of angular momentum** with a **variable moment of inertia**. As the mass slides inward, the system's moment of inertia decreases, causing the angular velocity to increase (like a spinning ice skater pulling in their arms).\n\nThe key insight is that angular momentum $L = I\\omega$ is conserved because there are no external torques.",
+        "brute_force": "The moment of inertia of the system consists of two parts:\n\n1. **Disc**: $I_{disc} = \\frac{1}{2}MR^2$ (constant)\n2. **Point mass**: $I_{mass} = mr^2$ (depends on position)\n\nInitially: $I_{initial} = \\frac{1}{2}MR^2 + mR^2$\n\nFinally (mass at center): $I_{final} = \\frac{1}{2}MR^2 + 0$",
+        "bottleneck": "The work done by force $F$ is tricky. The mass doesn't simply move inward—the system is rotating, so the actual path is complex. However, we can use energy methods.",
+        "optimized_approach": "**Part (a): Final Angular Velocity**\n\nConservation of angular momentum:\n$$L_{initial} = L_{final}$$\n$$I_{initial} \\cdot \\omega_0 = I_{final} \\cdot \\omega$$\n\n$$\\left(\\frac{1}{2}MR^2 + mR^2\\right)\\omega_0 = \\frac{1}{2}MR^2 \\cdot \\omega$$\n\nSolving:\n$$\\omega = \\omega_0 \\cdot \\frac{M + 2m}{M}$$\n\n**Part (b): Work Done**\n\nThe work done equals the change in kinetic energy:\n$$W = K_{final} - K_{initial}$$\n$$W = \\frac{1}{2}I_{final}\\omega^2 - \\frac{1}{2}I_{initial}\\omega_0^2$$\n\nSubstituting the expressions:\n$$W = \\frac{1}{2} \\cdot \\frac{1}{2}MR^2 \\cdot \\omega_0^2 \\cdot \\left(\\frac{M+2m}{M}\\right)^2 - \\frac{1}{2}\\left(\\frac{M+2m}{2}\\right)R^2\\omega_0^2$$",
+        "algorithm_steps": "1. Calculate initial moment of inertia: $I_i = \\frac{1}{2}MR^2 + mR^2$\n2. Calculate final moment of inertia: $I_f = \\frac{1}{2}MR^2$\n3. Apply conservation: $\\omega = \\omega_0 \\cdot \\frac{I_i}{I_f}$\n4. Calculate initial kinetic energy: $K_i = \\frac{1}{2}I_i\\omega_0^2$\n5. Calculate final kinetic energy: $K_f = \\frac{1}{2}I_f\\omega^2$\n6. Work done: $W = K_f - K_i$"
+      },
+      "code": "// Angular Momentum Conservation\nfunction rotatingDisc(M, R, m, omega0) {\n  // Moments of inertia\n  const I_disc = 0.5 * M * R * R;\n  const I_initial = I_disc + m * R * R;\n  const I_final = I_disc;  // mass at center contributes 0\n  \n  // Conservation of angular momentum: L = I * omega = const\n  const omega_final = omega0 * (I_initial / I_final);\n  \n  // Kinetic energies\n  const K_initial = 0.5 * I_initial * omega0 * omega0;\n  const K_final = 0.5 * I_final * omega_final * omega_final;\n  \n  // Work done by force F\n  const work = K_final - K_initial;\n  \n  return {\n    omega: omega_final,\n    work: work,\n    speedupFactor: omega_final / omega0\n  };\n}\n\n// Example: M = 2 kg, R = 0.5 m, m = 1 kg, ω₀ = 3 rad/s\nconst result = rotatingDisc(2, 0.5, 1, 3);\nconsole.log('Final ω:', result.omega.toFixed(2), 'rad/s');\nconsole.log('Work done:', result.work.toFixed(2), 'J');",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)",
+        "explanation_time": "Direct calculation with no iteration.",
+        "explanation_space": "Fixed number of variables."
+      },
+      "annotations": [
+        {
+          "lines": [
+            3,
+            4,
+            5
+          ],
+          "text": "Moment of inertia: I_disc = ½MR², I_mass = mr²"
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Conservation: L = Iω = constant → ω ∝ 1/I"
+        },
+        {
+          "lines": [
+            16
+          ],
+          "text": "Work-Energy Theorem: W = ΔK"
+        }
+      ],
+      "quizzes": [
+        {
+          "question": "What is conserved in this problem?",
+          "options": [
+            "Kinetic energy",
+            "Angular momentum",
+            "Linear momentum",
+            "Total energy"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What happens to ω when the mass moves to the center?",
+          "options": [
+            "Decreases",
+            "Stays the same",
+            "Increases",
+            "Becomes zero"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "What is the moment of inertia of a point mass at distance r?",
+          "options": [
+            "mr",
+            "mr²",
+            "½mr²",
+            "2mr²"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Is the work done by F positive or negative?",
+          "options": [
+            "Positive (energy added)",
+            "Negative (energy removed)",
+            "Zero (no work done)",
+            "Depends on M/m ratio"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Why is kinetic energy NOT conserved?",
+          "options": [
+            "Friction",
+            "Work done by external force F",
+            "Mass changes",
+            "Angular momentum changes"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "physics-3",
+      "title": "Viscous Flow in Cylinders (Couette Flow)",
+      "difficulty": "Hard",
+      "related": [
+        {
+          "id": "physics-2",
+          "title": "Angular Momentum Conservation",
+          "category": "physics"
+        },
+        {
+          "id": "physics-4",
+          "title": "Van der Waals Entropy",
+          "category": "physics"
+        }
+      ],
+      "tags": [
+        "hydrodynamics",
+        "differential-equations",
+        "viscosity"
+      ],
+      "problem_statement": "A fluid with viscosity $\\eta$ fills the space between two long co-axial cylinders of radii $R_1$ and $R_2$ (where $R_1 < R_2$). The inner cylinder is **stationary** while the outer one rotates with constant angular velocity $\\omega_2$. The flow is **laminar**.\n\nThe friction force per unit area on a cylindrical surface of radius $r$ is:\n$$\\sigma = \\eta r \\frac{\\partial \\omega}{\\partial r}$$\n\n**Find:**\n(a) The angular velocity $\\omega(r)$ of the fluid as a function of radius\n(b) The moment of friction forces acting on a unit length of the outer cylinder",
+      "explanation": {
+        "understanding_the_problem": "This is the **Couette flow** problem—a fundamental result in fluid mechanics. We need to find the velocity profile of a viscous fluid between rotating cylinders.\n\nThe key insight is that in steady-state laminar flow, the torque on any cylindrical shell must be constant (no angular acceleration).",
+        "brute_force": "Consider a cylindrical shell of radius $r$ and unit length. The torque $N$ on this shell is:\n\n$$N = (\\text{stress}) \\times (\\text{area}) \\times (\\text{moment arm})$$\n$$N = \\sigma \\cdot (2\\pi r \\cdot 1) \\cdot r = 2\\pi \\eta r^3 \\frac{d\\omega}{dr}$$\n\nFor steady flow, $N$ must be independent of $r$ (constant torque transmission).",
+        "bottleneck": "Setting up the correct differential equation and solving with the right boundary conditions requires careful attention to the physics.",
+        "optimized_approach": "**Step 1: Differential Equation**\n\nSince torque is constant:\n$$2\\pi \\eta r^3 \\frac{d\\omega}{dr} = C$$\n\nSimplifying:\n$$r^2 \\frac{d\\omega}{dr} = \\frac{C}{2\\pi\\eta} = C'$$\n\n**Step 2: Solve the ODE**\n\n$$d\\omega = \\frac{C'}{r^2} dr$$\n$$\\omega(r) = -\\frac{C'}{r} + C''$$\n\n**Step 3: Apply Boundary Conditions**\n\n- At $r = R_1$: $\\omega(R_1) = 0$ (inner cylinder stationary)\n- At $r = R_2$: $\\omega(R_2) = \\omega_2$ (outer cylinder rotating)\n\nSolving for constants:\n$$\\omega(r) = \\omega_2 \\cdot \\frac{R_2^2}{R_2^2 - R_1^2} \\left(1 - \\frac{R_1^2}{r^2}\\right)$$\n\n**Step 4: Torque on Outer Cylinder**\n\n$$N = 2\\pi \\eta R_2^3 \\left.\\frac{d\\omega}{dr}\\right|_{r=R_2} = \\frac{4\\pi \\eta \\omega_2 R_1^2 R_2^2}{R_2^2 - R_1^2}$$",
+        "algorithm_steps": "1. Write torque balance: $N = 2\\pi\\eta r^3 \\frac{d\\omega}{dr} = const$\n2. Separate variables: $d\\omega = \\frac{C}{r^2}dr$\n3. Integrate: $\\omega = -C/r + C'$\n4. Apply BC1: $\\omega(R_1) = 0$\n5. Apply BC2: $\\omega(R_2) = \\omega_2$\n6. Solve for constants and substitute"
+      },
+      "code": "// Couette Flow - Angular Velocity Profile\nfunction couetteFlow(R1, R2, omega2, eta) {\n  // Velocity profile function\n  const omega = (r) => {\n    const factor = R2 * R2 / (R2 * R2 - R1 * R1);\n    return omega2 * factor * (1 - R1 * R1 / (r * r));\n  };\n  \n  // Derivative of omega at r\n  const dOmegaDr = (r) => {\n    const factor = R2 * R2 / (R2 * R2 - R1 * R1);\n    return omega2 * factor * (2 * R1 * R1 / (r * r * r));\n  };\n  \n  // Torque per unit length on outer cylinder\n  const torque = 2 * Math.PI * eta * R2 * R2 * R2 * dOmegaDr(R2);\n  \n  // Sample the velocity profile\n  const profile = [];\n  for (let i = 0; i <= 10; i++) {\n    const r = R1 + (R2 - R1) * i / 10;\n    profile.push({ r: r, omega: omega(r) });\n  }\n  \n  return { omega, torque, profile };\n}\n\n// Example: R1 = 1, R2 = 2, ω₂ = 10, η = 0.1\nconst result = couetteFlow(1, 2, 10, 0.1);\nconsole.log('Torque:', result.torque.toFixed(4), 'N·m/m');",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)",
+        "explanation_time": "Analytical solution - direct formula evaluation.",
+        "explanation_space": "Constants only."
+      },
+      "annotations": [
+        {
+          "lines": [
+            4,
+            5,
+            6
+          ],
+          "text": "Velocity profile: ω(r) derived from constant torque condition"
+        },
+        {
+          "lines": [
+            10,
+            11,
+            12
+          ],
+          "text": "Derivative needed for shear stress calculation"
+        },
+        {
+          "lines": [
+            16
+          ],
+          "text": "Torque: N = 2πηr³(dω/dr) evaluated at R₂"
+        }
+      ],
+      "quizzes": [
+        {
+          "question": "What type of flow is this called?",
+          "options": [
+            "Poiseuille flow",
+            "Couette flow",
+            "Stokes flow",
+            "Turbulent flow"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What quantity is constant across radii in steady flow?",
+          "options": [
+            "Angular velocity",
+            "Linear velocity",
+            "Torque",
+            "Pressure"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "What type of equation do we solve?",
+          "options": [
+            "Algebraic equation",
+            "First-order ODE",
+            "Second-order ODE",
+            "PDE"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What are the boundary conditions?",
+          "options": [
+            "ω = 0 at both cylinders",
+            "ω = 0 at R₁, ω = ω₂ at R₂",
+            "dω/dr = 0 at boundaries",
+            "Periodic conditions"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What does viscosity η physically represent?",
+          "options": [
+            "Density",
+            "Resistance to flow/shearing",
+            "Compressibility",
+            "Surface tension"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "physics-4",
+      "title": "Van der Waals Gas Entropy",
+      "difficulty": "Medium",
+      "related": [
+        {
+          "id": "physics-3",
+          "title": "Viscous Flow in Cylinders",
+          "category": "physics"
+        },
+        {
+          "id": "physics-5",
+          "title": "Crossed E×B Fields",
+          "category": "physics"
+        }
+      ],
+      "tags": [
+        "thermodynamics",
+        "entropy",
+        "van-der-waals"
+      ],
+      "problem_statement": "Find the **entropy increment** $\\Delta S$ of one mole of a **Van der Waals gas** due to the isothermal variation of volume from $V_1$ to $V_2$.\n\nThe Van der Waals equation of state is:\n$$\\left(P + \\frac{a}{V^2}\\right)(V - b) = RT$$\n\nwhere $a$ and $b$ are the Van der Waals corrections.\n\n**Given:**\n- Initial volume: $V_1$\n- Final volume: $V_2$\n- Temperature: $T$ (constant)\n- Van der Waals constants: $a$, $b$",
+      "explanation": {
+        "understanding_the_problem": "This problem extends beyond the ideal gas law to incorporate **real gas effects**. The Van der Waals equation accounts for:\n\n1. **Intermolecular attraction** (the $a/V^2$ term)\n2. **Finite molecular volume** (the $b$ term)\n\nWe need to find $\\Delta S$ for an isothermal process.",
+        "brute_force": "For an isothermal process, we use the fundamental thermodynamic relation:\n\n$$TdS = dU + PdV$$\n\nFor a Van der Waals gas:\n- Internal energy depends on volume: $\\left(\\frac{\\partial U}{\\partial V}\\right)_T = \\frac{a}{V^2}$\n- Pressure: $P = \\frac{RT}{V-b} - \\frac{a}{V^2}$",
+        "bottleneck": "The key insight is that the $a/V^2$ terms from $dU$ and $PdV$ will cancel, leaving a simpler expression.",
+        "optimized_approach": "**Step 1: Write the entropy differential**\n\nAt constant $T$:\n$$dS = \\frac{1}{T}\\left[\\left(\\frac{\\partial U}{\\partial V}\\right)_T dV + P dV\\right]$$\n\n**Step 2: Substitute Van der Waals relations**\n\n$$dS = \\frac{1}{T}\\left[\\frac{a}{V^2}dV + \\left(\\frac{RT}{V-b} - \\frac{a}{V^2}\\right)dV\\right]$$\n\n**Step 3: Simplify**\n\nThe $\\frac{a}{V^2}$ terms cancel:\n$$dS = \\frac{R}{V-b}dV$$\n\n**Step 4: Integrate**\n\n$$\\Delta S = \\int_{V_1}^{V_2} \\frac{R}{V-b}dV = R \\ln\\left(\\frac{V_2 - b}{V_1 - b}\\right)$$\n\n**Note:** This is remarkably similar to the ideal gas result $\\Delta S = R\\ln(V_2/V_1)$, but with effective volumes $(V - b)$.",
+        "algorithm_steps": "1. Write $TdS = dU + PdV$\n2. For VdW gas at constant T: $dU = (a/V²)dV$\n3. Substitute $P = RT/(V-b) - a/V²$\n4. Combine: $TdS = (a/V² + RT/(V-b) - a/V²)dV$\n5. Simplify: $dS = R/(V-b)dV$\n6. Integrate: $\\Delta S = R \\ln[(V_2-b)/(V_1-b)]$"
+      },
+      "code": "// Van der Waals Gas Entropy Change\nconst R = 8.314; // J/(mol·K)\n\nfunction vdwEntropyChange(V1, V2, a, b) {\n  // For isothermal process:\n  // ΔS = R * ln((V2 - b) / (V1 - b))\n  \n  const effectiveV1 = V1 - b;\n  const effectiveV2 = V2 - b;\n  \n  if (effectiveV1 <= 0 || effectiveV2 <= 0) {\n    throw new Error('Volume must be greater than excluded volume b');\n  }\n  \n  const deltaS = R * Math.log(effectiveV2 / effectiveV1);\n  \n  // Compare with ideal gas\n  const deltaSideal = R * Math.log(V2 / V1);\n  \n  return {\n    deltaS: deltaS,\n    deltaSideal: deltaSideal,\n    correction: deltaS - deltaSideal\n  };\n}\n\n// Example: V1 = 0.022 m³, V2 = 0.044 m³, b = 0.001 m³\nconst result = vdwEntropyChange(0.022, 0.044, 0.1, 0.001);\nconsole.log('ΔS (VdW):', result.deltaS.toFixed(3), 'J/(mol·K)');\nconsole.log('ΔS (ideal):', result.deltaSideal.toFixed(3), 'J/(mol·K)');",
+      "complexity": {
+        "time": "O(1)",
+        "space": "O(1)",
+        "explanation_time": "Single logarithm evaluation.",
+        "explanation_space": "Constant space for calculation."
+      },
+      "annotations": [
+        {
+          "lines": [
+            8,
+            9
+          ],
+          "text": "Effective volume: V - b accounts for molecular exclusion"
+        },
+        {
+          "lines": [
+            15
+          ],
+          "text": "Key result: ΔS = R ln[(V₂-b)/(V₁-b)]"
+        },
+        {
+          "lines": [
+            18
+          ],
+          "text": "Compare with ideal gas: ΔS = R ln(V₂/V₁)"
+        }
+      ],
+      "quizzes": [
+        {
+          "question": "What do the Van der Waals constants a and b represent?",
+          "options": [
+            "Temperature and pressure",
+            "Intermolecular attraction (a) and molecular volume (b)",
+            "Entropy and enthalpy",
+            "Specific heats"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why do the a/V² terms cancel in the entropy calculation?",
+          "options": [
+            "They don't cancel",
+            "One appears in dU, the opposite in PdV",
+            "Isothermal process requirement",
+            "Mathematical coincidence"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "For an isothermal process, what is held constant?",
+          "options": [
+            "Pressure",
+            "Volume",
+            "Temperature",
+            "Entropy"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "How does VdW entropy compare to ideal gas entropy for expansion?",
+          "options": [
+            "Always smaller",
+            "Always larger",
+            "Depends on b relative to V",
+            "Exactly equal"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "What happens to ΔS if b → 0?",
+          "options": [
+            "Goes to infinity",
+            "Becomes ideal gas result",
+            "Becomes zero",
+            "Becomes negative"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "physics-5",
+      "title": "Crossed E×B Fields (Cycloidal Motion)",
+      "difficulty": "Hard",
+      "related": [
+        {
+          "id": "physics-4",
+          "title": "Van der Waals Entropy",
+          "category": "physics"
+        },
+        {
+          "id": "physics-1",
+          "title": "Relativistic Collision",
+          "category": "physics"
+        }
+      ],
+      "tags": [
+        "electrodynamics",
+        "lorentz-force",
+        "coupled-odes"
+      ],
+      "problem_statement": "A particle with specific charge $q/m$ moves in a region where uniform **perpendicular** electric ($\\vec{E}$) and magnetic ($\\vec{B}$) fields exist. Let $\\vec{E} = E\\hat{j}$ and $\\vec{B} = B\\hat{k}$.\n\nAt $t = 0$, the particle is at the origin with **zero velocity**.\n\n**Find (non-relativistic case):**\n(a) The law of motion $x(t)$ and $y(t)$\n(b) The shape of the trajectory\n(c) The **drift velocity** (mean velocity in $x$-direction)",
+      "explanation": {
+        "understanding_the_problem": "This classic electrodynamics problem involves solving **coupled differential equations** from the Lorentz force. The particle experiences:\n\n1. Electric force: $\\vec{F}_E = q\\vec{E}$ (constant, in $y$-direction)\n2. Magnetic force: $\\vec{F}_B = q\\vec{v} \\times \\vec{B}$ (velocity-dependent, perpendicular to motion)\n\nThe result is a **cycloidal trajectory** - like a point on a rolling wheel.",
+        "brute_force": "The equations of motion come from Newton's second law with the Lorentz force:\n\n$$m\\frac{d\\vec{v}}{dt} = q(\\vec{E} + \\vec{v} \\times \\vec{B})$$\n\nIn components (with $\\omega_c = qB/m$ the cyclotron frequency):\n\n$$\\frac{dv_x}{dt} = \\omega_c v_y$$\n$$\\frac{dv_y}{dt} = \\frac{qE}{m} - \\omega_c v_x$$",
+        "bottleneck": "These are coupled ODEs. We need to decouple them to solve.",
+        "optimized_approach": "**Step 1: Decouple the ODEs**\n\nDifferentiate the first equation:\n$$\\frac{d^2v_x}{dt^2} = \\omega_c \\frac{dv_y}{dt} = \\omega_c\\left(\\frac{qE}{m} - \\omega_c v_x\\right)$$\n\nThis gives:\n$$\\frac{d^2v_x}{dt^2} + \\omega_c^2 v_x = \\frac{\\omega_c qE}{m}$$\n\n**Step 2: Solve the ODE**\n\nThis is a simple harmonic oscillator with a constant driving term. Solution:\n$$v_x(t) = \\frac{E}{B}(1 - \\cos\\omega_c t)$$\n$$v_y(t) = \\frac{E}{B}\\sin\\omega_c t$$\n\n**Step 3: Integrate for position**\n\n$$x(t) = \\frac{E}{B}\\left(t - \\frac{\\sin\\omega_c t}{\\omega_c}\\right)$$\n$$y(t) = \\frac{E}{B\\omega_c}(1 - \\cos\\omega_c t)$$\n\n**Step 4: Trajectory Shape**\n\nThis is a **cycloid** - the path traced by a point on the rim of a rolling circle.\n\n**Step 5: Drift Velocity**\n\n$$v_{drift} = \\langle v_x \\rangle = \\frac{E}{B}$$\n\nThis is the famous **E×B drift** velocity!",
+        "algorithm_steps": "1. Write Lorentz force: F = q(E + v × B)\n2. Get component equations: $\\dot{v}_x = \\omega_c v_y$, $\\dot{v}_y = qE/m - \\omega_c v_x$\n3. Differentiate and substitute to get: $\\ddot{v}_x + \\omega_c^2 v_x = \\omega_c qE/m$\n4. Solve with IC $v_x(0) = 0$, $\\dot{v}_x(0) = 0$\n5. Integrate $v_x$, $v_y$ to get $x(t)$, $y(t)$\n6. Drift: $v_d = E/B$"
+      },
+      "code": "// Crossed E×B Fields - Cycloidal Motion\nfunction cycloidalMotion(E, B, qOverM, tMax, dt) {\n  const omega_c = qOverM * B;  // Cyclotron frequency\n  const vDrift = E / B;        // E×B drift velocity\n  \n  // Analytical solutions\n  const trajectory = [];\n  \n  for (let t = 0; t <= tMax; t += dt) {\n    const vx = vDrift * (1 - Math.cos(omega_c * t));\n    const vy = vDrift * Math.sin(omega_c * t);\n    \n    const x = vDrift * (t - Math.sin(omega_c * t) / omega_c);\n    const y = vDrift / omega_c * (1 - Math.cos(omega_c * t));\n    \n    trajectory.push({ t, x, y, vx, vy });\n  }\n  \n  // Arc length between velocity zeros (cycloid arc)\n  const arcLength = 8 * vDrift / omega_c;\n  \n  return {\n    trajectory,\n    driftVelocity: vDrift,\n    cyclotronPeriod: 2 * Math.PI / omega_c,\n    arcLength\n  };\n}\n\n// Example: E = 100 V/m, B = 0.01 T, q/m = 1e8 C/kg (electron-like)\nconst result = cycloidalMotion(100, 0.01, 1e8, 1e-6, 1e-9);\nconsole.log('Drift velocity:', result.driftVelocity, 'm/s');\nconsole.log('Cyclotron period:', result.cyclotronPeriod * 1e9, 'ns');",
+      "complexity": {
+        "time": "O(n)",
+        "space": "O(n)",
+        "explanation_time": "Linear in number of time steps for numerical trajectory.",
+        "explanation_space": "Stores trajectory points."
+      },
+      "annotations": [
+        {
+          "lines": [
+            3,
+            4
+          ],
+          "text": "Key parameters: ωc = qB/m (cyclotron), vd = E/B (drift)"
+        },
+        {
+          "lines": [
+            10,
+            11
+          ],
+          "text": "Velocity oscillates with cyclotron frequency"
+        },
+        {
+          "lines": [
+            13,
+            14
+          ],
+          "text": "Position: cycloid shape from integration of velocities"
+        }
+      ],
+      "quizzes": [
+        {
+          "question": "What is the shape of the trajectory?",
+          "options": [
+            "Circle",
+            "Ellipse",
+            "Cycloid",
+            "Parabola"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "What is the cyclotron frequency?",
+          "options": [
+            "qE/m",
+            "qB/m",
+            "E/B",
+            "eB/mc"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What is the E×B drift velocity?",
+          "options": [
+            "qE/m",
+            "qB/m",
+            "E/B",
+            "EB"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Why are the ODEs 'coupled'?",
+          "options": [
+            "They share variables (vx appears in vy equation)",
+            "They have the same solution",
+            "They are linear",
+            "They cannot be solved"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "At what times is the velocity zero?",
+          "options": [
+            "Never",
+            "At t = 0 only",
+            "At t = 2πn/ωc",
+            "At t = πn/ωc"
+          ],
+          "correct": 2
+        }
+      ]
+    }
   ]
 }
