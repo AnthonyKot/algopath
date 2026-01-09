@@ -80,6 +80,7 @@ const UI = {
                         <a href="${isHomePage ? '#algorithms' : 'index.html#algorithms'}"><i class="fas fa-cubes"></i>Problems</a>
                         <a href="${isHomePage ? '#concepts' : 'index.html#concepts'}"><i class="fas fa-lightbulb"></i>Concepts</a>
                         <a href="${isHomePage ? '#resources' : 'index.html#resources'}"><i class="fas fa-book"></i>Resources</a>
+                        <a href="geometry.html"><i class="fas fa-shapes"></i>Geometry</a>
                         
                         <div class="nav-search">
                             <input type="text" class="search-input" placeholder="Search..." aria-label="Search problems">
@@ -280,10 +281,10 @@ const SearchSystem = {
             p.id.toLowerCase().includes(normalizedQuery)
         ).slice(0, 8);
 
-        this.showResults(results);
+        this.showResults(results, normalizedQuery);
     },
 
-    showResults(results) {
+    showResults(results, query) {
         const container = document.querySelector('.search-results');
         if (!container) return;
 
@@ -291,9 +292,9 @@ const SearchSystem = {
             container.innerHTML = '<div class="search-no-results">No problems found</div>';
         } else {
             container.innerHTML = results.map(p => `
-                <a href="${p.category}.html#${p.id}" class="search-result-item">
+                <a href="${p.category}.html#${p.id}" class="search-result-item" onclick="SearchSystem.hideResults()">
                     <div class="search-result-info">
-                        <span class="search-result-title">${p.title}</span>
+                        <span class="search-result-title">${this.highlightMatch(p.title, query)}</span>
                         <span class="search-result-category">${p.category}</span>
                     </div>
                     <span class="card-difficulty difficulty-${p.difficulty.toLowerCase()}">${p.difficulty}</span>
@@ -301,6 +302,13 @@ const SearchSystem = {
             `).join('');
         }
         container.classList.add('active');
+    },
+
+    highlightMatch(text, query) {
+        if (!query) return text;
+        // Escape special regex characters in query
+        const safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return text.replace(new RegExp(`(${safeQuery})`, 'gi'), '<span class="search-match">$1</span>');
     },
 
     hideResults() {
@@ -590,7 +598,10 @@ const ProblemRenderer = {
         return `
             <div id="${problem.id}" class="problem-card detailed-walkthrough collapsed" data-has-quizzes="${hasQuizzes}">
                 <div class="card-header" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <h3>${problem.title}</h3>
+                    <h3>
+                        ${problem.tags.includes('bridges') ? '<i class="fas fa-archway" style="color:var(--accent-primary); margin-right:8px; font-size:0.9em;" title="Graph Bridge Problem"></i>' : ''}
+                        ${problem.title}
+                    </h3>
                     <div class="header-right">
                         <div class="card-difficulty ${difficultyClass}">${problem.difficulty}</div>
                         <span class="collapse-chevron">▼</span>
@@ -612,6 +623,15 @@ const ProblemRenderer = {
                         <h4 style="margin-bottom: 1rem; color: var(--text-primary);"><i class="fas fa-project-diagram"></i> Visualization</h4>
                         <div class="mermaid">
                             ${problem.diagram}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    ${problem.custom_visual ? `
+                    <div class="diagram-section" style="margin: 1.5rem 0; text-align: center;">
+                        <h4 style="margin-bottom: 1rem; color: var(--text-primary);"><i class="fas fa-th"></i> Visualization</h4>
+                        <div class="custom-visual-container">
+                            ${problem.custom_visual}
                         </div>
                     </div>
                     ` : ''}

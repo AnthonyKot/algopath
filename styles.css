@@ -1143,6 +1143,18 @@ footer {
     color: var(--text-secondary);
 }
 
+.search-match {
+    color: #667eea;
+    font-weight: 700;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 2px;
+}
+
+[data-theme="dark"] .search-match {
+    color: #a3bffa;
+    background: rgba(102, 126, 234, 0.2);
+}
+
 /* ============================================
    Print Styles - Cheat Sheet Mode
    ============================================ */
@@ -1778,4 +1790,55 @@ footer {
     line-height: 1.6;
     color: var(--text-primary);
     font-size: 1.05rem;
+}
+
+/* Grid Visualization */
+.grid-visual {
+    display: inline-block;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    background: var(--bg-card);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.grid-row {
+    display: flex;
+}
+
+.grid-cell {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    margin: 2px;
+    font-weight: bold;
+    font-family: 'Fira Code', monospace;
+    font-size: 1.1em;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border-radius: 4px;
+    transition: transform 0.2s;
+}
+
+.grid-cell:hover {
+    transform: scale(1.1);
+    z-index: 10;
+}
+
+.grid-cell.highlight {
+    background-color: #dcfce7;
+    color: #166534;
+    border-color: #86efac;
+    box-shadow: 0 0 5px #86efac;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .grid-cell.highlight {
+    background-color: #064e3b;
+    color: #a7f3d0;
+    border-color: #059669;
+    box-shadow: 0 0 5px #059669;
 }

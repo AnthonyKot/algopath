@@ -1206,6 +1206,7 @@
         "bfs"
       ],
       "problem_statement": "There is an `m x n` rectangular island that borders both the **Pacific Ocean** and **Atlantic Ocean**. The **Pacific Ocean** touches the island's left and top edges, and the **Atlantic Ocean** touches the island's right and bottom edges.\n\nThe island is partitioned into a grid of square cells. You are given an `m x n` integer matrix `heights` where `heights[r][c]` represents the height above sea level of the cell at coordinate `(r, c)`.\n\nThe island receives a lot of rain, and the rain water can flow to neighboring cells directly north, south, east, and west if the neighboring cell's height is **less than or equal to** the current cell's height. Water can flow from any cell adjacent to an ocean into the ocean.\n\nReturn a **2D list** of grid coordinates `result` where `result[i] = [ri, ci]` denotes that rain water can flow from cell `(ri, ci)` to **both** the Pacific and Atlantic oceans.\n\n**Example 1:**\n```\nInput: heights = [[1,2,2,3,5],[3,2,3,4,4],[2,4,5,3,1],[6,7,1,4,5],[5,1,1,2,4]]\nOutput: [[0,4],[1,3],[1,4],[2,2],[3,0],[3,1],[4,0]]\n```",
+      "custom_visual": "<div class='grid-visual'><div class='grid-row'><div class='grid-cell'>1</div><div class='grid-cell'>2</div><div class='grid-cell'>2</div><div class='grid-cell'>3</div><div class='grid-cell highlight'>5</div></div><div class='grid-row'><div class='grid-cell'>3</div><div class='grid-cell'>2</div><div class='grid-cell'>3</div><div class='grid-cell highlight'>4</div><div class='grid-cell highlight'>4</div></div><div class='grid-row'><div class='grid-cell'>2</div><div class='grid-cell'>4</div><div class='grid-cell highlight'>5</div><div class='grid-cell'>3</div><div class='grid-cell'>1</div></div><div class='grid-row'><div class='grid-cell highlight'>6</div><div class='grid-cell highlight'>7</div><div class='grid-cell'>1</div><div class='grid-cell'>4</div><div class='grid-cell'>5</div></div><div class='grid-row'><div class='grid-cell highlight'>5</div><div class='grid-cell'>1</div><div class='grid-cell'>1</div><div class='grid-cell'>2</div><div class='grid-cell'>4</div></div></div>",
       "explanation": {
         "understanding_the_problem": "Imagine the matrix is a continent, where each number represents the altitude of that piece of land. The edges of the continent are surrounded by two oceans: the Pacific (top and left edges) and the Atlantic (bottom and right edges).\n\nRain falls on the continent, and water can flow from any cell to a neighboring cell (up, down, left, or right) as long as the neighbor's altitude is the **same or lower**.\n\nOur goal is to find every cell on the continent from which water can flow to **both** the Pacific and the Atlantic oceans.",
         "brute_force": "The most intuitive way to solve this is to check each cell one by one. For every single cell `(r, c)` in the matrix, we could start a traversal (like DFS or BFS) and ask two questions:\n1. Can we reach the Pacific (top or left edge)?\n2. Can we reach the Atlantic (bottom or right edge)?\n\nIf the answer to both is 'yes,' we add the cell to our results.",
@@ -1321,6 +1322,83 @@
           "correct": 1
         }
       ]
+    },
+    {
+      "id": "graphs-6",
+      "title": "Critical Connections in a Network",
+      "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/critical-connections-in-a-network/",
+      "related": [
+        {
+          "id": "graphs-1",
+          "title": "Word Ladder",
+          "category": "graphs"
+        }
+      ],
+      "tags": [
+        "dfs",
+        "tarjan",
+        "bridges"
+      ],
+      "problem_statement": "There are `n` servers numbered from `0` to `n - 1` connected by undirected server-to-server `connections` forming a network where `connections[i] = [ai, bi]` represents a connection between servers `ai` and `bi`. Any server can reach other servers directly or indirectly through the network.\n\nA **critical connection** is a connection that, if removed, will make some servers unable to reach some other server.\n\nReturn all critical connections in the network in any order.\n\n**Example 1:**\n```\nInput: n = 4, connections = [[0,1],[1,2],[2,0],[1,3]]\nOutput: [[1,3]]\nExplanation: [[3,1]] is also accepted.\n```",
+      "diagram": "graph TD\n    0((0)) --- 1((1))\n    1 --- 2((2))\n    2 --- 0\n    1 ---|Bridge| 3((3))\n    \n    classDef default fill:#fff,stroke:#333,stroke-width:2px;\n    classDef bridge fill:#fecaca,stroke:#ef4444,stroke-width:4px;\n    \n    linkStyle 3 stroke:#ef4444,stroke-width:4px;\n    class 3 bridge;",
+      "explanation": {
+        "understanding_the_problem": "We need to find edges in a graph that, if removed, would increase the number of connected components. In graph theory, these edges are called **Bridges**.\n\nIn the example, nodes 0, 1, and 2 form a cycle (a strongly connected component). Node 3 is attached only to node 1. If we cut the edge `1-3`, node 3 becomes isolated. Thus, `1-3` is a critical connection.",
+        "brute_force": "A naive approach is to iterate through every edge, temporarily remove it, and run DFS/BFS to check if the graph is still connected. If it's disconnected, that edge is critical.\n\nTime Complexity: O(E * (V + E)), which is too slow for large graphs.",
+        "bottleneck": "Repeatedly traversing the graph is inefficient. We need a way to identify bridges in a single pass.",
+        "optimized_approach": "We can use **Tarjan's Bridge-Finding Algorithm** (or a variation using DFS discovery and low-link values).\n\n1.  **Rank (Discovery Time):** The order in which a node is visited during DFS.\n2.  **Low-Link Value:** The lowest rank reachable from the current node in the DFS tree (possibly using a back-edge, but not the direct parent edge).\n\n**Logic:** An edge `u-v` is a bridge if and only if `low[v] > rank[u]`. This means there is no back-edge from `v` or any of its descendants to `u` or any of `u`'s ancestors. `v` is 'stuck' needing `u` to reach the rest of the graph.",
+        "algorithm_steps": "1. Initialize `rank` and `low` arrays with -1. Time starts at 0.\n2. Start DFS from node 0 (or any node).\n3. In DFS(u, parent):\n    a. Set `rank[u] = low[u] = time++`.\n    b. Iterate neighbors `v`.\n    c. If `v` is parent, continue.\n    d. If `v` is visited, update `low[u] = min(low[u], rank[v])`.\n    e. If `v` is unvisited:\n        i. `DFS(v, u)`\n        ii. `low[u] = min(low[u], low[v])`\n        iii. If `low[v] > rank[u]`, add `[u, v]` to results."
+      },
+      "code": "var criticalConnections = function(n, connections) {\n    const adj = Array.from({length: n}, () => []);\n    for (const [u, v] of connections) {\n        adj[u].push(v);\n        adj[v].push(u);\n    }\n    \n    const rank = new Array(n).fill(-1);\n    const low = new Array(n).fill(-1);\n    const result = [];\n    let time = 0;\n    \n    const dfs = (u, p) => {\n        rank[u] = low[u] = time++;\n        for (const v of adj[u]) {\n            if (v === p) continue;\n            if (rank[v] !== -1) {\n                low[u] = Math.min(low[u], rank[v]);\n            } else {\n                dfs(v, u);\n                low[u] = Math.min(low[u], low[v]);\n                if (low[v] > rank[u]) {\n                    result.push([u, v]);\n                }\n            }\n        }\n    };\n    \n    dfs(0, -1);\n    return result;\n};",
+      "complexity": {
+        "time": "O(V + E)",
+        "space": "O(V + E)",
+        "explanation_time": "We perform a single standard DFS traversal of the graph. We visit every node and every edge exactly once.",
+        "explanation_space": "Adjacency list takes O(V+E). Recursion stack and arrays take O(V)."
+      },
+      "annotations": [],
+      "quizzes": []
+    },
+    {
+      "id": "graphs-7",
+      "title": "Cheapest Flights Within K Stops",
+      "difficulty": "Medium",
+      "leetcode_url": "https://leetcode.com/problems/cheapest-flights-within-k-stops/",
+      "related": [
+        {
+          "id": "graphs-2",
+          "title": "Network Delay Time",
+          "category": "graphs"
+        },
+        {
+          "id": "graphs-3",
+          "title": "Course Schedule II",
+          "category": "graphs"
+        }
+      ],
+      "tags": [
+        "bfs",
+        "dijkstra",
+        "bellman-ford"
+      ],
+      "problem_statement": "There are `n` cities connected by some number of flights. You are given an array `flights` where `flights[i] = [fromi, toi, pricei]` indicates that there is a flight from city `fromi` to city `toi` with cost `pricei`.\n\nYou are also given three integers `src`, `dst`, and `k`, return the **cheapest price** from `src` to `dst` with at most `k` stops. If there is no such route, return `-1`.\n\n**Example 1:**\n```\nInput: n = 4, flights = [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], src = 0, dst = 3, k = 1\nOutput: 700\nExplanation:\nThe path 0 -> 1 -> 3 costs 100 + 600 = 700.\nThe path 0 -> 1 -> 2 -> 3 costs 100 + 100 + 200 = 400, but it has 2 stops (exceeding k=1).\n```",
+      "diagram": "graph LR\n    0((0)) -- \"100\" --> 1((1))\n    1 -- \"100\" --> 2((2))\n    2 -- \"100\" --> 0\n    1 -- \"600\" --> 3((3))\n    2 -- \"200\" --> 3\n    \n    linkStyle 0,3 stroke:#22c55e,stroke-width:4px;\n    linkStyle 1,2,4 stroke:#94a3b8,stroke-width:2px;",
+      "explanation": {
+        "understanding_the_problem": "We need to find the shortest path in a weighted graph, but with a constraint on the number of edges (stops). A stop is an intermediate city, so `k` stops means we can visit at most `k+1` edges.\n\nThis is not a standard pure Dijkstra because a longer path (more stops) might be cheaper, but we are limited by stops. A cheaper path with too many stops is invalid.",
+        "brute_force": "DFS can explore all paths from `src` to `dst`. We can track the current cost and current stops.\n`DFS(city, cost, stops)`\nHowever, without memoization, this is exponential.",
+        "bottleneck": "Standard Dijkstra is greedy and might discard a path with more stops but cheaper cost if it's not the absolute shortest path found so far *to that node*. We need to track `(cost, stops)` or relax edges differently.",
+        "optimized_approach": "Allowed approaches:\n1.  **Bellman-Ford:** Run the outer loop `k+1` times. This naturally explores paths of length 1, then 2, ..., up to `k+1` edges. This is very intuitive for 'at most k stops'.\n2.  **BFS / Modified Dijkstra:** Use a priority queue `(cost, city, stops)`. Standard Dijkstra but we only add a node to the queue if we found a cheaper way to reach it *or* a way to reach it with fewer stops.",
+        "algorithm_steps": "**Bellman-Ford Approach:**\n1.  Initialize `prices` array with Infinity, `prices[src] = 0`.\n2.  Loop `k + 1` times:\n    a. Create `tempPrices` copy of `prices`.\n    b. Iterate through every flight `[u, v, w]`.\n    c. If `prices[u]` is reachable, `tempPrices[v] = min(tempPrices[v], prices[u] + w)`.\n    d. Update `prices = tempPrices`.\n3.  Return `prices[dst]` if not Infinity, else -1."
+      },
+      "code": "var findCheapestPrice = function(n, flights, src, dst, k) {\n    let prices = new Array(n).fill(Infinity);\n    prices[src] = 0;\n    \n    for (let i = 0; i < k + 1; i++) {\n        const tempPrices = [...prices];\n        for (const [u, v, w] of flights) {\n            if (prices[u] === Infinity) continue;\n            if (prices[u] + w < tempPrices[v]) {\n                tempPrices[v] = prices[u] + w;\n            }\n        }\n        prices = tempPrices;\n    }\n    \n    return prices[dst] === Infinity ? -1 : prices[dst];\n};",
+      "complexity": {
+        "time": "O((K + 1) * E)",
+        "space": "O(N)",
+        "explanation_time": "We iterate `K + 1` times. In each iteration, we iterate through all `E` flights (edges).",
+        "explanation_space": "We perform the operations using two arrays (`prices` and `tempPrices`) of size N."
+      },
+      "annotations": [],
+      "quizzes": []
     }
   ],
   "trees": [
@@ -4239,6 +4317,7 @@
         "wildcard"
       ],
       "problem_statement": "Design a data structure that supports adding new words and finding if a string matches any previously added string.\n\nImplement the `WordDictionary` class:\n*   `WordDictionary()` Initializes the object.\n*   `void addWord(word)` Adds `word` to the data structure, it can be matched later.\n*   `bool search(word)` Returns `true` if there is any string in the data structure that matches `word` or `false` otherwise. `word` may contain dots `.` where `.` can be matched with any letter.\n\n**Example 1:**\n```\nInput\n[\"WordDictionary\",\"addWord\",\"addWord\",\"addWord\",\"search\",\"search\",\"search\",\"search\"]\n[[],[\"bad\"],[\"dad\"],[\"mad\"],[\"pad\"],[\"bad\"],[\".ad\"],[\"b..\"]]\nOutput\n[null,null,null,null,false,true,true,true]\n```",
+      "diagram": "graph TD\n    root(( ))\n    \n    root --b--> n1(( ))\n    n1 --a--> n2(( ))\n    n2 --d--> n3((( )))\n    \n    root --d--> n4(( ))\n    n4 --a--> n5(( ))\n    n5 --d--> n6((( )))\n    \n    root --m--> n7(( ))\n    n7 --a--> n8(( ))\n    n8 --d--> n9((( )))\n    \n    classDef default fill:#fff,stroke:#333,stroke-width:2px;\n    classDef endNode fill:#bbf7d0,stroke:#22c55e,stroke-width:4px;\n    class n3,n6,n9 endNode;",
       "explanation": {
         "understanding_the_problem": "We need to store a dictionary of words and perform searches that can include wildcards. This is another problem that is perfectly suited for a **Trie (Prefix Tree)**.",
         "brute_force": "Storing words in a simple list or hash set would make `addWord` easy. However, searching for a word with a wildcard like 'b.d' would require iterating through every word in the dictionary and checking it against the pattern, which would be very slow.",
@@ -4448,128 +4527,6 @@
             "O(N)"
           ],
           "correct": 0
-        }
-      ]
-    },
-    {
-      "id": "optimization-2",
-      "title": "Largest Rectangle in Histogram",
-      "difficulty": "Hard",
-      "leetcode_url": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
-      "follow_up": {
-        "scenario": "The histogram is distributed across 1000 machines (MapReduce).",
-        "trade_off": "Cannot just sum the local results. The largest rectangle might span across machine boundaries.",
-        "strategy": "Each machine computes local max area AND a 'skyline' profile (left/right increasing subsequences). The reducer merges these 1000 compressed profiles.",
-        "answering_guide": "This is a classic <strong>'Divide and Conquer'</strong> at scale. Explain that the result is NOT just the max of local results; <strong>boundary merging</strong> is the key."
-      },
-      "related": [
-        {
-          "id": "optimization-3",
-          "title": "Maximal Rectangle",
-          "category": "optimization"
-        },
-        {
-          "id": "optimization-5",
-          "title": "Trapping Rain Water",
-          "category": "optimization"
-        }
-      ],
-      "tags": [
-        "stack",
-        "monotonic",
-        "optimization"
-      ],
-      "problem_statement": "Given an array of integers `heights` representing the histogram's bar height where the width of each bar is `1`, return *the area of the largest rectangle in the histogram*.\n\n**Example 1:**\n```\nInput: heights = [2,1,5,6,2,3]\nOutput: 10\nExplanation: The largest rectangle has an area = 10 units.\n```",
-      "explanation": {
-        "understanding_the_problem": "We need to find the largest rectangular area that can be inscribed within the given histogram bars.",
-        "brute_force": "For each bar `i`, we can try to form the largest rectangle that has this bar as its height. To do this, we would expand left and right from `i` to find the boundaries (the first bars shorter than `heights[i]`). This would take O(N) for each bar, leading to an overall O(N²) time complexity.",
-        "bottleneck": "The O(N²) approach is slow because for each bar, we are re-scanning its left and right sides to find the boundaries.",
-        "optimized_approach": "An O(N) solution uses a **monotonic stack**. The stack will store indices of bars in increasing order of their height. For any bar, its contribution to the max area is `height * width`. The width is determined by the first shorter bar to its left and the first shorter bar to its right. The monotonic stack helps us find these boundaries efficiently for all bars in a single pass.\n\nWhen we encounter a bar that is shorter than the one at the top of the stack, we know we've found the 'right boundary' for the bar on the stack. Its 'left boundary' is the next element in the stack.",
-        "algorithm_steps": "1.  Initialize an empty stack (to store indices) and `max_area = 0`.\n2.  Iterate through the `heights` array (it's helpful to append a 0 to the end to ensure all bars are processed).\n3.  For each bar `i`, while the stack is not empty and `heights[i]` is less than the height of the bar at the stack's top:\n    a.  Pop the index `h_idx` from the stack. This is the bar whose max area we are calculating.\n    b.  The `height` is `heights[h_idx]`.\n    c.  The right boundary is `i`. The left boundary is the next element in the stack.\n    d.  Calculate `width = i - (stack.length > 0 ? stack[stack.length-1] : -1) - 1`.\n    e.  Update `max_area = max(max_area, height * width)`.\n4.  Push the current index `i` onto the stack."
-      },
-      "code": "function largestRectangleArea(heights) {\n  const stack = [];\n  let maxArea = 0;\n  heights.push(0);\n  \n  for (let i = 0; i < heights.length; i++) {\n    while (stack.length && heights[i] < heights[stack[stack.length - 1]]) {\n      const h = heights[stack.pop()];\n      const w = stack.length ? i - stack[stack.length - 1] - 1 : i;\n      maxArea = Math.max(maxArea, h * w);\n    }\n    stack.push(i);\n  }\n  \n  return maxArea;\n}",
-      "complexity": {
-        "time": "O(N)",
-        "space": "O(N)",
-        "explanation_time": "Each bar's index is pushed onto and popped from the stack exactly once, leading to a linear time complexity.",
-        "explanation_space": "In the worst case (a histogram with increasing heights), the stack could hold all N indices."
-      },
-      "annotations": [
-        {
-          "lines": [
-            4
-          ],
-          "text": "Sentinel: Add 0 height at the end to force processing remaining bars in stack."
-        },
-        {
-          "lines": [
-            7
-          ],
-          "text": "Condition: Current bar is shorter than stack top? Stack top is the 'height' of the rect."
-        },
-        {
-          "lines": [
-            9
-          ],
-          "text": "Width Calc: i is right boundary (exclusive), new stack top is left boundary (exclusive)."
-        },
-        {
-          "lines": [
-            10
-          ],
-          "text": "Area: height * width. Update maxArea if this rectangle is bigger."
-        }
-      ],
-      "quizzes": [
-        {
-          "question": "What does the stack store?",
-          "options": [
-            "Heights",
-            "Indices",
-            "Areas",
-            "Reversed Heights"
-          ],
-          "correct": 1
-        },
-        {
-          "question": "What property of heights does the stack maintain?",
-          "options": [
-            "Decreasing",
-            "Increasing",
-            "Random",
-            "Constant"
-          ],
-          "correct": 1
-        },
-        {
-          "question": "What triggers a calculation?",
-          "options": [
-            "Pushing a taller bar",
-            "Pushing a shorter bar",
-            "Stack empty",
-            "Every step"
-          ],
-          "correct": 1
-        },
-        {
-          "question": "How is width calculated?",
-          "options": [
-            "right - left",
-            "right - left - 1",
-            "right + left",
-            "constant"
-          ],
-          "correct": 1
-        },
-        {
-          "question": "Why append 0 at the end?",
-          "options": [
-            "To avoid overflow",
-            "To flush the stack",
-            "To start index at 1",
-            "Padding"
-          ],
-          "correct": 1
         }
       ]
     },
@@ -4806,128 +4763,6 @@
             "The window must also contain duplicates",
             "Duplicates are impossible",
             "Use a Set instead of Map"
-          ],
-          "correct": 1
-        }
-      ]
-    },
-    {
-      "id": "optimization-5",
-      "title": "Trapping Rain Water",
-      "difficulty": "Hard",
-      "leetcode_url": "https://leetcode.com/problems/trapping-rain-water/",
-      "follow_up": {
-        "scenario": "Optimizing water calculation for a dynamic terrain (e.g., Minecraft, where blocks are added/removed).",
-        "trade_off": "Recomputing O(N) for every block change is too slow (O(K*N)).",
-        "strategy": "Use a Segment Tree. Each node stores max_height and water_volume. Updates take O(log N). Sub-problems merge by calculating water trapped between left_child_max and right_child_max.",
-        "answering_guide": "Recognize that 'Dynamic Updates' = <strong>'Segment Tree'</strong> (or Fenwick). Explain that pre-computation allows O(log N) updates vs O(N) rebuilds."
-      },
-      "related": [
-        {
-          "id": "optimization-2",
-          "title": "Largest Rectangle in Histogram",
-          "category": "optimization"
-        },
-        {
-          "id": "two-pointers-1",
-          "title": "Container With Most Water",
-          "category": "two-pointers"
-        }
-      ],
-      "tags": [
-        "two-pointers",
-        "optimization",
-        "greedy"
-      ],
-      "problem_statement": "Given `n` non-negative integers representing an elevation map where the width of each bar is `1`, compute how much water it can trap after raining.\n\n**Example 1:**\n```\nInput: height = [0,1,0,2,1,0,1,3,2,1,2,1]\nOutput: 6\nExplanation: The above elevation map (black section) is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped.\n```",
-      "explanation": {
-        "understanding_the_problem": "Imagine the given array as a 2D profile. After it rains, water will be trapped between taller bars. We need to calculate the total volume of this trapped water.",
-        "brute_force": "For any given bar `i`, the amount of water it can hold above it is determined by the height of the tallest bar to its left (`max_left`) and the tallest bar to its right (`max_right`). The water level above bar `i` will be `min(max_left, max_right)`. The trapped water is `min(max_left, max_right) - height[i]`. We could iterate through each bar, and for each one, scan its left and right sides to find the max heights. This would be O(N²).",
-        "bottleneck": "The O(N²) approach is slow because we repeatedly scan the left and right sides for every bar.",
-        "optimized_approach": "**1. DP Approach (O(N) time, O(N) space):**\nWe can precompute the `max_left` and `max_right` for every position. First, iterate from left to right to create a `max_lefts` array. Then, iterate from right to left for a `max_rights` array. Finally, in a third pass, calculate the trapped water at each bar with the formula.\n\n**2. Two Pointers (O(N) time, O(1) space):**\nThis is the most optimal solution. We maintain two pointers, `left` and `right`, at the ends of the array, and two variables, `left_max` and `right_max`.\nThe key insight is that the amount of water trapped at any point is limited by the shorter of the two max walls (`left_max` and `right_max`). If `height[left]` is less than `height[right]`, we know the `left_max` is the limiting factor for the `left` pointer. We can safely calculate the trapped water at `left` because we know `right_max` is at least as high as `height[right]`, which is higher than `height[left]`.",
-        "algorithm_steps": "1.  Initialize `left = 0`, `right = N-1`, `left_max = 0`, `right_max = 0`, and `water = 0`.\n2.  Loop while `left < right`:\n    a.  If `height[left] < height[right]`:\n        i.  If `height[left] >= left_max`, update `left_max` because this new bar is taller.\n        ii. Else, water is trapped. Add `left_max - height[left]` to `water`.\n        iii. Move `left++`.\n    b.  Else (if `height[right] <= height[left]`):\n        i.  Do the symmetric operation for the right side. Update `right_max` or add `right_max - height[right]` to `water`.\n        ii. Move `right--`."
-      },
-      "code": "function trap(height) {\n  if (height.length < 3) return 0;\n  \n  let left = 0, right = height.length - 1;\n  let leftMax = 0, rightMax = 0;\n  let water = 0;\n  \n  while (left < right) {\n    if (height[left] < height[right]) {\n      if (height[left] >= leftMax) {\n        leftMax = height[left];\n      } else {\n        water += leftMax - height[left];\n      }\n      left++;\n    } else {\n      if (height[right] >= rightMax) {\n        rightMax = height[right];\n      } else {\n        water += rightMax - height[right];\n      }\n      right--;\n    }\n  }\n  \n  return water;\n}",
-      "complexity": {
-        "time": "O(N)",
-        "space": "O(1)",
-        "explanation_time": "The two pointers, `left` and `right`, traverse the array once, meeting in the middle. This results in a single pass and linear time complexity.",
-        "explanation_space": "We only use a few variables to keep track of pointers and maximums, giving us constant space complexity."
-      },
-      "annotations": [
-        {
-          "lines": [
-            8
-          ],
-          "text": "Key Insight: The shorter wall determines water level. If left < right, we trust leftMax."
-        },
-        {
-          "lines": [
-            9
-          ],
-          "text": "Update Left Max: We found a taller wall, so no water trapped here."
-        },
-        {
-          "lines": [
-            11
-          ],
-          "text": "Trap Water: Current bar is shorter than leftMax, so it holds water."
-        },
-        {
-          "lines": [
-            15
-          ],
-          "text": "Symmetric: Same logic for the right side if right wall is shorter."
-        }
-      ],
-      "quizzes": [
-        {
-          "question": "What determines height of water at index i?",
-          "options": [
-            "min(max_left, max_right) - height[i]",
-            "max(max_left, max_right)",
-            "Average height",
-            "max_left + max_right"
-          ],
-          "correct": 0
-        },
-        {
-          "question": "What is the space complexity of the Two-Pointer approach?",
-          "options": [
-            "O(N)",
-            "O(1)",
-            "O(log N)",
-            "O(N^2)"
-          ],
-          "correct": 1
-        },
-        {
-          "question": "Why can we trust 'leftMax' when height[left] < height[right]?",
-          "options": [
-            "We can't",
-            "Because rightMax is guaranteed to be >= height[right] > height[left]",
-            "It's a heuristic",
-            "Magic"
-          ],
-          "correct": 1
-        },
-        {
-          "question": "What happens if height[left] >= leftMax?",
-          "options": [
-            "Update leftMax",
-            "Trap water",
-            "Move right pointer",
-            "Reset"
-          ],
-          "correct": 0
-        },
-        {
-          "question": "How does this differ from 'Container With Most Water'?",
-          "options": [
-            "It doesn't",
-            "Container cares about width * min_height, this sums volumes",
-            "This is 3D",
-            "Different inputs"
           ],
           "correct": 1
         }
@@ -5326,6 +5161,305 @@
             "Only satellite"
           ],
           "correct": 2
+        }
+      ]
+    }
+  ],
+  "geometry": [
+    {
+      "id": "geometry-1",
+      "title": "Convex Hull (Monotone Chain)",
+      "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/erect-the-fence/",
+      "tags": [
+        "geometry",
+        "math",
+        "convex-hull"
+      ],
+      "problem_statement": "You are given an array `trees` where `trees[i] = [xi, yi]` represents the location of a tree in the garden. You are asked to fence the entire garden using the minimum length of rope as it is expensive. The garden is well fenced only if **all the trees are enclosed**.\n\nReturn the coordinates of trees that are exactly located on the fence perimeter.",
+      "custom_visual": "<div style=\"text-align:center; padding:10px; background:var(--bg-secondary); border-radius:8px;\"><svg width=\"300\" height=\"200\" viewBox=\"0 0 300 200\" style=\"background:#f9fafb; border:1px solid #e5e7eb; border-radius:4px;\"><!-- Grid --><defs><pattern id=\"grid\" width=\"20\" height=\"20\" patternUnits=\"userSpaceOnUse\"><path d=\"M 20 0 L 0 0 0 20\" fill=\"none\" stroke=\"#e5e7eb\" stroke-width=\"1\"/></pattern></defs><rect width=\"100%\" height=\"100%\" fill=\"url(#grid)\" /><!-- Hull Polygon --><polygon points=\"50,150 100,50 200,50 250,150\" fill=\"rgba(34, 197, 94, 0.2)\" stroke=\"#16a34a\" stroke-width=\"2\" stroke-dasharray=\"5,5\" /><!-- Inner Points --><circle cx=\"120\" cy=\"100\" r=\"4\" fill=\"#9ca3af\" /><circle cx=\"150\" cy=\"120\" r=\"4\" fill=\"#9ca3af\" /><circle cx=\"180\" cy=\"90\" r=\"4\" fill=\"#9ca3af\" /><!-- Hull Points --><circle cx=\"50\" cy=\"150\" r=\"5\" fill=\"#16a34a\" /><circle cx=\"100\" cy=\"50\" r=\"5\" fill=\"#16a34a\" /><circle cx=\"200\" cy=\"50\" r=\"5\" fill=\"#16a34a\" /><circle cx=\"250\" cy=\"150\" r=\"5\" fill=\"#16a34a\" /></svg></div>",
+      "explanation": {
+        "understanding_the_problem": "We need to find the smallest convex polygon that contains all given points. This is like wrapping a rubber band around a set of nails.",
+        "brute_force": "For every pair of points, check if all other points lie to one side of the line connecting them. If they do, this logic line is part of the hull. O(N³).",
+        "optimized_approach": "**Monotone Chain Algorithm (Andrew's Algorithm):**\n1. Sort the points by x-coordinate (and y-coordinate for ties).\n2. Build the **lower hull**: Iterate through points, adding them to a stack. If the new point makes a 'right turn' (clockwise) relative to the last two points, pop from stack until the turn is left (counter-clockwise).\n3. Build the **upper hull**: Similar process logic iterating from right to left.\n4. Concatenate lower and upper hulls.\n\nTime Complexity: O(N log N) dominated by sorting.",
+        "algorithm_steps": "1. Sort points by x, then y.\n2. Iterate through points to build Lower Hull stack. Maintain 'counter-clockwise' turn property using Cross Product.\n3. Iterate through points specifically to build Upper Hull stack.\n4. Remove duplicate start/end points and return unique points."
+      },
+      "code": "function outerTrees(trees) {\n    trees.sort((a, b) => a[0] - b[0] || a[1] - b[1]);\n    \n    const crossProduct = (o, a, b) => \n        (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);\n        \n    const lower = [];\n    for (const p of trees) {\n        while (lower.length >= 2 && crossProduct(lower[lower.length-2], lower[lower.length-1], p) < 0) {\n            lower.pop();\n        }\n        lower.push(p);\n    }\n    \n    const upper = [];\n    for (let i = trees.length - 1; i >= 0; i--) {\n        const p = trees[i];\n        while (upper.length >= 2 && crossProduct(upper[upper.length-2], upper[upper.length-1], p) < 0) {\n            upper.pop();\n        }\n        upper.push(p);\n    }\n    \n    return [...new Set([...lower, ...upper])];\n}",
+      "complexity": {
+        "time": "O(N log N)",
+        "space": "O(N)",
+        "explanation_time": "Sorting takes O(N log N). The hull construction is linear O(N).",
+        "explanation_space": "We store the hull points in a stack/list, taking O(N) space."
+      }
+    },
+    {
+      "id": "geometry-2",
+      "title": "Closest Pair of Points",
+      "difficulty": "Hard",
+      "leetcode_url": "https://en.wikipedia.org/wiki/Closest_pair_of_points_problem",
+      "tags": [
+        "geometry",
+        "divide-and-conquer"
+      ],
+      "problem_statement": "Given an array of `points` where `points[i] = [xi, yi]`, find the pair of points with the **minimum Euclidean distance** between them.",
+      "custom_visual": "<div style=\"text-align:center; padding:10px; background:var(--bg-secondary); border-radius:8px;\"><svg width=\"300\" height=\"200\" viewBox=\"0 0 300 200\" style=\"background:#f9fafb; border:1px solid #e5e7eb; border-radius:4px;\"><!-- Grid --><rect width=\"100%\" height=\"100%\" fill=\"url(#grid)\" /><!-- Split Line --><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"190\" stroke=\"#6b7280\" stroke-width=\"1\" stroke-dasharray=\"4\" /><text x=\"155\" y=\"25\" fill=\"#6b7280\" font-size=\"10\">Divide</text><!-- Left Points --><circle cx=\"50\" cy=\"80\" r=\"3\" fill=\"#9ca3af\" /><circle cx=\"100\" cy=\"150\" r=\"3\" fill=\"#9ca3af\" /><!-- Right Points --><circle cx=\"200\" cy=\"60\" r=\"3\" fill=\"#9ca3af\" /><circle cx=\"250\" cy=\"120\" r=\"3\" fill=\"#9ca3af\" /><!-- Valid Pair --><line x1=\"140\" y1=\"100\" x2=\"160\" y2=\"105\" stroke=\"#ec4899\" stroke-width=\"2\" /><circle cx=\"140\" cy=\"100\" r=\"4\" fill=\"#ec4899\" /><circle cx=\"160\" cy=\"105\" r=\"4\" fill=\"#ec4899\" /><text x=\"130\" y=\"125\" fill=\"#ec4899\" font-size=\"10\">d_min</text></svg></div>",
+      "explanation": {
+        "understanding_the_problem": "Find two points closest to each other. Naive O(N²) is too slow for large N.",
+        "brute_force": "Calculate distance between every pair of points and track minimum.",
+        "optimized_approach": "**Divide and Conquer (O(N log N)):**\n1. Sort by X-coordinate.\n2. Divide the set into two halves.\n3. Recursively find min distance in left (`dL`) and right (`dR`) halves.\n4. Let `d = min(dL, dR)`.\n5. **Merge Step:** The closest pair might span the dividing line. Check points within a strip of width `d` around the center line. Sort these by Y-coordinate and compare each point with the next 7 points (geometric proof guarantees this is sufficient).",
+        "algorithm_steps": "1. Pre-sort points by X and Y.\n2. `solve(points)`: If N <= 3, brute force.\n3. Split into Left and Right.\n4. `d = min(solve(Left), solve(Right))`.\n5. Create `strip` array of points within `d` of mid-line.\n6. Iterate `strip` checking neighbors within `d`. Update min distance."
+      },
+      "code": "// Conceptual JS implementation\nfunction closestPair(points) {\n    points.sort((a,b) => a[0] - b[0]);\n    return recursiveClosest(points);\n}",
+      "complexity": {
+        "time": "O(N log N)",
+        "space": "O(N)",
+        "explanation_time": "T(N) = 2T(N/2) + O(N). By Master Theorem, this is O(N log N).",
+        "explanation_space": "Recursion stack and auxiliary arrays for split/merge."
+      }
+    },
+    {
+      "id": "optimization-2",
+      "title": "Largest Rectangle in Histogram",
+      "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
+      "follow_up": {
+        "scenario": "The histogram is distributed across 1000 machines (MapReduce).",
+        "trade_off": "Cannot just sum the local results. The largest rectangle might span across machine boundaries.",
+        "strategy": "Each machine computes local max area AND a 'skyline' profile (left/right increasing subsequences). The reducer merges these 1000 compressed profiles.",
+        "answering_guide": "This is a classic <strong>'Divide and Conquer'</strong> at scale. Explain that the result is NOT just the max of local results; <strong>boundary merging</strong> is the key."
+      },
+      "related": [
+        {
+          "id": "optimization-3",
+          "title": "Maximal Rectangle",
+          "category": "optimization"
+        },
+        {
+          "id": "optimization-5",
+          "title": "Trapping Rain Water",
+          "category": "optimization"
+        }
+      ],
+      "tags": [
+        "stack",
+        "monotonic",
+        "optimization"
+      ],
+      "problem_statement": "Given an array of integers `heights` representing the histogram's bar height where the width of each bar is `1`, return *the area of the largest rectangle in the histogram*.\n\n**Example 1:**\n```\nInput: heights = [2,1,5,6,2,3]\nOutput: 10\nExplanation: The largest rectangle has an area = 10 units.\n```",
+      "custom_visual": "<div style=\"display:flex; align-items:flex-end; height:140px; gap:4px; justify-content:center; padding:10px; background:var(--bg-secondary); border-radius:8px; position:relative; width:fit-content; margin:0 auto;\">\n  <!-- Overlay Rectangle (Indices 2-3, Height 5) -->\n  <!-- Left: 24 (idx0) + 4 + 24 (idx1) + 4 = 56px offset? Bars are 24px wide, gap 4px. -->\n  <!-- Index 2 starts at: 32px? No. -->\n  <!-- Let's assume bars 30px width, gap 4px. -->\n  <!-- Idx 0: 0px. Idx 1: 34px. Idx 2: 68px. Width of 2 bars + 1 gap = 64px. Height 5*20 = 100px. -->\n  <div style=\"position:absolute; left:78px; bottom:10px; width:64px; height:100px; border:2px dashed #ef4444; background:rgba(239,68,68,0.2); z-index:10; pointer-events:none;\"></div>\n\n  <!-- 0: 2 -->\n  <div style=\"width:30px; height:40px; background:#4b5563;\"></div>\n  <!-- 1: 1 -->\n  <div style=\"width:30px; height:20px; background:#4b5563;\"></div>\n  <!-- 2: 5 -->\n  <div style=\"width:30px; height:100px; background:#4b5563;\"></div>\n  <!-- 3: 6 -->\n  <div style=\"width:30px; height:120px; background:#4b5563;\"></div>\n  <!-- 4: 2 -->\n  <div style=\"width:30px; height:40px; background:#4b5563;\"></div>\n  <!-- 5: 3 -->\n  <div style=\"width:30px; height:60px; background:#4b5563;\"></div>\n</div>",
+      "explanation": {
+        "understanding_the_problem": "We need to find the largest rectangular area that can be inscribed within the given histogram bars.",
+        "brute_force": "For each bar `i`, we can try to form the largest rectangle that has this bar as its height. To do this, we would expand left and right from `i` to find the boundaries (the first bars shorter than `heights[i]`). This would take O(N) for each bar, leading to an overall O(N²) time complexity.",
+        "bottleneck": "The O(N²) approach is slow because for each bar, we are re-scanning its left and right sides to find the boundaries.",
+        "optimized_approach": "An O(N) solution uses a **monotonic stack**. The stack will store indices of bars in increasing order of their height. For any bar, its contribution to the max area is `height * width`. The width is determined by the first shorter bar to its left and the first shorter bar to its right. The monotonic stack helps us find these boundaries efficiently for all bars in a single pass.\n\nWhen we encounter a bar that is shorter than the one at the top of the stack, we know we've found the 'right boundary' for the bar on the stack. Its 'left boundary' is the next element in the stack.",
+        "algorithm_steps": "1.  Initialize an empty stack (to store indices) and `max_area = 0`.\n2.  Iterate through the `heights` array (it's helpful to append a 0 to the end to ensure all bars are processed).\n3.  For each bar `i`, while the stack is not empty and `heights[i]` is less than the height of the bar at the stack's top:\n    a.  Pop the index `h_idx` from the stack. This is the bar whose max area we are calculating.\n    b.  The `height` is `heights[h_idx]`.\n    c.  The right boundary is `i`. The left boundary is the next element in the stack.\n    d.  Calculate `width = i - (stack.length > 0 ? stack[stack.length-1] : -1) - 1`.\n    e.  Update `max_area = max(max_area, height * width)`.\n4.  Push the current index `i` onto the stack."
+      },
+      "code": "function largestRectangleArea(heights) {\n  const stack = [];\n  let maxArea = 0;\n  heights.push(0);\n  \n  for (let i = 0; i < heights.length; i++) {\n    while (stack.length && heights[i] < heights[stack[stack.length - 1]]) {\n      const h = heights[stack.pop()];\n      const w = stack.length ? i - stack[stack.length - 1] - 1 : i;\n      maxArea = Math.max(maxArea, h * w);\n    }\n    stack.push(i);\n  }\n  \n  return maxArea;\n}",
+      "complexity": {
+        "time": "O(N)",
+        "space": "O(N)",
+        "explanation_time": "Each bar's index is pushed onto and popped from the stack exactly once, leading to a linear time complexity.",
+        "explanation_space": "In the worst case (a histogram with increasing heights), the stack could hold all N indices."
+      },
+      "annotations": [
+        {
+          "lines": [
+            4
+          ],
+          "text": "Sentinel: Add 0 height at the end to force processing remaining bars in stack."
+        },
+        {
+          "lines": [
+            7
+          ],
+          "text": "Condition: Current bar is shorter than stack top? Stack top is the 'height' of the rect."
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Width Calc: i is right boundary (exclusive), new stack top is left boundary (exclusive)."
+        },
+        {
+          "lines": [
+            10
+          ],
+          "text": "Area: height * width. Update maxArea if this rectangle is bigger."
+        }
+      ],
+      "quizzes": [
+        {
+          "question": "What does the stack store?",
+          "options": [
+            "Heights",
+            "Indices",
+            "Areas",
+            "Reversed Heights"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What property of heights does the stack maintain?",
+          "options": [
+            "Decreasing",
+            "Increasing",
+            "Random",
+            "Constant"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What triggers a calculation?",
+          "options": [
+            "Pushing a taller bar",
+            "Pushing a shorter bar",
+            "Stack empty",
+            "Every step"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How is width calculated?",
+          "options": [
+            "right - left",
+            "right - left - 1",
+            "right + left",
+            "constant"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why append 0 at the end?",
+          "options": [
+            "To avoid overflow",
+            "To flush the stack",
+            "To start index at 1",
+            "Padding"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    {
+      "id": "optimization-5",
+      "title": "Trapping Rain Water",
+      "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/trapping-rain-water/",
+      "follow_up": {
+        "scenario": "Optimizing water calculation for a dynamic terrain (e.g., Minecraft, where blocks are added/removed).",
+        "trade_off": "Recomputing O(N) for every block change is too slow (O(K*N)).",
+        "strategy": "Use a Segment Tree. Each node stores max_height and water_volume. Updates take O(log N). Sub-problems merge by calculating water trapped between left_child_max and right_child_max.",
+        "answering_guide": "Recognize that 'Dynamic Updates' = <strong>'Segment Tree'</strong> (or Fenwick). Explain that pre-computation allows O(log N) updates vs O(N) rebuilds."
+      },
+      "related": [
+        {
+          "id": "optimization-2",
+          "title": "Largest Rectangle in Histogram",
+          "category": "optimization"
+        },
+        {
+          "id": "two-pointers-1",
+          "title": "Container With Most Water",
+          "category": "two-pointers"
+        }
+      ],
+      "tags": [
+        "two-pointers",
+        "optimization",
+        "greedy"
+      ],
+      "problem_statement": "Given `n` non-negative integers representing an elevation map where the width of each bar is `1`, compute how much water it can trap after raining.\n\n**Example 1:**\n```\nInput: height = [0,1,0,2,1,0,1,3,2,1,2,1]\nOutput: 6\nExplanation: The above elevation map (black section) is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped.\n```",
+      "custom_visual": "<div style=\"display:flex; align-items:flex-end; height:100px; gap:2px; justify-content:center; padding:10px; background:var(--bg-secondary); border-radius:8px; width:fit-content; margin:0 auto;\">\n  <!-- 0: h0 w0 -->\n  <div style=\"display:flex; flex-direction:column-reverse; width:20px;\"><div style=\"height:0px; background:#4b5563;\"></div></div>\n  <!-- 1: h1 w0 -->\n  <div style=\"display:flex; flex-direction:column-reverse; width:20px;\"><div style=\"height:20px; background:#4b5563;\"></div></div>\n  <!-- 2: h0 w1 -->\n  <div style=\"display:flex; flex-direction:column-reverse; width:20px;\"><div style=\"height:0px; background:#4b5563;\"></div><div style=\"height:20px; background:rgba(59,130,246,0.6);\"></div></div>\n  <!-- 3: h2 w0 -->\n  <div style=\"display:flex; flex-direction:column-reverse; width:20px;\"><div style=\"height:40px; background:#4b5563;\"></div></div>\n  <!-- 4: h1 w1 -->\n  <div style=\"display:flex; flex-direction:column-reverse; width:20px;\"><div style=\"height:20px; background:#4b5563;\"></div><div style=\"height:20px; background:rgba(59,130,246,0.6);\"></div></div>\n  <!-- 5: h0 w2 -->\n  <div style=\"display:flex; flex-direction:column-reverse; width:20px;\"><div style=\"height:0px; background:#4b5563;\"></div><div style=\"height:40px; background:rgba(59,130,246,0.6);\"></div></div>\n  <!-- 6: h1 w1 -->\n  <div style=\"display:flex; flex-direction:column-reverse; width:20px;\"><div style=\"height:20px; background:#4b5563;\"></div><div style=\"height:20px; background:rgba(59,130,246,0.6);\"></div></div>\n  <!-- 7: h3 w0 -->\n  <div style=\"display:flex; flex-direction:column-reverse; width:20px;\"><div style=\"height:60px; background:#4b5563;\"></div></div>\n  <!-- 8: h2 w0 -->\n  <div style=\"display:flex; flex-direction:column-reverse; width:20px;\"><div style=\"height:40px; background:#4b5563;\"></div></div>\n  <!-- 9: h1 w1 -->\n  <div style=\"display:flex; flex-direction:column-reverse; width:20px;\"><div style=\"height:20px; background:#4b5563;\"></div><div style=\"height:20px; background:rgba(59,130,246,0.6);\"></div></div>\n  <!-- 10: h2 w0 -->\n  <div style=\"display:flex; flex-direction:column-reverse; width:20px;\"><div style=\"height:40px; background:#4b5563;\"></div></div>\n  <!-- 11: h1 w0 -->\n  <div style=\"display:flex; flex-direction:column-reverse; width:20px;\"><div style=\"height:20px; background:#4b5563;\"></div></div>\n</div>",
+      "explanation": {
+        "understanding_the_problem": "Imagine the given array as a 2D profile. After it rains, water will be trapped between taller bars. We need to calculate the total volume of this trapped water.",
+        "brute_force": "For any given bar `i`, the amount of water it can hold above it is determined by the height of the tallest bar to its left (`max_left`) and the tallest bar to its right (`max_right`). The water level above bar `i` will be `min(max_left, max_right)`. The trapped water is `min(max_left, max_right) - height[i]`. We could iterate through each bar, and for each one, scan its left and right sides to find the max heights. This would be O(N²) time.",
+        "bottleneck": "The O(N²) approach is slow because we repeatedly scan the left and right sides for every bar.",
+        "optimized_approach": "**1. DP Approach (O(N) time, O(N) space):**\nWe can precompute the `max_left` and `max_right` for every position. First, iterate from left to right to create a `max_lefts` array. Then, iterate from right to left for a `max_rights` array. Finally, in a third pass, calculate the trapped water at each bar with the formula.\n\n**2. Two Pointers (O(N) time, O(1) space):**\nThis is the most optimal solution. We maintain two pointers, `left` and `right`, at the ends of the array, and two variables, `left_max` and `right_max`.\nThe key insight is that the amount of water trapped at any point is limited by the shorter of the two max walls (`left_max` and `right_max`). If `height[left]` is less than `height[right]`, we know the `left_max` is the limiting factor for the `left` pointer. We can safely calculate the trapped water at `left` because we know `right_max` is at least as high as `height[right]`, which is higher than `height[left]`.",
+        "algorithm_steps": "1.  Initialize `left = 0`, `right = N-1`, `left_max = 0`, `right_max = 0`, and `water = 0`.\n2.  Loop while `left < right`:\n    a.  If `height[left] < height[right]`:\n        i.  If `height[left] >= left_max`, update `left_max` because this new bar is taller.\n        ii. Else, water is trapped. Add `left_max - height[left]` to `water`.\n        iii. Move `left++`.\n    b.  Else (if `height[right] <= height[left]`):\n        i.  Do the symmetric operation for the right side. Update `right_max` or add `right_max - height[right]` to `water`.\n        ii. Move `right--`."
+      },
+      "code": "function trap(height) {\n  if (height.length < 3) return 0;\n  \n  let left = 0, right = height.length - 1;\n  let leftMax = 0, rightMax = 0;\n  let water = 0;\n  \n  while (left < right) {\n    if (height[left] < height[right]) {\n      if (height[left] >= leftMax) {\n        leftMax = height[left];\n      } else {\n        water += leftMax - height[left];\n      }\n      left++;\n    } else {\n      if (height[right] >= rightMax) {\n        rightMax = height[right];\n      } else {\n        water += rightMax - height[right];\n      }\n      right--;\n    }\n  }\n  \n  return water;\n}",
+      "complexity": {
+        "time": "O(N)",
+        "space": "O(1)",
+        "explanation_time": "The two pointers, `left` and `right`, traverse the array once, meeting in the middle. This results in a single pass and linear time complexity.",
+        "explanation_space": "We only use a few variables to keep track of pointers and maximums, giving us constant space complexity."
+      },
+      "annotations": [
+        {
+          "lines": [
+            8
+          ],
+          "text": "Key Insight: The shorter wall determines water level. If left < right, we trust leftMax."
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Update Left Max: We found a taller wall, so no water trapped here."
+        },
+        {
+          "lines": [
+            11
+          ],
+          "text": "Trap Water: Current bar is shorter than leftMax, so it holds water."
+        },
+        {
+          "lines": [
+            15
+          ],
+          "text": "Symmetric: Same logic for the right side if right wall is shorter."
+        }
+      ],
+      "quizzes": [
+        {
+          "question": "What determines height of water at index i?",
+          "options": [
+            "min(max_left, max_right) - height[i]",
+            "max(max_left, max_right)",
+            "Average height",
+            "max_left + max_right"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "What is the space complexity of the Two-Pointer approach?",
+          "options": [
+            "O(N)",
+            "O(1)",
+            "O(log N)",
+            "O(N^2)"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why can we trust 'leftMax' when height[left] < height[right]?",
+          "options": [
+            "We can't",
+            "Because rightMax is guaranteed to be >= height[right] > height[left]",
+            "It's a heuristic",
+            "Magic"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What happens if height[left] >= leftMax?",
+          "options": [
+            "Update leftMax",
+            "Trap water",
+            "Move right pointer",
+            "Do nothing"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "What happens if height[left] < leftMax?",
+          "options": [
+            "Update leftMax",
+            "Trap water",
+            "Move right pointer",
+            "Error"
+          ],
+          "correct": 1
         }
       ]
     }

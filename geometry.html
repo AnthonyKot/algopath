@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Computational Geometry - L4/L5 FAANG Algorithms Guide</title>
+    <title>Geometry Algorithms - L4/L5 FAANG Algorithms Guide</title>
     <meta name="description"
-        content="Computational Geometry: convex hulls, line intersections, polygon problems for Codeforces.">
+        content="Computational Geometry for senior engineering interviews: Convex Hull, Closest Pair, and sweep-line algorithms.">
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -19,22 +19,22 @@
         <section id="geometry" class="hero category-hero">
             <div class="container">
                 <h1>Computational Geometry</h1>
-                <p class="hero-text">Solve spatial problems. Master Convex Hulls for enclosing points, sweeping line
-                    algorithms for intersections, and vector cross-products.</p>
+                <p class="hero-text">Master spatial algorithms. From Convex Hulls to Sweep Line techniques, visualize
+                    and solve complex geometric problems efficienty.</p>
                 <div class="category-stats">
-                    <div class="stat-item"><span class="stat-number">5</span><span class="stat-label">Problems</span>
+                    <div class="stat-item"><span class="stat-number">4</span><span class="stat-label">Problems</span>
                     </div>
-                    <div class="stat-item"><span class="stat-number" style="color: #95a5a6;">Low</span><span
-                            class="stat-label">Interview Priority</span></div>
-                    <div class="stat-item"><span class="stat-number">1700-2300</span><span class="stat-label">CF
-                            Rating</span></div>
+                    <div class="stat-item"><span class="stat-number" style="color: #9b59b6;">Specialized</span><span
+                            class="stat-label">Interview Focus</span></div>
+                    <div class="stat-item"><span class="stat-number">1800+</span><span
+                            class="stat-label">Difficulty</span></div>
                 </div>
             </div>
         </section>
 
         <section class="problems-section">
             <div class="container">
-                <h2>Key Geometry Problems</h2>
+                <h2>Core Geometry Problems</h2>
                 <!-- Dynamic Problems Mount Point -->
                 <div id="problems-mount">
                     <div class="loading">Loading problems...</div>
@@ -47,6 +47,13 @@
     <div id="footer-mount"></div>
 
     <script src="script.js"></script>
+    <script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load geometry problems
+            ProblemRenderer.renderProblems('geometry');
+        });
+    </script>
 </body>
 
 </html>
