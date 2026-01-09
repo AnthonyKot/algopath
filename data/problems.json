@@ -75,6 +75,58 @@
           ],
           "text": "Final answer: min edits to transform s1[0..m] to s2[0..n]"
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What technique best fits a problem with overlapping subproblems?",
+          "options": [
+            "Greedy",
+            "Divide & Conquer",
+            "Dynamic Programming",
+            "Backtracking"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "What is the main bottleneck of naive recursion here?",
+          "options": [
+            "Stack overflow",
+            "Repeated subproblems",
+            "Memory allocation",
+            "String copying"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How do we avoid recomputing the same subproblems?",
+          "options": [
+            "Sorting",
+            "Hashing",
+            "Memoization",
+            "Parallelism"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "What does dp[i][j] represent in this solution?",
+          "options": [
+            "Max edits",
+            "Min edits for prefixes",
+            "Character count",
+            "String length"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What is the space complexity after optimization?",
+          "options": [
+            "O(m*n)",
+            "O(m+n)",
+            "O(min(m,n))",
+            "O(1)"
+          ],
+          "correct": 2
+        }
       ]
     },
     {
@@ -145,6 +197,58 @@
             9
           ],
           "text": "Answer is the max of all dp values since LIS could end at any index"
+        }
+      ],
+      "quizzes": [
+        {
+          "question": "What does dp[i] represent in the LIS solution?",
+          "options": [
+            "Total subsequences",
+            "LIS ending at index i",
+            "LIS starting at i",
+            "Array length"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What is the bottleneck of O(N²) DP for LIS?",
+          "options": [
+            "Memory usage",
+            "Nested loops checking all pairs",
+            "Recursion depth",
+            "String operations"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How can we optimize LIS to O(N log N)?",
+          "options": [
+            "Hash table",
+            "Binary search on tails array",
+            "Sorting first",
+            "Divide and conquer"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why do we initialize dp[i] = 1?",
+          "options": [
+            "Array indexing",
+            "Each element is LIS of length 1",
+            "Prevent overflow",
+            "Match array size"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How do we get the final answer?",
+          "options": [
+            "dp[0]",
+            "dp[n-1]",
+            "Max of all dp values",
+            "Sum of dp values"
+          ],
+          "correct": 2
         }
       ]
     },
@@ -217,6 +321,58 @@
           ],
           "text": "Return answer, or -1 if amount is still unreachable (Infinity)"
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What DP pattern does Coin Change follow?",
+          "options": [
+            "0/1 Knapsack",
+            "Unbounded Knapsack",
+            "LCS",
+            "Matrix Chain"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why is naive recursion slow for this problem?",
+          "options": [
+            "Stack overflow",
+            "Repeated subproblems",
+            "Too many coins",
+            "Large amounts"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What does dp[i] store?",
+          "options": [
+            "Number of ways",
+            "Min coins for amount i",
+            "Max coins",
+            "Coin values"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why initialize dp with Infinity?",
+          "options": [
+            "Prevent overflow",
+            "Mark unreachable amounts",
+            "Faster comparison",
+            "Memory efficiency"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the time complexity?",
+          "options": [
+            "O(N)",
+            "O(N²)",
+            "O(Amount × Coins)",
+            "O(2^N)"
+          ],
+          "correct": 2
+        }
       ]
     },
     {
@@ -283,6 +439,58 @@
             13
           ],
           "text": "Answer: max coins from bursting all balloons (range 1 to n)"
+        }
+      ],
+      "quizzes": [
+        {
+          "question": "What DP pattern does Burst Balloons use?",
+          "options": [
+            "Linear DP",
+            "Interval DP",
+            "Tree DP",
+            "Digit DP"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the key insight for this problem?",
+          "options": [
+            "Burst smallest first",
+            "Think about which to burst LAST",
+            "Use greedy",
+            "Sort balloons"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why think about 'last balloon' instead of 'first'?",
+          "options": [
+            "Faster execution",
+            "Subproblems become independent",
+            "Easier to code",
+            "Less memory"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What does dp[i][j] represent?",
+          "options": [
+            "Min coins",
+            "Max coins in interval (i,j)",
+            "Balloon count",
+            "Burst order"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the time complexity?",
+          "options": [
+            "O(N)",
+            "O(N²)",
+            "O(N³)",
+            "O(2^N)"
+          ],
+          "correct": 2
         }
       ]
     },
@@ -363,6 +571,58 @@
           ],
           "text": "Helper: '.' matches any character, otherwise must be exact match"
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What does dp[i][j] represent?",
+          "options": [
+            "Match count",
+            "s[0..i-1] matches p[0..j-1]?",
+            "Pattern length",
+            "String index"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How does '*' work in patterns?",
+          "options": [
+            "Match any char",
+            "Match zero or more of preceding",
+            "Match one char",
+            "End of pattern"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What does '.' match?",
+          "options": [
+            "Period only",
+            "Any single character",
+            "Zero chars",
+            "Whitespace"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "When can pattern a* match empty string?",
+          "options": [
+            "Never",
+            "When * matches zero elements",
+            "Only if a exists",
+            "Always"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the complexity of this DP solution?",
+          "options": [
+            "O(N)",
+            "O(N²)",
+            "O(M × N)",
+            "O(2^N)"
+          ],
+          "correct": 2
+        }
       ]
     }
   ],
@@ -435,12 +695,77 @@
           ],
           "text": "Crucial: Remove from set immediately to mark as visited. This guarantees shortest path."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "How can we model this problem?",
+          "options": [
+            "Tree",
+            "Graph with edges between similar words",
+            "Array",
+            "Stack"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why is DFS inefficient for finding shortest path?",
+          "options": [
+            "Too much memory",
+            "Explores long paths first",
+            "Can't handle cycles",
+            "Too slow"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Which algorithm finds shortest path in unweighted graphs?",
+          "options": [
+            "DFS",
+            "Dijkstra",
+            "BFS",
+            "Bellman-Ford"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Why use a Set instead of Array for the word list?",
+          "options": [
+            "Smaller memory",
+            "O(1) lookups",
+            "Easier to iterate",
+            "Maintains order"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What makes BFS guarantee shortest path?",
+          "options": [
+            "Random exploration",
+            "Layer-by-layer exploration",
+            "Depth priority",
+            "Heuristics"
+          ],
+          "correct": 1
+        }
       ]
     },
     {
       "id": "graphs-2",
       "title": "Course Schedule II (Topological Sort)",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/course-schedule-ii/",
+      "related": [
+        {
+          "id": "graphs-1",
+          "title": "Word Ladder",
+          "category": "graphs"
+        },
+        {
+          "id": "graphs-3",
+          "title": "Network Delay Time",
+          "category": "graphs"
+        }
+      ],
       "tags": [
         "topological-sort",
         "bfs",
@@ -507,12 +832,77 @@
           ],
           "text": "If result length equals numCourses, we found a valid order. Otherwise, there's a cycle."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What algorithm solves task scheduling with dependencies?",
+          "options": [
+            "BFS",
+            "Topological Sort",
+            "Dijkstra",
+            "Binary Search"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What does 'in-degree' of a node mean?",
+          "options": [
+            "Outgoing edges",
+            "Number of prerequisites",
+            "Node weight",
+            "Distance from source"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Which data structure does Kahn's algorithm use?",
+          "options": [
+            "Stack",
+            "Queue",
+            "Heap",
+            "Tree"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How do we detect a cycle in this approach?",
+          "options": [
+            "DFS recursion",
+            "Result length < numCourses",
+            "Stack overflow",
+            "Negative edges"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the time complexity?",
+          "options": [
+            "O(N)",
+            "O(N²)",
+            "O(V + E)",
+            "O(N log N)"
+          ],
+          "correct": 2
+        }
       ]
     },
     {
       "id": "graphs-3",
       "title": "Network Delay Time (Dijkstra)",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/network-delay-time/",
+      "related": [
+        {
+          "id": "graphs-2",
+          "title": "Course Schedule II",
+          "category": "graphs"
+        },
+        {
+          "id": "graphs-4",
+          "title": "Min Cost to Connect Points",
+          "category": "graphs"
+        }
+      ],
       "tags": [
         "dijkstra",
         "shortest-path",
@@ -579,12 +969,77 @@
           ],
           "text": "Push new shortest path to PQ. Sort to maintain min-heap property (simplification)."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What algorithm finds single-source shortest paths with non-negative weights?",
+          "options": [
+            "BFS",
+            "DFS",
+            "Dijkstra",
+            "Bellman-Ford"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "What data structure makes Dijkstra efficient?",
+          "options": [
+            "Stack",
+            "Array",
+            "Min-Priority Queue",
+            "Hash Table"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Why can't Dijkstra handle negative edge weights?",
+          "options": [
+            "Memory overflow",
+            "Greedy assumption breaks",
+            "Too slow",
+            "Can't represent them"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What is 'relaxation' in Dijkstra?",
+          "options": [
+            "Removing edges",
+            "Updating shorter path distance",
+            "Adding nodes",
+            "Sorting edges"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the time complexity with a heap?",
+          "options": [
+            "O(V)",
+            "O(V²)",
+            "O(E log V)",
+            "O(V³)"
+          ],
+          "correct": 2
+        }
       ]
     },
     {
       "id": "graphs-4",
       "title": "Min Cost to Connect Points (Prim's MST)",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/min-cost-to-connect-all-points/",
+      "related": [
+        {
+          "id": "graphs-3",
+          "title": "Network Delay Time",
+          "category": "graphs"
+        },
+        {
+          "id": "graphs-5",
+          "title": "Pacific Atlantic Water Flow",
+          "category": "graphs"
+        }
+      ],
       "tags": [
         "mst",
         "prim",
@@ -652,12 +1107,77 @@
           ],
           "text": "Update step: Update connection costs for all remaining unvisited neighbors of 'u'."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What problem does MST solve?",
+          "options": [
+            "Shortest path",
+            "Min cost to connect all nodes",
+            "Maximum flow",
+            "Cycle detection"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Which algorithm grows MST from a single node?",
+          "options": [
+            "Kruskal's",
+            "Prim's",
+            "Dijkstra's",
+            "Bellman-Ford"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What greedy choice does Prim's make?",
+          "options": [
+            "Longest edge",
+            "Cheapest edge to unvisited node",
+            "Random edge",
+            "Most connected node"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What is Manhattan distance?",
+          "options": [
+            "|x₁-x₂| + |y₁-y₂|",
+            "√((x₁-x₂)² + (y₁-y₂)²)",
+            "max(|x₁-x₂|, |y₁-y₂|)",
+            "min(|x₁-x₂|, |y₁-y₂|)"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "What's Prim's time complexity for dense graphs?",
+          "options": [
+            "O(N)",
+            "O(N log N)",
+            "O(N²)",
+            "O(N³)"
+          ],
+          "correct": 2
+        }
       ]
     },
     {
       "id": "graphs-5",
       "title": "Pacific Atlantic Water Flow",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/pacific-atlantic-water-flow/",
+      "related": [
+        {
+          "id": "graphs-4",
+          "title": "Min Cost to Connect Points",
+          "category": "graphs"
+        },
+        {
+          "id": "graphs-1",
+          "title": "Word Ladder",
+          "category": "graphs"
+        }
+      ],
       "tags": [
         "dfs",
         "multi-source",
@@ -726,6 +1246,58 @@
           ],
           "text": "Intersection: If cell is in both sets, it can flow to both oceans."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What's the key insight to optimize this problem?",
+          "options": [
+            "Sort cells",
+            "Think from oceans inward",
+            "Use DP",
+            "Binary search"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What traversal technique is used here?",
+          "options": [
+            "Single-source BFS",
+            "Multi-source BFS",
+            "Dijkstra",
+            "DFS only"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How do we find cells that reach both oceans?",
+          "options": [
+            "Union of sets",
+            "Intersection of sets",
+            "Difference of sets",
+            "XOR of sets"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "When flowing 'uphill' from ocean, we move to cells with height...?",
+          "options": [
+            "Lower",
+            "Equal or higher",
+            "Exactly equal",
+            "Random"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the time complexity of the optimized solution?",
+          "options": [
+            "O((MN)²)",
+            "O(MN)",
+            "O(M + N)",
+            "O(M log N)"
+          ],
+          "correct": 1
+        }
       ]
     }
   ],
@@ -734,6 +1306,19 @@
       "id": "trees-1",
       "title": "Range Sum Queries (Segment Tree)",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/range-sum-query-mutable/",
+      "related": [
+        {
+          "id": "trees-4",
+          "title": "Lazy Propagation",
+          "category": "trees"
+        },
+        {
+          "id": "trees-5",
+          "title": "Fenwick Tree",
+          "category": "trees"
+        }
+      ],
       "tags": [
         "segment-tree",
         "data-structures"
@@ -801,12 +1386,76 @@
           ],
           "text": "Query: Partial overlap -> recurse on both sides and sum the results."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What operations does a Segment Tree efficiently support?",
+          "options": [
+            "Only point queries",
+            "Range queries and point updates",
+            "Only sorting",
+            "Random access only"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the time complexity for query and update?",
+          "options": [
+            "O(N)",
+            "O(1)",
+            "O(log N)",
+            "O(N²)"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "What does each node in the tree represent?",
+          "options": [
+            "Single element",
+            "Aggregate of an interval",
+            "Pointer to child",
+            "Hash value"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How do we handle partial overlap during query?",
+          "options": [
+            "Skip node",
+            "Recurse on both children",
+            "Return 0",
+            "Use lazy tag"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why use array size 4N for the tree?",
+          "options": [
+            "For padding",
+            "Safe upper bound for complete binary tree",
+            "Memory alignment",
+            "Faster access"
+          ],
+          "correct": 1
+        }
       ]
     },
     {
       "id": "trees-2",
       "title": "Distance Queries (LCA with Binary Lifting)",
       "difficulty": "Hard",
+      "related": [
+        {
+          "id": "trees-1",
+          "title": "Segment Tree",
+          "category": "trees"
+        },
+        {
+          "id": "trees-3",
+          "title": "Tree Diameter",
+          "category": "trees"
+        }
+      ],
       "tags": [
         "lca",
         "binary-lifting",
@@ -881,12 +1530,77 @@
           ],
           "text": "After loop, they are just below LCA, so return parent."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What does LCA stand for?",
+          "options": [
+            "Last Common Ancestor",
+            "Lowest Common Ancestor",
+            "Linear Chain Analysis",
+            "Longest Connected Arc"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How is distance calculated using LCA?",
+          "options": [
+            "depth(u) * depth(v)",
+            "depth(u) + depth(v) - 2*depth(lca)",
+            "depth(lca)",
+            "max(depth(u), depth(v))"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What does up[k][u] store?",
+          "options": [
+            "k-th child",
+            "2^k-th ancestor of u",
+            "k ancestors",
+            "Distance to root"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the key idea of binary lifting?",
+          "options": [
+            "Sort nodes",
+            "Jump by powers of 2",
+            "Hash ancestors",
+            "Split tree"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the preprocessing complexity?",
+          "options": [
+            "O(N)",
+            "O(N log N)",
+            "O(N²)",
+            "O(log N)"
+          ],
+          "correct": 1
+        }
       ]
     },
     {
       "id": "trees-3",
       "title": "Tree Diameter",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/tree-diameter/",
+      "related": [
+        {
+          "id": "trees-2",
+          "title": "LCA Binary Lifting",
+          "category": "trees"
+        },
+        {
+          "id": "graphs-3",
+          "title": "Network Delay Time",
+          "category": "graphs"
+        }
+      ],
       "tags": [
         "tree-dp",
         "dfs",
@@ -941,12 +1655,76 @@
           ],
           "text": "Global diameter update: The longest path THROUGH u is max1 + max2."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What is tree diameter?",
+          "options": [
+            "Node count",
+            "Longest path between any two nodes",
+            "Tree height",
+            "Edge weight sum"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the two-BFS/DFS method?",
+          "options": [
+            "Sort nodes",
+            "Find farthest from any node, then farthest from that",
+            "Binary search",
+            "Hash nodes"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "In the DP method, what do max1 and max2 track?",
+          "options": [
+            "Min paths",
+            "Two longest downward paths",
+            "Node values",
+            "Edge weights"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How is diameter updated at each node?",
+          "options": [
+            "max1 * max2",
+            "max1 + max2",
+            "max(max1, max2)",
+            "min(max1, max2)"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the time complexity?",
+          "options": [
+            "O(N²)",
+            "O(N log N)",
+            "O(N)",
+            "O(2^N)"
+          ],
+          "correct": 2
+        }
       ]
     },
     {
       "id": "trees-4",
       "title": "Range Add, Range Sum (Lazy Propagation)",
       "difficulty": "Hard",
+      "related": [
+        {
+          "id": "trees-1",
+          "title": "Segment Tree",
+          "category": "trees"
+        },
+        {
+          "id": "trees-5",
+          "title": "Fenwick Tree",
+          "category": "trees"
+        }
+      ],
       "tags": [
         "segment-tree",
         "lazy-propagation"
@@ -1011,12 +1789,77 @@
           ],
           "text": "Query: Push before checking children to ensure fresh data."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What is 'lazy propagation'?",
+          "options": [
+            "Slow updates",
+            "Defer updates to children until needed",
+            "Skip nodes",
+            "Parallel processing"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "When do we 'push down' lazy values?",
+          "options": [
+            "Never",
+            "Before accessing children",
+            "After query",
+            "Only on update"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why use lazy propagation for range updates?",
+          "options": [
+            "Simpler code",
+            "Avoid updating all N elements",
+            "Better caching",
+            "Less memory"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What does the lazy array store?",
+          "options": [
+            "Final values",
+            "Pending additions for children",
+            "Node indices",
+            "Hash codes"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the time complexity per operation?",
+          "options": [
+            "O(N)",
+            "O(1)",
+            "O(log N)",
+            "O(N log N)"
+          ],
+          "correct": 2
+        }
       ]
     },
     {
       "id": "trees-5",
       "title": "Fenwick Tree (Binary Indexed Tree)",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/range-sum-query-mutable/",
+      "related": [
+        {
+          "id": "trees-1",
+          "title": "Segment Tree",
+          "category": "trees"
+        },
+        {
+          "id": "trees-4",
+          "title": "Lazy Propagation",
+          "category": "trees"
+        }
+      ],
       "tags": [
         "fenwick-tree",
         "bit",
@@ -1074,6 +1917,58 @@
           ],
           "text": "Range Sum [L, R] = PrefixSum(R) - PrefixSum(L-1)."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What is another name for Fenwick Tree?",
+          "options": [
+            "Segment Tree",
+            "Binary Indexed Tree",
+            "AVL Tree",
+            "Red-Black Tree"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What bit operation finds the LSB?",
+          "options": [
+            "i | -i",
+            "i ^ -i",
+            "i & -i",
+            "i >> 1"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Why is Fenwick Tree 1-indexed?",
+          "options": [
+            "Convention",
+            "LSB trick works properly",
+            "Faster access",
+            "Less memory"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the advantage over Segment Tree?",
+          "options": [
+            "Faster queries",
+            "Simpler code and less space",
+            "More operations",
+            "Better for strings"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How to get range sum [L, R]?",
+          "options": [
+            "query(R) + query(L)",
+            "query(R) - query(L-1)",
+            "query(L+R)",
+            "query(R) * query(L)"
+          ],
+          "correct": 1
+        }
       ]
     }
   ],
@@ -1082,6 +1977,19 @@
       "id": "strings-1",
       "title": "KMP Pattern Matching",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/",
+      "related": [
+        {
+          "id": "strings-2",
+          "title": "Rabin-Karp Rolling Hash",
+          "category": "strings"
+        },
+        {
+          "id": "strings-3",
+          "title": "Z-Algorithm",
+          "category": "strings"
+        }
+      ],
       "tags": [
         "kmp",
         "strings",
@@ -1134,12 +2042,77 @@
           ],
           "text": "Mismatch after some matches: Smart jump. Set j to LPS[j-1]."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What does LPS stand for in KMP?",
+          "options": [
+            "Longest Prefix String",
+            "Longest Proper Prefix also Suffix",
+            "Last Pattern Start",
+            "Linear Pattern Search"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What is the time complexity of KMP?",
+          "options": [
+            "O(N²)",
+            "O(N*M)",
+            "O(N+M)",
+            "O(N log N)"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "What makes KMP faster than naive search?",
+          "options": [
+            "Sorting first",
+            "Avoiding redundant comparisons using LPS",
+            "Parallel processing",
+            "Binary search"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What happens on mismatch after partial match?",
+          "options": [
+            "Start over",
+            "Use LPS to skip ahead",
+            "Reverse string",
+            "Swap characters"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Is the LPS array built in preprocessing?",
+          "options": [
+            "No, during search",
+            "Yes, O(M) time",
+            "Not needed",
+            "Built once per text"
+          ],
+          "correct": 1
+        }
       ]
     },
     {
       "id": "strings-2",
       "title": "Rabin-Karp Rolling Hash",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/repeated-dna-sequences/",
+      "related": [
+        {
+          "id": "strings-1",
+          "title": "KMP Pattern Matching",
+          "category": "strings"
+        },
+        {
+          "id": "strings-3",
+          "title": "Z-Algorithm",
+          "category": "strings"
+        }
+      ],
       "tags": [
         "hashing",
         "strings",
@@ -1185,12 +2158,77 @@
           ],
           "text": "Correction: Handle negative result from JS modulo operator."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What is a 'rolling hash'?",
+          "options": [
+            "A sorted hash",
+            "Hash updated in O(1) per window slide",
+            "A circular buffer",
+            "Encrypted hash"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What happens when hashes match?",
+          "options": [
+            "Guaranteed match",
+            "Verify with string comparison",
+            "Skip to next",
+            "Return immediately"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why might we get false positives?",
+          "options": [
+            "Bug in code",
+            "Hash collisions",
+            "Wrong base",
+            "Pattern too long"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the average time complexity?",
+          "options": [
+            "O(N²)",
+            "O(N*M)",
+            "O(N+M)",
+            "O(log N)"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "What's the worst case (many collisions)?",
+          "options": [
+            "O(N)",
+            "O(N+M)",
+            "O(N*M)",
+            "O(log N)"
+          ],
+          "correct": 2
+        }
       ]
     },
     {
       "id": "strings-3",
       "title": "Z-Algorithm for Pattern Finding",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/",
+      "related": [
+        {
+          "id": "strings-1",
+          "title": "KMP Pattern Matching",
+          "category": "strings"
+        },
+        {
+          "id": "strings-4",
+          "title": "Suffix Array Construction",
+          "category": "strings"
+        }
+      ],
       "tags": [
         "z-algorithm",
         "strings",
@@ -1236,12 +2274,76 @@
           ],
           "text": "Check Z-value: If length equals pattern length, exact match found."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What does Z[i] represent?",
+          "options": [
+            "Distance to end",
+            "Longest prefix also substring at i",
+            "Character code",
+            "Match count"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How do we use Z-algorithm for pattern matching?",
+          "options": [
+            "Direct comparison",
+            "Concatenate pattern+'$'+text",
+            "Sort strings",
+            "Hash values"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What is a 'Z-box'?",
+          "options": [
+            "Special character",
+            "Interval matching prefix used to optimize",
+            "Data structure",
+            "Output array"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the time complexity?",
+          "options": [
+            "O(N²)",
+            "O(N*M)",
+            "O(N+M)",
+            "O(N log N)"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "When is Z[i] = pattern length?",
+          "options": [
+            "Always",
+            "When pattern matches at position i",
+            "Never",
+            "At end of text"
+          ],
+          "correct": 1
+        }
       ]
     },
     {
       "id": "strings-4",
       "title": "Suffix Array Construction",
       "difficulty": "Hard",
+      "related": [
+        {
+          "id": "strings-3",
+          "title": "Z-Algorithm",
+          "category": "strings"
+        },
+        {
+          "id": "strings-5",
+          "title": "Manacher's Algorithm",
+          "category": "strings"
+        }
+      ],
       "tags": [
         "suffix-array",
         "strings",
@@ -1281,12 +2383,77 @@
           ],
           "text": "Re-rank: Assign new equivalence classes based on sorted order."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What is a suffix array?",
+          "options": [
+            "Character frequencies",
+            "Sorted indices of all suffixes",
+            "Hash values",
+            "Prefix lengths"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the key idea of prefix-doubling?",
+          "options": [
+            "Sort by increasing prefix lengths",
+            "Use hash tables",
+            "Compare all pairs",
+            "Recursive divide"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "How many iterations does doubling take?",
+          "options": [
+            "N",
+            "N/2",
+            "log N",
+            "N²"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "What's the time complexity of doubling algorithm?",
+          "options": [
+            "O(N)",
+            "O(N log N)",
+            "O(N log² N)",
+            "O(N²)"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "What are suffix arrays used for?",
+          "options": [
+            "Only sorting",
+            "Pattern search, LCP, compression",
+            "Just visualization",
+            "Memory allocation"
+          ],
+          "correct": 1
+        }
       ]
     },
     {
       "id": "strings-5",
       "title": "Manacher's (Longest Palindrome)",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/longest-palindromic-substring/",
+      "related": [
+        {
+          "id": "strings-4",
+          "title": "Suffix Array Construction",
+          "category": "strings"
+        },
+        {
+          "id": "dp-1",
+          "title": "Edit Distance",
+          "category": "dp"
+        }
+      ],
       "tags": [
         "manacher",
         "palindrome",
@@ -1338,6 +2505,58 @@
           ],
           "text": "Update: New palindrome goes beyond R, so move center C."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "How does Manacher handle odd and even length palindromes?",
+          "options": [
+            "Separate loops",
+            "Transform string with #",
+            "Ignore even",
+            "Binary search"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the key optimization in Manacher's?",
+          "options": [
+            "Sorting",
+            "Using palindrome mirror property",
+            "Hashing",
+            "Divide and conquer"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What does P[i] store?",
+          "options": [
+            "Character code",
+            "Palindrome radius at i",
+            "String length",
+            "Index of mirror"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the time complexity of Manacher's?",
+          "options": [
+            "O(N²)",
+            "O(N log N)",
+            "O(N)",
+            "O(2^N)"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "What makes the inner while loop O(N) total?",
+          "options": [
+            "Fixed iterations",
+            "Right boundary R only moves forward",
+            "Early termination",
+            "Tail recursion"
+          ],
+          "correct": 1
+        }
       ]
     }
   ],
@@ -1346,6 +2565,19 @@
       "id": "math-1",
       "title": "Modular Exponentiation",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/powx-n/",
+      "related": [
+        {
+          "id": "math-2",
+          "title": "Sieve of Eratosthenes",
+          "category": "math"
+        },
+        {
+          "id": "math-3",
+          "title": "Extended Euclidean Algorithm",
+          "category": "math"
+        }
+      ],
       "tags": [
         "modular",
         "exponentiation",
@@ -1392,12 +2624,77 @@
           ],
           "text": "Shift: Move to next bit of exponent (divide by 2)."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What technique gives O(log b) for a^b?",
+          "options": [
+            "Linear loop",
+            "Binary exponentiation",
+            "Recursion only",
+            "Matrix multiplication"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why square the base each iteration?",
+          "options": [
+            "Randomization",
+            "Move to next power of 2",
+            "Reduce memory",
+            "Handle negatives"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "When do we multiply result by current base?",
+          "options": [
+            "Always",
+            "When b is odd (bit is 1)",
+            "When b is even",
+            "Never"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why take mod at each step?",
+          "options": [
+            "Faster",
+            "Prevent overflow",
+            "Required by algorithm",
+            "Improves precision"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the space complexity?",
+          "options": [
+            "O(N)",
+            "O(log b)",
+            "O(1)",
+            "O(b)"
+          ],
+          "correct": 2
+        }
       ]
     },
     {
       "id": "math-2",
       "title": "Sieve of Eratosthenes",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/count-primes/",
+      "related": [
+        {
+          "id": "math-1",
+          "title": "Modular Exponentiation",
+          "category": "math"
+        },
+        {
+          "id": "math-3",
+          "title": "Extended Euclidean Algorithm",
+          "category": "math"
+        }
+      ],
       "tags": [
         "sieve",
         "primes",
@@ -1437,12 +2734,76 @@
           ],
           "text": "Mark: Set multiple to false (composite)."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What's the main idea of the Sieve?",
+          "options": [
+            "Check each number",
+            "Mark multiples of primes as composite",
+            "Factorize all numbers",
+            "Sort primes"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why start marking multiples from p*p?",
+          "options": [
+            "Faster to compute",
+            "Smaller multiples already marked",
+            "Prevents overflow",
+            "Mathematical requirement"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the time complexity?",
+          "options": [
+            "O(N)",
+            "O(N log N)",
+            "O(N log log N)",
+            "O(N²)"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "What does isPrime[i] = true mean?",
+          "options": [
+            "i is composite",
+            "i is prime (not yet marked)",
+            "i is even",
+            "i is odd"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the space complexity?",
+          "options": [
+            "O(1)",
+            "O(log N)",
+            "O(N)",
+            "O(N²)"
+          ],
+          "correct": 2
+        }
       ]
     },
     {
       "id": "math-3",
       "title": "Extended Euclidean Algorithm",
       "difficulty": "Hard",
+      "related": [
+        {
+          "id": "math-1",
+          "title": "Modular Exponentiation",
+          "category": "math"
+        },
+        {
+          "id": "math-4",
+          "title": "Chinese Remainder Theorem",
+          "category": "math"
+        }
+      ],
       "tags": [
         "gcd",
         "modular-inverse",
@@ -1482,12 +2843,76 @@
           ],
           "text": "Update Coefficients: x = y1, y = x1 - floor(a/b)*y1. (Based on b*x1 + (a%b)*y1 = g)"
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What equation does Extended Euclidean solve?",
+          "options": [
+            "ax = b mod m",
+            "ax + by = gcd(a,b)",
+            "a^b mod m",
+            "ab = c"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What is the base case when b = 0?",
+          "options": [
+            "x=0, y=1",
+            "x=1, y=0",
+            "x=a, y=b",
+            "No solution"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How is modular inverse found?",
+          "options": [
+            "Division",
+            "Solve ax + my = 1 for x",
+            "Exponentiation",
+            "Random search"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "When does modular inverse exist?",
+          "options": [
+            "Always",
+            "When gcd(a,m) = 1",
+            "When a > m",
+            "When m is prime"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the time complexity?",
+          "options": [
+            "O(N)",
+            "O(log(min(a,b)))",
+            "O(ab)",
+            "O(1)"
+          ],
+          "correct": 1
+        }
       ]
     },
     {
       "id": "math-4",
       "title": "Chinese Remainder Theorem",
       "difficulty": "Hard",
+      "related": [
+        {
+          "id": "math-3",
+          "title": "Extended Euclidean Algorithm",
+          "category": "math"
+        },
+        {
+          "id": "math-5",
+          "title": "FFT",
+          "category": "math"
+        }
+      ],
       "tags": [
         "crt",
         "modular",
@@ -1527,12 +2952,76 @@
           ],
           "text": "Iterative Merge: Combine current answer with next congruence."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What does CRT solve?",
+          "options": [
+            "Polynomial equations",
+            "System of congruences",
+            "Prime factorization",
+            "Matrix equations"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What condition is needed for standard CRT?",
+          "options": [
+            "All m_i equal",
+            "All m_i pairwise coprime",
+            "All a_i prime",
+            "m_i sorted"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How does the iterative approach work?",
+          "options": [
+            "Solve all at once",
+            "Merge two congruences at a time",
+            "Binary search",
+            "Random sampling"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What algorithm is used in the merge step?",
+          "options": [
+            "Sieve",
+            "Extended Euclidean",
+            "FFT",
+            "Binary exponentiation"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Is the solution unique?",
+          "options": [
+            "No",
+            "Yes, modulo product of all m_i",
+            "Only for primes",
+            "Depends on a_i"
+          ],
+          "correct": 1
+        }
       ]
     },
     {
       "id": "math-5",
       "title": "Fast Fourier Transform (FFT)",
       "difficulty": "Hard",
+      "related": [
+        {
+          "id": "math-4",
+          "title": "Chinese Remainder Theorem",
+          "category": "math"
+        },
+        {
+          "id": "math-1",
+          "title": "Modular Exponentiation",
+          "category": "math"
+        }
+      ],
       "tags": [
         "fft",
         "polynomial-multiplication",
@@ -1573,6 +3062,58 @@
           ],
           "text": "Butterfly: Update pairs in place using the 'twiddle factor' wlen."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What problem does FFT solve efficiently?",
+          "options": [
+            "Sorting",
+            "Polynomial multiplication",
+            "Graph traversal",
+            "String matching"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the key insight of FFT?",
+          "options": [
+            "Sort coefficients",
+            "Convert to point-value form",
+            "Use hashing",
+            "Binary search"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What are 'roots of unity'?",
+          "options": [
+            "Prime numbers",
+            "Complex numbers where z^n = 1",
+            "Square roots",
+            "Fibonacci numbers"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What's the time complexity of FFT?",
+          "options": [
+            "O(N²)",
+            "O(N)",
+            "O(N log N)",
+            "O(N³)"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "How does inverse FFT differ?",
+          "options": [
+            "Different algorithm",
+            "Negate angle and divide by N",
+            "Only for integers",
+            "Uses recursion"
+          ],
+          "correct": 1
+        }
       ]
     }
   ],
@@ -1581,6 +3122,18 @@
       "id": "geometry-1",
       "title": "Point in Polygon Test",
       "difficulty": "Hard",
+      "related": [
+        {
+          "id": "geometry-2",
+          "title": "Line Segment Intersection",
+          "category": "geometry"
+        },
+        {
+          "id": "geometry-3",
+          "title": "Convex Hull",
+          "category": "geometry"
+        }
+      ],
       "tags": [
         "geometry",
         "polygon",
@@ -1626,12 +3179,76 @@
           ],
           "text": "Parity Flip: If intersect, toggle 'inside' state (odd=in, even=out)."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What is the standard algorithm for Point in Polygon?",
+          "options": [
+            "Ray Casting",
+            "Dijkstra",
+            "Convex Hull",
+            "Rotating Calipers"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "If a ray has 3 intersections, is the point inside?",
+          "options": [
+            "No",
+            "Yes (Odd)",
+            "Maybe",
+            "Only for convex"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What direction do we typically cast the ray?",
+          "options": [
+            "Random",
+            "Horizontal (Right)",
+            "Vertical (Up)",
+            "Diagonal"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How do we handle the ray passing through a vertex?",
+          "options": [
+            "Ignore it",
+            "Count as 0.5",
+            "Careful inequality checks (epsilon)",
+            "Restart with new ray"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "What is the time complexity per query?",
+          "options": [
+            "O(1)",
+            "O(log N)",
+            "O(N)",
+            "O(N²)"
+          ],
+          "correct": 2
+        }
       ]
     },
     {
       "id": "geometry-2",
       "title": "Line Segment Intersection",
       "difficulty": "Hard",
+      "related": [
+        {
+          "id": "geometry-1",
+          "title": "Point in Polygon",
+          "category": "geometry"
+        },
+        {
+          "id": "geometry-3",
+          "title": "Convex Hull",
+          "category": "geometry"
+        }
+      ],
       "tags": [
         "geometry",
         "line-intersection",
@@ -1671,12 +3288,78 @@
           ],
           "text": "Collinear Case: If 3 points are collinear, check if point lies ON segment."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What is the key geometric primitive used?",
+          "options": [
+            "Distance",
+            "Slope",
+            "Orientation (Cross Product)",
+            "Midpoint"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "How many orientation tests are needed for the general case?",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "When do segments intersect in general?",
+          "options": [
+            "Slopes are different",
+            "Lengths are equal",
+            "Endpoints straddle each other",
+            "They are perpendicular"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Why avoid using equation y = mx + c?",
+          "options": [
+            "Harder to code",
+            "Division by zero (vertical lines) & precision",
+            "Slower",
+            "Memory usage"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What is the time complexity?",
+          "options": [
+            "O(1)",
+            "O(log N)",
+            "O(N)",
+            "O(N²)",
+            "O(log N)"
+          ],
+          "correct": 0
+        }
       ]
     },
     {
       "id": "geometry-3",
       "title": "Convex Hull (Monotone Chain)",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/erect-the-fence/",
+      "related": [
+        {
+          "id": "geometry-2",
+          "title": "Line Segment Intersection",
+          "category": "geometry"
+        },
+        {
+          "id": "geometry-5",
+          "title": "Rotating Calipers",
+          "category": "geometry"
+        }
+      ],
       "tags": [
         "convex-hull",
         "geometry",
@@ -1716,12 +3399,76 @@
           ],
           "text": "Reverse Logic: Building the upper hull works identically but processes points in reverse sorted order."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What is the Convex Hull?",
+          "options": [
+            "Largest circle inside",
+            "Smallest convex polygon containing all points",
+            "Average point",
+            "Shortest path"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What is the first step of Andrew's Algorithm?",
+          "options": [
+            "Find center",
+            "Sort points by X",
+            "Random shuffle",
+            "Find max Y"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "When do we pop a point from the hull?",
+          "options": [
+            "When we make a right turn (non-convex)",
+            "When we make a left turn",
+            "Never",
+            "Every time"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "What is the time complexity?",
+          "options": [
+            "O(N)",
+            "O(N²)",
+            "O(N log N)",
+            "O(N!)"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Why build lower and upper hulls separately?",
+          "options": [
+            "It's mandatory",
+            "Handles vertical lines better",
+            "Simplifies the turn logic (monotone chain)",
+            "Faster"
+          ],
+          "correct": 2
+        }
       ]
     },
     {
       "id": "geometry-4",
       "title": "Closest Pair of Points",
       "difficulty": "Hard",
+      "related": [
+        {
+          "id": "geometry-3",
+          "title": "Convex Hull",
+          "category": "geometry"
+        },
+        {
+          "id": "geometry-1",
+          "title": "Point in Polygon",
+          "category": "geometry"
+        }
+      ],
       "tags": [
         "divide-and-conquer",
         "geometry",
@@ -1767,12 +3514,71 @@
           ],
           "text": "Magic Constant: Geometry guarantees we only need to check next 7 points in sorted Y strip."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What is the time complexity of the Divide and Conquer approach?",
+          "options": [
+            "O(N²)",
+            "O(N log N)",
+            "O(N)",
+            "O(N!)"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why is brute force O(N²)?",
+          "options": [
+            "Checks all pairs",
+            "Sorting takes N²",
+            "Complex math",
+            "Memory allocation"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "What is the 'strip'?",
+          "options": [
+            "Points far from center",
+            "Points within distance 'd' of dividing line",
+            "Outliers",
+            "Points on X-axis"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why do we only check 7 neighbors in the strip?",
+          "options": [
+            "It's a heuristic",
+            "Geometric pigeonhole principle limit",
+            "To save time (approximate)",
+            "Hardware limit"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What sorting is required?",
+          "options": [
+            "Only by X",
+            "Only by Y",
+            "By X initially, and Y for the strip",
+            "No sorting"
+          ],
+          "correct": 2
+        }
       ]
     },
     {
       "id": "geometry-5",
       "title": "Rotating Calipers (Diameter)",
       "difficulty": "Hard",
+      "related": [
+        {
+          "id": "geometry-3",
+          "title": "Convex Hull",
+          "category": "geometry"
+        }
+      ],
       "tags": [
         "rotating-calipers",
         "convex-hull",
@@ -1812,6 +3618,58 @@
           ],
           "text": "Update: Advance 'q' or 'p' based on which edge is closer to parallel."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What does this algorithm calculate?",
+          "options": [
+            "Area",
+            "Diameter (max distance)",
+            "Perimeter",
+            "Center of mass"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What is the prerequisite step?",
+          "options": [
+            "Sort by angle",
+            "Compute Convex Hull",
+            "Triangulate",
+            "Find centroid"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What are 'antipodal points'?",
+          "options": [
+            "Opposite points supporting parallel tangents",
+            "Points with same x-coord",
+            "Points with same y-coord",
+            "Adjacent points"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "What is the time complexity (after hull)?",
+          "options": [
+            "O(H)",
+            "O(H log H)",
+            "O(H²)",
+            "O(1)"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "How do we decide which caliper to rotate?",
+          "options": [
+            "Randomly",
+            "Smallest angle to next edge",
+            "Largest angle",
+            "Fixed order"
+          ],
+          "correct": 1
+        }
       ]
     }
   ],
@@ -1820,6 +3678,19 @@
       "id": "design-1",
       "title": "LRU Cache",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/lru-cache/",
+      "related": [
+        {
+          "id": "design-4",
+          "title": "Design Hit Counter",
+          "category": "design"
+        },
+        {
+          "id": "design-5",
+          "title": "Design Add and Search Words",
+          "category": "design"
+        }
+      ],
       "tags": [
         "design",
         "hash-table",
@@ -1867,12 +3738,77 @@
           ],
           "text": "Get: If found, move to head to refresh 'recently used' status."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What combination of data structures is optimal?",
+          "options": [
+            "Array + List",
+            "HashMap + Doubly Linked List",
+            "Stack + Queue",
+            "Two Heaps"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why is a Doubly Linked List needed?",
+          "options": [
+            "To sort keys",
+            "O(1) removal of any node given a pointer",
+            "Less memory",
+            "To handle collisions"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Which item is evicted when full?",
+          "options": [
+            "Head (Most Recently Used)",
+            "Tail (Least Recently Used)",
+            "Random",
+            "Middle"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What is the time complexity of put/get?",
+          "options": [
+            "O(1)",
+            "O(log N)",
+            "O(N)",
+            "O(N log N)"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Why use dummy head/tail nodes?",
+          "options": [
+            "Required by language",
+            "Avoid null checks/edge cases",
+            "Store metadata",
+            "Increase capacity"
+          ],
+          "correct": 1
+        }
       ]
     },
     {
       "id": "design-2",
       "title": "Design Twitter",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/design-twitter/",
+      "related": [
+        {
+          "id": "design-4",
+          "title": "Design Hit Counter",
+          "category": "design"
+        },
+        {
+          "id": "design-1",
+          "title": "LRU Cache",
+          "category": "design"
+        }
+      ],
       "tags": [
         "design",
         "heap",
@@ -1912,12 +3848,77 @@
           ],
           "text": "Sort: Naive approach sorts all gathered tweets. Heap merge would be better here."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What is the core algorithmic problem in getNewsFeed?",
+          "options": [
+            "Graph traversal",
+            "Merge k Sorted Lists",
+            "Dynamic Programming",
+            "shortest path"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Which data structure optimizes merging tweets?",
+          "options": [
+            "Stack",
+            "Queue",
+            "Min-Heap",
+            "Max-Heap"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "Why is 'Pull Model' (fetch on read) used here?",
+          "options": [
+            "Simpler for small scale",
+            "Faster reads",
+            "Uses more storage",
+            "Harder to implement"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "How do we handle a user following thousands of people?",
+          "options": [
+            "Pull model fails (latency)",
+            "It just works",
+            "Use larger heap",
+            "Cache everything"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "What is the time complexity of getNewsFeed (optimized)?",
+          "options": [
+            "O(T * k)",
+            "O(1)",
+            "O(k log k)",
+            "O(N²)"
+          ],
+          "correct": 2
+        }
       ]
     },
     {
       "id": "design-3",
       "title": "Design Search Autocomplete System",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/design-search-autocomplete-system/",
+      "related": [
+        {
+          "id": "design-5",
+          "title": "Design Add and Search Words",
+          "category": "design"
+        },
+        {
+          "id": "design-2",
+          "title": "Design Twitter",
+          "category": "design"
+        }
+      ],
       "tags": [
         "design",
         "trie",
@@ -1964,12 +3965,77 @@
           ],
           "text": "Ranking: Sort candidates at the constant-time node lookup level."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What is the primary data structure used?",
+          "options": [
+            "Hash Table",
+            "Trie (Prefix Tree)",
+            "Binary Search Tree",
+            "Linked List"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Where do we store the 'hot' sentences?",
+          "options": [
+            "Only at leaves",
+            "In every node of the path",
+            "In a separate database",
+            "In the root only"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How do we handle the '#' character?",
+          "options": [
+            "Ignore it",
+            "It marks the end of a sentence (commit)",
+            "It's a wildcard",
+            "It deletes the last char"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What optimizes the 'top 3' query?",
+          "options": [
+            "Sorting all sentences every time",
+            "Storing a small sorted list at each node",
+            "Using a global heap",
+            "Binary search"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What happens if two sentences have the same hotness?",
+          "options": [
+            "Random order",
+            "Lexicographical (ASCII) order",
+            "Newest first",
+            "Oldest first"
+          ],
+          "correct": 1
+        }
       ]
     },
     {
       "id": "design-4",
       "title": "Design Hit Counter",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/design-hit-counter/",
+      "related": [
+        {
+          "id": "design-2",
+          "title": "Design Twitter",
+          "category": "design"
+        },
+        {
+          "id": "design-1",
+          "title": "LRU Cache",
+          "category": "design"
+        }
+      ],
       "tags": [
         "design",
         "sliding-window",
@@ -2017,12 +4083,77 @@
           ],
           "text": "Sum: Aggregate hits only from buckets falling within the last 300s window."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What is the optimal data structure for this?",
+          "options": [
+            "LinkedList",
+            "Circular Buffer (Buckets)",
+            "Large Array",
+            "BST"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why not store every timestamp?",
+          "options": [
+            "Too much memory/slow query",
+            "Not precise",
+            "Hard to implementing",
+            "Integer overflow"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "What is the size of the array needed?",
+          "options": [
+            "Unlimited",
+            "60",
+            "300",
+            "86400"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "How do we handle concurrent hits?",
+          "options": [
+            "Locks/Atomic increment",
+            "Ignore race conditions",
+            "Use separate arrays",
+            "Delay writes"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "How do we handle stale buckets?",
+          "options": [
+            "Delete them",
+            "Reset value when index is reused",
+            "Shift entire array",
+            "Use garbage collection"
+          ],
+          "correct": 1
+        }
       ]
     },
     {
       "id": "design-5",
       "title": "Design Add and Search Words Data Structure",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/design-add-and-search-words-data-structure/",
+      "related": [
+        {
+          "id": "design-3",
+          "title": "Design Search Autocomplete System",
+          "category": "design"
+        },
+        {
+          "id": "strings-1",
+          "title": "KMP Pattern Matching",
+          "category": "strings"
+        }
+      ],
       "tags": [
         "design",
         "trie",
@@ -2063,6 +4194,58 @@
           ],
           "text": "Standard Match: Proceed down specific child path."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "Which data structure is best for prefix-based storage?",
+          "options": [
+            "Hash Set",
+            "Trie",
+            "Array",
+            "Linked List"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How do we handle the '.' wildcard?",
+          "options": [
+            "Ignore it",
+            "Check all children of current node",
+            "Guess the character",
+            "Jump to leaf"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What is the worst-case search complexity with wildcards?",
+          "options": [
+            "O(M)",
+            "O(26^M)",
+            "O(1)",
+            "O(log N)"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What flag is crucial in each Trie node?",
+          "options": [
+            "isVisited",
+            "isEndOfWord",
+            "charValue",
+            "hasChildren"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Does 'addWord' handle wildcards?",
+          "options": [
+            "Yes",
+            "No, only search does",
+            "Ideally yes",
+            "Depends on implementation"
+          ],
+          "correct": 1
+        }
       ]
     }
   ],
@@ -2071,6 +4254,19 @@
       "id": "optimization-1",
       "title": "Sliding Window Maximum",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/sliding-window-maximum/",
+      "related": [
+        {
+          "id": "optimization-2",
+          "title": "Largest Rectangle in Histogram",
+          "category": "optimization"
+        },
+        {
+          "id": "design-4",
+          "title": "Design Hit Counter",
+          "category": "design"
+        }
+      ],
       "tags": [
         "sliding-window",
         "deque",
@@ -2116,12 +4312,78 @@
           ],
           "text": "Result: The front of the deque always holds the index of the max value for the current window."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What property does the deque maintain?",
+          "options": [
+            "Increasing values",
+            "Decreasing values",
+            "Sorted indices",
+            "Random order"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why do we store indices instead of values?",
+          "options": [
+            "To save memory",
+            "To check window bounds (expiry)",
+            "Faster comparison",
+            "Required by array"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "When do we pop from the back?",
+          "options": [
+            "When window slides",
+            "When new element is larger than back",
+            "When deque is full",
+            "Never"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "When do we pop from the front?",
+          "options": [
+            "When element is too small",
+            "When element is out of window range",
+            "When finding max",
+            "Randomly"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What is the time complexity?",
+          "options": [
+            "O(N*k)",
+            "O(N log k)",
+            "O(N)",
+            "O(N²)",
+            "O(N)"
+          ],
+          "correct": 0
+        }
       ]
     },
     {
       "id": "optimization-2",
       "title": "Largest Rectangle in Histogram",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
+      "related": [
+        {
+          "id": "optimization-3",
+          "title": "Maximal Rectangle",
+          "category": "optimization"
+        },
+        {
+          "id": "optimization-5",
+          "title": "Trapping Rain Water",
+          "category": "optimization"
+        }
+      ],
       "tags": [
         "stack",
         "monotonic",
@@ -2167,12 +4429,77 @@
           ],
           "text": "Area: height * width. Update maxArea if this rectangle is bigger."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What does the stack store?",
+          "options": [
+            "Heights",
+            "Indices",
+            "Areas",
+            "Reversed Heights"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What property of heights does the stack maintain?",
+          "options": [
+            "Decreasing",
+            "Increasing",
+            "Random",
+            "Constant"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What triggers a calculation?",
+          "options": [
+            "Pushing a taller bar",
+            "Pushing a shorter bar",
+            "Stack empty",
+            "Every step"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How is width calculated?",
+          "options": [
+            "right - left",
+            "right - left - 1",
+            "right + left",
+            "constant"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why append 0 at the end?",
+          "options": [
+            "To avoid overflow",
+            "To flush the stack",
+            "To start index at 1",
+            "Padding"
+          ],
+          "correct": 1
+        }
       ]
     },
     {
       "id": "optimization-3",
       "title": "Maximal Rectangle",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/maximal-rectangle/",
+      "related": [
+        {
+          "id": "optimization-2",
+          "title": "Largest Rectangle in Histogram",
+          "category": "optimization"
+        },
+        {
+          "id": "dp-5",
+          "title": "Maximal Square",
+          "category": "dp"
+        }
+      ],
       "tags": [
         "dp",
         "stack",
@@ -2212,12 +4539,77 @@
           ],
           "text": "Solve Subproblem: Run 'Largest Rectangle in Histogram' on current row's heights."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What easier problem does this reduce to?",
+          "options": [
+            "Maximum Subarray Sum",
+            "Largest Rectangle in Histogram",
+            "Longest Common Subsequence",
+            "Knapsack Problem"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How do we build the histogram for each row?",
+          "options": [
+            "Count 1s in row",
+            "Accumulate 1s from top (reset on 0)",
+            "Count 0s",
+            "Randomly"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What happens if matrix[i][j] is '0'?",
+          "options": [
+            "Height becomes 0",
+            "Height stays same",
+            "Height decreases by 1",
+            "Height increases"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "What is the overall time complexity?",
+          "options": [
+            "O(M*N)",
+            "O(M²*N)",
+            "O(M*N²)",
+            "O(M+N)"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "What is the space complexity?",
+          "options": [
+            "O(1)",
+            "O(N) (width of matrix)",
+            "O(M*N)",
+            "O(M)"
+          ],
+          "correct": 1
+        }
       ]
     },
     {
       "id": "optimization-4",
       "title": "Minimum Window Substring",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/minimum-window-substring/",
+      "related": [
+        {
+          "id": "optimization-1",
+          "title": "Sliding Window Maximum",
+          "category": "optimization"
+        },
+        {
+          "id": "strings-2",
+          "title": "Longest Substring Without Repeating Characters",
+          "category": "strings"
+        }
+      ],
       "tags": [
         "sliding-window",
         "two-pointers",
@@ -2263,12 +4655,77 @@
           ],
           "text": "Shrink: Remove char at 'left' to find smaller valid window."
         }
+      ],
+      "quizzes": [
+        {
+          "question": "What techniques are combined here?",
+          "options": [
+            "Sliding Window + Hash Map",
+            "Dynamic Programming + Stack",
+            "Greedy + Heap",
+            "DFS + Backtracking"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "When do we try to shrink the window (move left)?",
+          "options": [
+            "When the window is valid (contains all chars)",
+            "When we reach end of string",
+            "At every step",
+            "When window is empty"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "What does the 'need' map store?",
+          "options": [
+            "Indices of chars",
+            "Frequency of chars in target T",
+            "Visited chars",
+            "Result substring"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What is the time complexity?",
+          "options": [
+            "O(N^2)",
+            "O(N log N)",
+            "O(|S| + |T|)",
+            "O(N^3)"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "What if the target T has duplicates (e.g., 'AA')?",
+          "options": [
+            "Ignore duplicates",
+            "The window must also contain duplicates",
+            "Duplicates are impossible",
+            "Use a Set instead of Map"
+          ],
+          "correct": 1
+        }
       ]
     },
     {
       "id": "optimization-5",
       "title": "Trapping Rain Water",
       "difficulty": "Hard",
+      "leetcode_url": "https://leetcode.com/problems/trapping-rain-water/",
+      "related": [
+        {
+          "id": "optimization-2",
+          "title": "Largest Rectangle in Histogram",
+          "category": "optimization"
+        },
+        {
+          "id": "two-pointers-1",
+          "title": "Container With Most Water",
+          "category": "two-pointers"
+        }
+      ],
       "tags": [
         "two-pointers",
         "optimization",
@@ -2313,6 +4770,58 @@
             15
           ],
           "text": "Symmetric: Same logic for the right side if right wall is shorter."
+        }
+      ],
+      "quizzes": [
+        {
+          "question": "What determines height of water at index i?",
+          "options": [
+            "min(max_left, max_right) - height[i]",
+            "max(max_left, max_right)",
+            "Average height",
+            "max_left + max_right"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "What is the space complexity of the Two-Pointer approach?",
+          "options": [
+            "O(N)",
+            "O(1)",
+            "O(log N)",
+            "O(N^2)"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why can we trust 'leftMax' when height[left] < height[right]?",
+          "options": [
+            "We can't",
+            "Because rightMax is guaranteed to be >= height[right] > height[left]",
+            "It's a heuristic",
+            "Magic"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What happens if height[left] >= leftMax?",
+          "options": [
+            "Update leftMax",
+            "Trap water",
+            "Move right pointer",
+            "Reset"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "How does this differ from 'Container With Most Water'?",
+          "options": [
+            "It doesn't",
+            "Container cares about width * min_height, this sums volumes",
+            "This is 3D",
+            "Different inputs"
+          ],
+          "correct": 1
         }
       ]
     }

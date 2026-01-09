@@ -309,6 +309,55 @@ const SearchSystem = {
     }
 };
 
+// Quiz System Module for progressive reveal
+const QuizSystem = {
+    checkAnswer(problemId, quizIndex, correctAnswer) {
+        const quizGate = document.querySelector(`.quiz-gate[data-problem-id="${problemId}"][data-quiz-index="${quizIndex}"]`);
+        const selectedOption = document.querySelector(`input[name="quiz-${problemId}-${quizIndex}"]:checked`);
+        const feedback = quizGate.querySelector('.quiz-feedback');
+
+        if (!selectedOption) {
+            feedback.textContent = 'Please select an answer!';
+            feedback.className = 'quiz-feedback error';
+            return;
+        }
+
+        const selectedValue = parseInt(selectedOption.value);
+
+        if (selectedValue === correctAnswer) {
+            // Correct answer - unlock the section
+            feedback.textContent = '✅ Correct!';
+            feedback.className = 'quiz-feedback success';
+            quizGate.classList.add('answered');
+
+            // Reveal the corresponding section
+            const section = document.querySelector(`.gated-section[data-problem-id="${problemId}"][data-section-index="${quizIndex}"]`);
+            if (section) {
+                section.classList.remove('locked');
+                section.classList.add('revealed');
+            }
+
+            // Show next quiz if exists
+            const nextQuiz = document.querySelector(`.quiz-gate[data-problem-id="${problemId}"][data-quiz-index="${quizIndex + 1}"]`);
+            if (nextQuiz) {
+                nextQuiz.classList.add('active');
+            }
+
+            // Re-apply syntax highlighting for revealed code
+            setTimeout(() => {
+                if (typeof Prism !== 'undefined') {
+                    Prism.highlightAll();
+                }
+                ProblemRenderer.applyAnnotations();
+            }, 100);
+        } else {
+            // Wrong answer
+            feedback.textContent = '❌ Try again!';
+            feedback.className = 'quiz-feedback error';
+        }
+    }
+};
+
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', function () {
     UI.init();
@@ -333,11 +382,12 @@ const ProblemRenderer = {
         }
     },
 
-    // Renders the new, detailed walkthrough format
+    // Renders the new, detailed walkthrough format with quiz-gated progressive reveal
     renderDetailedProblemCard(problem) {
         const difficultyClass = this.getDifficultyClass(problem.difficulty);
         const tagsHtml = problem.tags.join(', ');
         const explanation = problem.explanation;
+        const quizzes = problem.quizzes || [];
 
         // Helper to format markdown-style explanation text to HTML
         const formatMarkdown = (text) => {
@@ -386,8 +436,83 @@ const ProblemRenderer = {
             return result.join('');
         };
 
+        // Helper to render a quiz
+        const renderQuiz = (quiz, index, problemId) => {
+            if (!quiz) return '';
+            return `
+                <div class="quiz-gate" data-quiz-index="${index}" data-problem-id="${problemId}">
+                    <div class="quiz-question">🤔 ${quiz.question}</div>
+                    <div class="quiz-options">
+                        ${quiz.options.map((opt, i) => `
+                            <label class="quiz-option">
+                                <input type="radio" name="quiz-${problemId}-${index}" value="${i}">
+                                <span class="quiz-option-text">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                    <button class="quiz-check-btn" onclick="QuizSystem.checkAnswer('${problemId}', ${index}, ${quiz.correct})">
+                        Check Answer
+                    </button>
+                    <div class="quiz-feedback"></div>
+                </div>
+            `;
+        };
+
+        // Build sections with quiz gates
+        const sections = [
+            {
+                id: 'naive',
+                title: '2. The Naive Approach & Its Bottleneck',
+                content: `<div>${formatMarkdown(explanation.brute_force)}</div>
+                         <p><strong>The Bottleneck:</strong> ${formatMarkdown(explanation.bottleneck)}</p>`
+            },
+            {
+                id: 'insight',
+                title: '3. The Key Insight',
+                content: `<div>${formatMarkdown(explanation.optimized_approach)}</div>`
+            },
+            {
+                id: 'algorithm',
+                title: '4. The Optimized Algorithm',
+                content: `<div>${formatMarkdown(explanation.algorithm_steps)}</div>`
+            },
+            {
+                id: 'code',
+                title: '5. Code Implementation',
+                content: `<div class="code-snippet">
+                            <pre><code class="language-javascript" data-annotations="${this.escapeHtml(JSON.stringify(problem.annotations || []))}">${this.escapeHtml(problem.code)}</code></pre>
+                         </div>`
+            },
+            {
+                id: 'complexity',
+                title: '6. Complexity Analysis',
+                content: `<p><strong>Time Complexity:</strong> <code class="language-text">${problem.complexity.time}</code></p>
+                         <div>${formatMarkdown(problem.complexity.explanation_time)}</div>
+                         <br>
+                         <p><strong>Space Complexity:</strong> <code class="language-text">${problem.complexity.space}</code></p>
+                         <div>${formatMarkdown(problem.complexity.explanation_space)}</div>`
+            }
+        ];
+
+        // Render sections with quiz gates (if quizzes exist)
+        const hasQuizzes = quizzes.length > 0;
+        const renderSections = () => {
+            return sections.map((section, idx) => {
+                const quiz = quizzes[idx];
+                const isLocked = hasQuizzes;
+                return `
+                    ${quiz ? renderQuiz(quiz, idx, problem.id) : ''}
+                    <div class="explanation-section gated-section ${isLocked ? 'locked' : ''}" 
+                         data-section-index="${idx}" data-problem-id="${problem.id}">
+                        <h4>${section.title}</h4>
+                        ${section.content}
+                    </div>
+                `;
+            }).join('');
+        };
+
         return `
-            <div id="${problem.id}" class="problem-card detailed-walkthrough collapsed">
+            <div id="${problem.id}" class="problem-card detailed-walkthrough collapsed" data-has-quizzes="${hasQuizzes}">
                 <div class="card-header" onclick="this.parentElement.classList.toggle('collapsed')">
                     <h3>${problem.title}</h3>
                     <div class="header-right">
@@ -400,42 +525,14 @@ const ProblemRenderer = {
                         <span class="cf-tags">${tagsHtml}</span>
                     </div>
 
+                    <!-- Problem Statement - Always Visible -->
                     <div class="explanation-section">
                         <h4>1. Understanding the Problem</h4>
                         <div>${formatMarkdown(problem.explanation.understanding_the_problem)}</div>
                     </div>
 
-                    <div class="explanation-section">
-                        <h4>2. The Naive Approach & Its Bottleneck</h4>
-                        <div>${formatMarkdown(explanation.brute_force)}</div>
-                        <p><strong>The Bottleneck:</strong> ${formatMarkdown(explanation.bottleneck)}</p>
-                    </div>
-
-                    <div class="explanation-section">
-                        <h4>3. The Key Insight: Reversing the Flow</h4>
-                        <div>${formatMarkdown(explanation.optimized_approach)}</div>
-                    </div>
-                    
-                    <div class="explanation-section">
-                        <h4>4. The Optimized Algorithm</h4>
-                        <div>${formatMarkdown(explanation.algorithm_steps)}</div>
-                    </div>
-
-                    <div class="explanation-section">
-                        <h4>5. Code Implementation</h4>
-                        <div class="code-snippet">
-                            <pre><code class="language-javascript" data-annotations="${this.escapeHtml(JSON.stringify(problem.annotations || []))}">${this.escapeHtml(problem.code)}</code></pre>
-                        </div>
-                    </div>
-
-                    <div class="explanation-section">
-                        <h4>6. Complexity Analysis</h4>
-                        <p><strong>Time Complexity:</strong> <code class="language-text">${problem.complexity.time}</code></p>
-                        <div>${formatMarkdown(problem.complexity.explanation_time)}</div>
-                        <br>
-                        <p><strong>Space Complexity:</strong> <code class="language-text">${problem.complexity.space}</code></p>
-                        <div>${formatMarkdown(problem.complexity.explanation_space)}</div>
-                    </div>
+                    <!-- Quiz-Gated Sections -->
+                    ${renderSections()}
 
                     ${problem.leetcode_url ? `
                     <div class="practice-actions">
