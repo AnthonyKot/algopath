@@ -499,12 +499,36 @@ footer {
     transition: background 0.3s ease;
 }
 
+.explanation-section pre,
+.problem-definition pre {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 0.9rem;
+    border: 1px solid var(--border-color);
+}
+
+.explanation-section pre code,
+.problem-definition pre code {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+}
+
 .code-snippet {
     background: var(--code-bg);
     border-radius: 8px;
     padding: 1.5rem;
+    padding-bottom: 2rem;
     margin: 1.5rem 0;
+    margin-bottom: 2.5rem;
     overflow-x: auto;
+    overflow-y: auto;
+    max-height: 600px;
     transition: background-color 0.3s ease;
 }
 
@@ -739,51 +763,52 @@ footer {
     color: #e0e7ff;
 }
 
-/* List styling - flowing, connected design */
+/* List styling - clean and aligned with text */
+.explanation-section ul,
+.explanation-section ol {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
 .explanation-section ul {
     list-style: none;
-    padding: 0;
-    margin: 1rem 0;
-    background: var(--bg-tertiary);
-    border-radius: 8px;
-    padding: 0.5rem 0;
-    border-left: 3px solid #667eea;
+    padding-left: 1.25rem;
 }
 
-.explanation-section ul li {
+.explanation-section ol {
+    list-style: decimal;
+}
+
+.explanation-section ul li,
+.explanation-section ol li {
     position: relative;
-    padding: 0.5rem 1rem 0.5rem 2rem;
+    margin-bottom: 0.5rem;
+    padding-left: 0.5rem;
     color: var(--text-secondary);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.explanation-section ul li:last-child {
-    border-bottom: none;
+.explanation-section ul li:last-child,
+.explanation-section ol li:last-child {
+    margin-bottom: 0;
 }
 
 .explanation-section ul li::before {
-    content: '›';
+    content: '•';
     position: absolute;
-    left: 0.75rem;
+    left: -1rem;
     color: #667eea;
     font-weight: bold;
-    font-size: 1.1em;
 }
 
 /* Nested lists */
-.explanation-section ul ul {
-    margin: 0.5rem 0 0.5rem 0;
-    padding: 0;
-    background: transparent;
-    border-left: none;
-    padding-left: 1rem;
-}
-
-.explanation-section ul ul li {
-    padding: 0.25rem 0.5rem 0.25rem 1.5rem;
-    border-bottom: none;
-    font-size: 0.9em;
-    opacity: 0.9;
+.explanation-section ul ul,
+.explanation-section ol ol,
+.explanation-section ul ol,
+.explanation-section ol ul {
+    margin: 0.5rem 0;
+    padding-left: 1.25rem;
 }
 
 .explanation-section ul ul li::before {
@@ -861,7 +886,7 @@ footer {
 
 .problem-card.detailed-walkthrough .card-body {
     overflow: hidden;
-    max-height: 5000px;
+    max-height: 10000px;
     transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
     opacity: 1;
 }
@@ -889,13 +914,6 @@ footer {
 }
 
 /* Dark theme adjustments */
-[data-theme="dark"] .explanation-section ul li {
-    background: rgba(45, 55, 72, 0.5);
-}
-
-[data-theme="dark"] .explanation-section ul li:hover {
-    background: var(--bg-secondary);
-}
 
 [data-theme="dark"] .explanation-section .callout-box {
     background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
@@ -1180,9 +1198,17 @@ footer {
     .header-right,
     #theme-toggle,
     .hero-section,
+    .hero,
+    .category-hero,
+    .category-stats,
     .breadcrumb,
     .filter-section,
     .cta-section,
+    .nav-search,
+    .quiz-gate,
+    .quiz-section,
+    .related-section,
+    .practice-actions,
     button,
     .btn {
         display: none !important;
@@ -1273,17 +1299,23 @@ footer {
         color: #333 !important;
     }
 
-    /* Lists - simplified */
-    .explanation-section ul {
+    /* Lists - clean print format */
+    .explanation-section ul,
+    .explanation-section ol {
         margin: 0.25rem 0 !important;
-        padding: 0.25rem 0 0.25rem 0.5rem !important;
-        background: #f8f9fa !important;
-        border-left: 2px solid #667eea !important;
+        padding-left: 1.5rem !important;
+        background: transparent !important;
+        border: none !important;
     }
 
-    .explanation-section ul li {
-        padding: 0.15rem 0.5rem !important;
-        border-bottom: none !important;
+    .explanation-section ul li,
+    .explanation-section ol li {
+        padding: 0.1rem 0 !important;
+        margin-bottom: 0.25rem !important;
+    }
+
+    .explanation-section ul li::before {
+        color: #333 !important;
     }
 
     /* Code blocks - high contrast */

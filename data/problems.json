@@ -649,6 +649,7 @@
         "answering_guide": "Mentioning <strong>'Bi-directional BFS'</strong> is the key differentiator between L4 and L5 here. Explain <em>why</em> it's faster (branching factor)."
       },
       "problem_statement": "A **transformation sequence** from word `beginWord` to word `endWord` using a dictionary `wordList` is a sequence of words `beginWord -> s1 -> s2 -> ... -> sk` such that:\n\n1.  Every adjacent pair of words differs by a single letter.\n2.  Every `si` for `1 <= i <= k` is in `wordList`. Note that `beginWord` does not need to be in `wordList`.\n3.  `sk == endWord`\n\nGiven two words, `beginWord` and `endWord`, and a dictionary `wordList`, return the **number of words** in the **shortest transformation sequence** from `beginWord` to `endWord`, or `0` if no such sequence exists.\n\n**Example 1:**\n```\nInput: beginWord = \"hit\", endWord = \"cog\", wordList = [\"hot\",\"dot\",\"dog\",\"lot\",\"log\",\"cog\"]\nOutput: 5\nExplanation: One shortest transformation sequence is \"hit\" -> \"hot\" -> \"dot\" -> \"dog\" -> \"cog\", which is 5 words long.\n```",
+      "diagram": "graph TD\n    hit --> hot\n    hit --> dot\n    hot --> dot\n    hot --> lot\n    dot --> lot\n    dot --> dog\n    lot --> log\n    dog --> log\n    dog --> cog\n    log --> cog\n    style hit fill:#4ade80,stroke:#333,stroke-width:2px,color:#000\n    style cog fill:#f87171,stroke:#333,stroke-width:2px,color:#000\n    linkStyle default stroke:#a1a1aa,stroke-width:2px",
       "explanation": {
         "understanding_the_problem": "We are asked to find the *shortest* sequence of transformations to get from a starting word to an ending word. The only valid transformation is changing a single letter, and the resulting word must be in a given dictionary. This problem can be perfectly modeled as finding the shortest path in a graph.",
         "brute_force": "A simple way to visualize this is as a graph where every word is a node. An edge exists between two word-nodes if they are one letter apart. Our task is to find the shortest path from the `beginWord` node to the `endWord` node.\n\nA Depth-First Search (DFS) could explore paths. We'd start from the `beginWord`, find all connected words (one letter different), and recursively explore each of them, keeping track of the path length. We would need a `visited` set to avoid cycles (e.g., `hit` -> `hot` -> `hit`).",
@@ -790,6 +791,7 @@
         "answering_guide": "Connect this to <strong>'Build Systems'</strong>. It shows you understand practical applications of DAGs beyond just abstract graphs."
       },
       "problem_statement": "There are a total of `numCourses` courses you have to take, labeled from `0` to `numCourses - 1`. You are given an array `prerequisites` where `prerequisites[i] = [ai, bi]` indicates that you **must** take course `bi` first if you want to take course `ai`.\n\nReturn the ordering of courses you should take to finish all courses. If there are many valid answers, return **any** of them. If it is impossible to finish all courses, return **an empty array**.\n\n**Example 1:**\n```\nInput: numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]\nOutput: [0,2,1,3]\nExplanation: There are a total of 4 courses to take. To take course 3 you should have finished both courses 1 and 2. Both courses 1 and 2 should be taken after you finished course 0.\nSo one correct course order is [0,1,2,3]. Another correct ordering is [0,2,1,3].\n```",
+      "diagram": "graph TD\n    0((Course 0)) --> 1((Course 1))\n    0 --> 2((Course 2))\n    1 --> 3((Course 3))\n    2 --> 3\n    \n    classDef default fill:#fff,stroke:#333,stroke-width:2px;\n    classDef source fill:#dcfce7,stroke:#166534,stroke-width:2px; \n    classDef sink fill:#fee2e2,stroke:#991b1b,stroke-width:2px;\n    \n    class 0 source;\n    class 3 sink;",
       "explanation": {
         "understanding_the_problem": "This is a classic scheduling problem. We have a set of tasks (courses) and dependencies (prerequisites). The rule `[a, b]` means `b` must be completed before `a`. We need to find a linear sequence of all courses that respects these rules.\n\nThis problem is equivalent to finding a **Topological Sort** of a directed graph. A cycle in the prerequisites (e.g., you need course 1 for course 2, and course 2 for course 1) makes it impossible to finish.",
         "brute_force": "The problem can be modeled as a graph where courses are nodes and prerequisites are directed edges. For a prerequisite `[a, b]`, we draw an edge `b -> a`.\n\nA topological sort is a linear ordering of nodes where for every edge `u -> v`, node `u` comes before node `v`. The core idea is to always find a node with no incoming edges—this is a course with no prerequisites. We can place this course in our schedule.\n\nOnce we 'take' this course, we can remove it and its outgoing edges from the graph. This might create new nodes that now have zero incoming edges. We repeat this process until all courses are taken.",
@@ -927,6 +929,7 @@
         "priority-queue"
       ],
       "problem_statement": "You are given a network of `n` nodes, labeled from `1` to `n`. You are also given `times`, a list of travel times as directed edges `times[i] = [u, v, w]`, where `u` is the source node, `v` is the target node, and `w` is the time it takes for a signal to travel from source to target.\n\nWe will send a signal from a given node `k`. Return the time it takes for all `n` nodes to receive the signal. If it is impossible for all `n` nodes to receive the signal, return `-1`.\n\n**Example 1:**\n```\nInput: times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2\nOutput: 2\n```",
+      "diagram": "graph LR\n    2((2)) -->|1| 1((1))\n    2 -->|1| 3((3))\n    3 -->|1| 4((4))\n    \n    classDef default fill:#fff,stroke:#333,stroke-width:2px;\n    classDef source fill:#dcfce7,stroke:#166534,stroke-width:2px;\n    \n    class 2 source;",
       "explanation": {
         "understanding_the_problem": "We have a network of nodes with weighted directed connections (travel times). A signal starts at a source node `K` and propagates through the network. The time for the signal to reach any given node is the shortest path time from `K` to that node.\n\nThe problem asks for the time it takes for the *entire network* to get the signal. This means we must find the shortest path from `K` to all other nodes, and the answer will be the *longest* of these shortest paths. If any node is unreachable, its shortest path time will be infinity, and it's impossible to alert the whole network.",
         "brute_force": "This is a classic **single-source shortest path** problem on a weighted, directed graph. The nodes are the network nodes, the edges are the travel times, and the source is `K`.\n\nSince the edge weights (times) are non-negative, this is a perfect scenario for **Dijkstra's Algorithm**. Dijkstra's is a greedy algorithm that finds the shortest paths from a single source to all other nodes in a graph.",
@@ -1064,6 +1067,7 @@
         "greedy"
       ],
       "problem_statement": "You are given an array `points` representing integer coordinates of some points on a 2D-plane, where `points[i] = [xi, yi]`.\n\nThe cost of connecting two points `[xi, yi]` and `[xj, yj]` is the **Manhattan distance** between them: `|xi - xj| + |yi - yj|`.\n\nReturn the minimum cost to make all points connected. All points are connected if there is exactly one simple path between any two points.\n\n**Example 1:**\n```\nInput: points = [[0,0],[2,2],[3,10],[5,2],[7,0]]\nOutput: 20\n```",
+      "diagram": "graph TD\n    0(\"[0,0]\") ---|4| 1(\"[2,2]\")\n    1 ---|3| 3(\"[5,2]\")\n    3 ---|4| 4(\"[7,0]\")\n    1 ---|9| 2(\"[3,10]\")\n    \n    classDef default fill:#fff,stroke:#333,stroke-width:2px;\n    classDef mst fill:#dcfce7,stroke:#166534,stroke-width:2px;\n    \n    class 0,1,2,3,4 mst;",
       "explanation": {
         "understanding_the_problem": "We are given a set of points and asked to connect all of them with the minimum possible total cost. The rule that 'there is exactly one simple path between any two points' is the definition of a **tree**.\n\nSo, the problem is asking us to find a **Minimum Spanning Tree (MST)**. We can imagine this as a complete graph where every point is a node, and an edge exists between every pair of points, weighted by their Manhattan distance.",
         "brute_force": "There are two primary greedy algorithms for finding an MST: Prim's and Kruskal's.\n\n- **Kruskal's Algorithm:** Sorts all possible edges by weight and adds the smallest ones that don't form a cycle. This is great for sparse graphs.\n- **Prim's Algorithm:** Grows an MST from a single starting node, at each step adding the cheapest edge that connects a node in the MST to a node outside of it.\n\nSince our graph is **dense** (a complete graph where every point is connected to every other), Prim's algorithm is a very natural and efficient choice.",
@@ -1480,6 +1484,7 @@
         "trees"
       ],
       "problem_statement": "You are given a tree with `n` nodes labeled from `0` to `n - 1`, and an array of `edges` where `edges[i] = [ai, bi]` indicates that there is an undirected edge between the two nodes `ai` and `bi` in the tree.\n\nYou are also given an array `queries` where `queries[i] = [u, v]`. For each query, find the **distance** between node `u` and node `v`.\n\nThe **distance** between two nodes is the number of edges on the unique simple path between them.\n\n**Example 1:**\n```\nInput: n = 6, edges = [[0,1],[0,2],[1,3],[1,4],[2,5]], queries = [[3,5],[4,5]]\nOutput: [3, 3]\nExplanation: \nThe distance between 3 and 5 is 3 (3 -> 1 -> 0 -> 2 -> 5).\nThe distance between 4 and 5 is 3 (4 -> 1 -> 0 -> 2 -> 5).\n```",
+      "diagram": "graph TD\n    0((0))\n    1((1))\n    2((2))\n    3((3))\n    4((4))\n    5((5))\n    \n    0 --- 1\n    0 --- 2\n    1 --- 3\n    1 --- 4\n    2 --- 5\n    \n    %% Binary Lifting Paths (Example for nodes 3 and 5)\n    3 -.->|2^0| 1\n    3 -.->|2^1| 0\n    5 -.->|2^0| 2\n    5 -.->|2^1| 0\n    \n    classDef default fill:#fff,stroke:#333,stroke-width:2px;",
       "explanation": {
         "understanding_the_problem": "A naive approach of running a separate BFS/DFS for each query to find the path length would be too slow if there are many queries. A more efficient method relies on finding the **Lowest Common Ancestor (LCA)** of the two nodes.\n\nThe path from node `u` to `v` can be seen as the path from `u` up to `lca(u,v)` and then down to `v`. This gives us a formula for the distance: `dist(u,v) = depth(u) + depth(v) - 2 * depth(lca(u,v))`. The problem now becomes: how to find the LCA efficiently?",
         "brute_force": "To find the LCA of `u` and `v`, we could first bring them to the same depth by moving the deeper node up one parent at a time. Then, we move both nodes up one parent at a time until they meet. This is simple but can take O(N) time per query in the worst case (for a tall, skinny tree).",
@@ -1625,6 +1630,7 @@
         "diameter"
       ],
       "problem_statement": "Given the `root` of a binary tree (or a general tree represented by edges), return *the length of the **diameter** of the tree*.\n\nThe **diameter** of a tree is the length of the longest path between any two nodes in a tree. This path may or may not pass through the root.\n\nThe length of a path between two nodes is represented by the number of edges between them.\n\n**Example 1:**\n```\nInput: edges = [[0,1],[0,2],[1,4],[1,5]]\nOutput: 3\nExplanation: 3 is the length of the path [4,1,0,2] or [5,1,0,2].\n```",
+      "diagram": "graph TD\n    0((0)) --- 1((1))\n    0 --- 2((2))\n    1 --- 4((4))\n    1 --- 5((5))\n    \n    classDef default fill:#fff,stroke:#333,stroke-width:2px;\n    classDef path fill:#fca5a5,stroke:#b91c1c,stroke-width:2px;\n    \n    class 4,1,0,2 path;\n    linkStyle 0,1,2 stroke:#ef4444,stroke-width:4px;",
       "explanation": {
         "understanding_the_problem": "We need to find the two nodes in the tree that are the farthest apart and return the number of edges between them. Since it's a tree, there's only one unique path between any two nodes.",
         "brute_force": "A naive approach would be to run a graph traversal (like BFS or DFS) starting from every single node in the tree. For each start node `u`, we would find the node `v` farthest from it and record that distance. The final answer would be the maximum distance found across all starting nodes. This would require N traversals, each taking O(N) time, for a total of O(N²), which is inefficient.",
@@ -4932,13 +4938,8 @@
     {
       "id": "physics-1",
       "title": "Relativistic Collision (Four-Momentum)",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "related": [
-        {
-          "id": "physics-2",
-          "title": "Angular Momentum Conservation",
-          "category": "physics"
-        },
         {
           "id": "math-1",
           "title": "Modular Exponentiation",
@@ -4955,38 +4956,10 @@
         "understanding_the_problem": "This is a classic relativistic collision problem. Unlike Newtonian mechanics where kinetic energy can be converted to other forms, in relativity we must use the **four-momentum invariant** $s = E^2/c^2 - p^2$.\n\nThe key insight is that this invariant quantity is the same in all reference frames. We can calculate it in the lab frame (where one particle is stationary) and set it equal to the rest frame of the compound particle.",
         "brute_force": "The four-momentum for a single particle is $(E/c, \\vec{p})$. Its magnitude squared is:\n\n$$s = \\frac{E^2}{c^2} - p^2 = m_0^2 c^2$$\n\nThis is the **invariant mass** relation: $E^2 = (pc)^2 + (m_0 c^2)^2$\n\nFor a system of particles, the total four-momentum is conserved, and its invariant is related to the total rest mass $M$ of the system.",
         "bottleneck": "The challenge is correctly handling the relativistic relations. We cannot simply add kinetic energies or momenta like in classical mechanics.",
-        "optimized_approach": "**Step 1: Initial State**\n\nStriking particle:\n- Total energy: $E_1 = T + m_0 c^2$\n- Momentum: From $E_1^2 = (p_1 c)^2 + (m_0 c^2)^2$, we get $p_1 = \\frac{1}{c}\\sqrt{E_1^2 - m_0^2 c^4}$\n\nStationary particle:\n- Total energy: $E_2 = m_0 c^2$\n- Momentum: $p_2 = 0$\n\n**Step 2: Total Four-Momentum Invariant**\n\n$$s = \\frac{(E_1 + E_2)^2}{c^2} - (p_1 + p_2)^2 = M^2 c^2$$\n\nSubstituting:\n$$M^2 c^4 = (T + 2m_0 c^2)^2 - (E_1^2 - m_0^2 c^4)$$\n\nSimplifying:\n$$M = \\sqrt{2m_0^2 + \\frac{2m_0 T}{c^2}}$$\n\n**Step 3: Velocity from Momentum Conservation**\n\nUsing $p_{total} = p_1 = \\gamma M V$:\n$$V = \\frac{p_1 c^2}{E_1 + E_2}$$",
-        "algorithm_steps": "1. Calculate total energy of striking particle: $E_1 = T + m_0 c^2$\n2. Calculate momentum: $p_1 = \\frac{1}{c}\\sqrt{T(T + 2m_0 c^2)}$\n3. Apply invariant: $M^2 c^4 = (E_1 + m_0 c^2)^2 - (p_1 c)^2$\n4. Solve for $M = m_0\\sqrt{2 + \\frac{2T}{m_0 c^2}}$\n5. Find velocity: $V = \\frac{p_1 c^2}{E_1 + m_0 c^2}$"
+        "optimized_approach": "**Step 1: Initial State**\n\nStriking particle:\n- Total energy: $E_1 = T + m_0 c^2$\n- Momentum: From $E_1^2 = (p_1 c)^2 + (m_0 c^2)^2$, we get $p_1 = \\frac{1}{c}\\sqrt{E_1^2 - m_0^2 c^4}$\n\nStationary particle:\n- Total energy: $E_2 = m_0 c^2$\n- Momentum: $p_2 = 0$\n\n**Step 2: Total Four-Momentum Invariant**\n\n$$s = \\frac{(E_1 + E_2)^2}{c^2} - (p_1 + p_2)^2 = M^2 c^2$$\n\nSubstituting:\n$$M^2 c^4 = (T + 2m_0 c^2)^2 - (E_1^2 - m_0^2 c^4)$$\n\nSimplifying:\n$$M = 2m_0\\sqrt{1 + \\frac{T}{2m_0 c^2}}$$\n\n**Step 3: Velocity from Momentum Conservation**\n\nUsing $p_{total} = p_1 = \\gamma M V$:\n$$V = \\frac{p_1 c^2}{E_1 + E_2}$$",
+        "algorithm_steps": "1. Calculate total energy of striking particle: $E_1 = T + m_0 c^2$\n2. Calculate momentum: $p_1 = \\frac{1}{c}\\sqrt{T(T + 2m_0 c^2)}$\n3. Apply invariant: $M^2 c^4 = (E_1 + m_0 c^2)^2 - (p_1 c)^2$\n4. Solve for $M = 2m_0\\sqrt{1 + \\frac{T}{2m_0 c^2}}$\n5. Find velocity: $V = \\frac{p_1 c^2}{E_1 + m_0 c^2}$",
+        "result_analysis": "**Final Results:**\n\n$$M = 2m_0\\sqrt{1 + \\frac{T}{2m_0 c^2}}$$\n\n$$V = \\frac{c\\sqrt{T(T + 2m_0 c^2)}}{T + 2m_0 c^2}$$\n\n**Limiting Cases:**\n\n1. **Non-relativistic limit** ($T \\ll m_0 c^2$): $M \\approx 2m_0$ and $V \\approx \\sqrt{T/(2m_0)}$ — recovers classical result\n\n2. **Ultra-relativistic limit** ($T \\gg m_0 c^2$): $M \\approx \\sqrt{2m_0 T}/c$ and $V \\to c$\n\n**Physical Interpretation:**\n\nThe compound particle has **more rest mass** than the sum of the original rest masses ($M > 2m_0$ when $T > 0$). This 'extra' mass comes from the kinetic energy of the collision, which is converted to rest mass energy via $E = mc^2$.\n\n**Applications:**\n\n- **Particle Accelerators**: This is how new heavy particles are created at CERN. High-energy protons collide, and some kinetic energy converts to the mass of new particles (Higgs boson, etc.)\n- **Threshold Energy**: To create a particle of mass $M_{new}$, we need minimum kinetic energy $T_{min}$ — this formula helps calculate it\n- **Cosmic Ray Physics**: Understanding how high-energy cosmic rays create particle showers in the atmosphere"
       },
-      "code": "// Relativistic Collision Calculator\n// Units: c = 1 (natural units)\n\nfunction relativisticCollision(m0, T) {\n  // Striking particle\n  const E1 = T + m0;           // Total energy (c=1)\n  const p1 = Math.sqrt(T * (T + 2 * m0));  // Momentum\n  \n  // Stationary particle\n  const E2 = m0;\n  const p2 = 0;\n  \n  // Invariant mass of compound particle\n  const Etotal = E1 + E2;\n  const ptotal = p1 + p2;\n  const M = Math.sqrt(Etotal * Etotal - ptotal * ptotal);\n  \n  // Velocity of compound particle (as fraction of c)\n  const V = ptotal / Etotal;\n  \n  return {\n    restMass: M,\n    velocity: V,\n    gamma: 1 / Math.sqrt(1 - V * V)\n  };\n}\n\n// Example: m0 = 1 GeV, T = 1 GeV\nconst result = relativisticCollision(1, 1);\nconsole.log('Rest Mass M:', result.restMass.toFixed(4), 'm0');\nconsole.log('Velocity V:', result.velocity.toFixed(4), 'c');",
-      "complexity": {
-        "time": "O(1)",
-        "space": "O(1)",
-        "explanation_time": "This is a direct calculation with no iteration. All operations are constant time.",
-        "explanation_space": "Only a fixed number of variables are needed regardless of input values."
-      },
-      "annotations": [
-        {
-          "lines": [
-            6,
-            7
-          ],
-          "text": "Relativistic energy-momentum relation: E² = (pc)² + (m₀c²)²"
-        },
-        {
-          "lines": [
-            15,
-            16
-          ],
-          "text": "Four-momentum invariant: s = E² - p² = M²c⁴ (with c=1)"
-        },
-        {
-          "lines": [
-            19
-          ],
-          "text": "Velocity from relativistic momentum: V = p/E"
-        }
-      ],
       "quizzes": [
         {
           "question": "What quantity is invariant in all reference frames?",
@@ -5042,110 +5015,78 @@
     },
     {
       "id": "physics-2",
-      "title": "Angular Momentum Conservation (Rotating Disc)",
+      "title": "Expanding Particle Cloud (Critical Density Universe)",
       "difficulty": "Medium",
       "related": [
         {
           "id": "physics-1",
           "title": "Relativistic Collision",
           "category": "physics"
-        },
-        {
-          "id": "physics-3",
-          "title": "Viscous Flow in Cylinders",
-          "category": "physics"
         }
       ],
       "tags": [
         "mechanics",
-        "angular-momentum",
-        "conservation"
+        "gravity",
+        "cosmology",
+        "energy-conservation"
       ],
-      "problem_statement": "A horizontally oriented uniform disc of mass $M$ and radius $R$ rotates freely about a stationary vertical axis passing through its centre. The disc has a radial guide along which a small body of mass $m$ can slide without friction.\n\nInitially the body was located at the edge of the disc and the whole system rotated with angular velocity $\\omega_0$. Then by means of a force $F$ applied to a thread, the body was **slowly pulled to the rotation axis**.\n\n**Find:**\n(a) The angular velocity $\\omega$ of the system in its final state\n(b) The work $W$ performed by the force $F$",
+      "problem_statement": "A spherical cloud of particles is uniformly distributed. Each particle has a **radial velocity** directed outward from the center with magnitude $v = Hr$, where $r$ is the distance from the center and $H$ is a constant.\n\nThe cloud has the **minimum density** that allows it to expand forever (not collapse back due to gravity).\n\n**Find:**\nHow does the speed $v$ of a particular particle depend on its distance $R$ from the center at a future time?\n\n**Given:**\n- Initial distance of particle: $r_0$\n- Initial velocity: $v_0 = Hr_0$\n- Velocity law: $v = Hr$ (Hubble-like expansion)\n- Critical density condition (minimum to escape)",
       "explanation": {
-        "understanding_the_problem": "This is a classic problem involving **conservation of angular momentum** with a **variable moment of inertia**. As the mass slides inward, the system's moment of inertia decreases, causing the angular velocity to increase (like a spinning ice skater pulling in their arms).\n\nThe key insight is that angular momentum $L = I\\omega$ is conserved because there are no external torques.",
-        "brute_force": "The moment of inertia of the system consists of two parts:\n\n1. **Disc**: $I_{disc} = \\frac{1}{2}MR^2$ (constant)\n2. **Point mass**: $I_{mass} = mr^2$ (depends on position)\n\nInitially: $I_{initial} = \\frac{1}{2}MR^2 + mR^2$\n\nFinally (mass at center): $I_{final} = \\frac{1}{2}MR^2 + 0$",
-        "bottleneck": "The work done by force $F$ is tricky. The mass doesn't simply move inward—the system is rotating, so the actual path is complex. However, we can use energy methods.",
-        "optimized_approach": "**Part (a): Final Angular Velocity**\n\nConservation of angular momentum:\n$$L_{initial} = L_{final}$$\n$$I_{initial} \\cdot \\omega_0 = I_{final} \\cdot \\omega$$\n\n$$\\left(\\frac{1}{2}MR^2 + mR^2\\right)\\omega_0 = \\frac{1}{2}MR^2 \\cdot \\omega$$\n\nSolving:\n$$\\omega = \\omega_0 \\cdot \\frac{M + 2m}{M}$$\n\n**Part (b): Work Done**\n\nThe work done equals the change in kinetic energy:\n$$W = K_{final} - K_{initial}$$\n$$W = \\frac{1}{2}I_{final}\\omega^2 - \\frac{1}{2}I_{initial}\\omega_0^2$$\n\nSubstituting the expressions:\n$$W = \\frac{1}{2} \\cdot \\frac{1}{2}MR^2 \\cdot \\omega_0^2 \\cdot \\left(\\frac{M+2m}{M}\\right)^2 - \\frac{1}{2}\\left(\\frac{M+2m}{2}\\right)R^2\\omega_0^2$$",
-        "algorithm_steps": "1. Calculate initial moment of inertia: $I_i = \\frac{1}{2}MR^2 + mR^2$\n2. Calculate final moment of inertia: $I_f = \\frac{1}{2}MR^2$\n3. Apply conservation: $\\omega = \\omega_0 \\cdot \\frac{I_i}{I_f}$\n4. Calculate initial kinetic energy: $K_i = \\frac{1}{2}I_i\\omega_0^2$\n5. Calculate final kinetic energy: $K_f = \\frac{1}{2}I_f\\omega^2$\n6. Work done: $W = K_f - K_i$"
+        "understanding_the_problem": "This is a classic problem in classical mechanics that parallels the dynamics of the **expansion of the Universe** — specifically the Newtonian derivation of the Friedmann equations for a 'flat' universe.\n\nThe condition 'minimum density to expand forever' means the cloud is at the boundary between expanding forever and collapsing back. This is the **critical density** condition where **Total Energy = 0**.\n\n**Key Insight (Shell Theorem):** A particle at distance $R$ is only affected by the mass $M$ enclosed within radius $R$. Since the expansion is radial and $v \\propto r$, layers don't cross, so $M$ remains constant for our particle.",
+        "brute_force": "Since Total Energy = 0 (critical density condition):\n\n$$E_{total} = K + U = 0$$\n$$\\frac{1}{2}mv^2 - \\frac{GMm}{R} = 0$$\n\nwhere:\n- $v$ is the speed at distance $R$\n- $G$ is the gravitational constant\n- $M$ is the enclosed mass (constant)\n- $R$ is the instantaneous distance from center",
+        "bottleneck": "We have two unknowns: $v$ and $M$. We need to eliminate $M$ using the initial conditions.",
+        "optimized_approach": "**Step 1: Solve for velocity at any distance R**\n\nFrom the energy equation:\n$$\\frac{1}{2}mv^2 = \\frac{GMm}{R}$$\n$$v^2 = \\frac{2GM}{R}$$\n$$v(R) = \\sqrt{\\frac{2GM}{R}}$$\n\n**Step 2: Apply initial conditions to find 2GM**\n\nAt $t = 0$: $R = r_0$ and $v = Hr_0$\n\nSubstitute:\n$$(Hr_0) = \\sqrt{\\frac{2GM}{r_0}}$$\n\nSquare both sides:\n$$H^2 r_0^2 = \\frac{2GM}{r_0}$$\n$$2GM = H^2 r_0^3$$\n\n**Step 3: Substitute back**\n\n$$v(R) = \\sqrt{\\frac{H^2 r_0^3}{R}} = Hr_0\\sqrt{\\frac{r_0}{R}}$$",
+        "algorithm_steps": "1. Write energy conservation: $\\frac{1}{2}mv^2 - \\frac{GMm}{R} = 0$\n2. Solve for $v$: $v = \\sqrt{2GM/R}$\n3. Apply initial condition: At $R = r_0$, $v = Hr_0$\n4. Find constant: $2GM = H^2 r_0^3$\n5. Substitute: $v(R) = Hr_0\\sqrt{r_0/R} = v_0\\sqrt{r_0/R}$",
+        "result_analysis": "**Final Result:**\n\n$$v(R) = v_0\\sqrt{\\frac{r_0}{R}} \\propto \\frac{1}{\\sqrt{R}}$$\n\n**The Critical Density:**\n\nThe 'minimum density' condition means Total Energy = 0. Using $v = Hr$ and $M = \\frac{4}{3}\\pi r^3 \\rho$:\n\n$$\\frac{1}{2}(Hr)^2 = \\frac{GM}{r} = \\frac{4\\pi G \\rho r^2}{3}$$\n\nSolving for the critical density:\n$$\\rho_{crit} = \\frac{3H^2}{8\\pi G}$$\n\n**How Density Evolves:**\n\nAs the cloud expands, the total mass $M$ stays constant, but the volume grows. Since radius scales as $R \\propto t^{2/3}$ (for critical density), the density drops as:\n\n$$\\rho(t) \\propto \\frac{1}{R^3} \\propto \\frac{1}{t^2}$$\n\n**Physical Interpretation:**\n\nAs the cloud expands ($R$ increases), the particle **slows down** — converting kinetic energy to gravitational potential energy. Because the cloud is at critical density, the particle's speed approaches (but never quite reaches) zero as $R \\to \\infty$. It's on an exact **parabolic escape trajectory**.\n\n**Connection to Cosmology:**\n\nThis is a **Newtonian model of our Universe**! The velocity law $v = Hr$ is exactly the **Hubble Law**, and the critical density corresponds to a **flat universe** ($\\Omega = 1$). With $H \\approx 70$ km/s/Mpc, we get $\\rho_{crit} \\approx 10^{-26}$ kg/m³ — about 6 hydrogen atoms per cubic meter!\n\n**What About Fluctuations?**\n\nIf some particles have slightly different initial velocities:\n- **Slower particles** → gravitationally attract neighbors → form **overdense clumps** (galaxies, clusters)\n- **Faster particles** → escape from neighbors → create **voids**\n\nThis is the origin of **cosmic structure formation** (the Zel'dovich Approximation). Random fluctuations in the early universe created the cosmic web of galaxies, filaments, and voids we observe today!\n\n**The Pancake Effect:**\n\nCollapse happens anisotropically — faster along one axis first, creating:\n1. **Sheets** ('pancakes') — collapse in 1D\n2. **Filaments** — sheets collapse in 2D\n3. **Clusters** — filaments collapse to nodes\n\nThis web-like structure matches observations of the large-scale universe."
       },
-      "code": "// Angular Momentum Conservation\nfunction rotatingDisc(M, R, m, omega0) {\n  // Moments of inertia\n  const I_disc = 0.5 * M * R * R;\n  const I_initial = I_disc + m * R * R;\n  const I_final = I_disc;  // mass at center contributes 0\n  \n  // Conservation of angular momentum: L = I * omega = const\n  const omega_final = omega0 * (I_initial / I_final);\n  \n  // Kinetic energies\n  const K_initial = 0.5 * I_initial * omega0 * omega0;\n  const K_final = 0.5 * I_final * omega_final * omega_final;\n  \n  // Work done by force F\n  const work = K_final - K_initial;\n  \n  return {\n    omega: omega_final,\n    work: work,\n    speedupFactor: omega_final / omega0\n  };\n}\n\n// Example: M = 2 kg, R = 0.5 m, m = 1 kg, ω₀ = 3 rad/s\nconst result = rotatingDisc(2, 0.5, 1, 3);\nconsole.log('Final ω:', result.omega.toFixed(2), 'rad/s');\nconsole.log('Work done:', result.work.toFixed(2), 'J');",
-      "complexity": {
-        "time": "O(1)",
-        "space": "O(1)",
-        "explanation_time": "Direct calculation with no iteration.",
-        "explanation_space": "Fixed number of variables."
-      },
-      "annotations": [
-        {
-          "lines": [
-            3,
-            4,
-            5
-          ],
-          "text": "Moment of inertia: I_disc = ½MR², I_mass = mr²"
-        },
-        {
-          "lines": [
-            9
-          ],
-          "text": "Conservation: L = Iω = constant → ω ∝ 1/I"
-        },
-        {
-          "lines": [
-            16
-          ],
-          "text": "Work-Energy Theorem: W = ΔK"
-        }
-      ],
       "quizzes": [
         {
-          "question": "What is conserved in this problem?",
+          "question": "What physical condition defines 'minimum density to dissolve'?",
           "options": [
-            "Kinetic energy",
-            "Angular momentum",
-            "Linear momentum",
-            "Total energy"
+            "Kinetic Energy = Potential Energy",
+            "Total Energy = 0 (critical density)",
+            "Momentum is conserved",
+            "Temperature is constant"
           ],
           "correct": 1
         },
         {
-          "question": "What happens to ω when the mass moves to the center?",
+          "question": "Why does the enclosed mass M remain constant for our particle?",
           "options": [
-            "Decreases",
-            "Stays the same",
-            "Increases",
-            "Becomes zero"
+            "Mass is created during expansion",
+            "Layers don't cross because v ∝ r",
+            "Gravity doesn't act on moving particles",
+            "The cloud is infinitely large"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "How does v depend on R?",
+          "options": [
+            "v ∝ R",
+            "v ∝ 1/R",
+            "v ∝ 1/√R",
+            "v is constant"
           ],
           "correct": 2
         },
         {
-          "question": "What is the moment of inertia of a point mass at distance r?",
+          "question": "What happens as R → ∞?",
           "options": [
-            "mr",
-            "mr²",
-            "½mr²",
-            "2mr²"
+            "v → ∞",
+            "v → c (speed of light)",
+            "v → 0",
+            "v oscillates"
           ],
-          "correct": 1
+          "correct": 2
         },
         {
-          "question": "Is the work done by F positive or negative?",
+          "question": "What cosmological structure does this model explain?",
           "options": [
-            "Positive (energy added)",
-            "Negative (energy removed)",
-            "Zero (no work done)",
-            "Depends on M/m ratio"
-          ],
-          "correct": 0
-        },
-        {
-          "question": "Why is kinetic energy NOT conserved?",
-          "options": [
-            "Friction",
-            "Work done by external force F",
-            "Mass changes",
-            "Angular momentum changes"
+            "Black holes only",
+            "The cosmic web (galaxies, filaments, voids)",
+            "Planetary orbits",
+            "Atomic structure"
           ],
           "correct": 1
         }
@@ -5153,112 +5094,78 @@
     },
     {
       "id": "physics-3",
-      "title": "Viscous Flow in Cylinders (Couette Flow)",
+      "title": "Random Walk to Diffusion Equation (Einstein 1905)",
       "difficulty": "Hard",
       "related": [
         {
           "id": "physics-2",
-          "title": "Angular Momentum Conservation",
-          "category": "physics"
-        },
-        {
-          "id": "physics-4",
-          "title": "Van der Waals Entropy",
+          "title": "Expanding Particle Cloud",
           "category": "physics"
         }
       ],
       "tags": [
-        "hydrodynamics",
-        "differential-equations",
-        "viscosity"
+        "probability",
+        "taylor-series",
+        "diffusion",
+        "brownian-motion"
       ],
-      "problem_statement": "A fluid with viscosity $\\eta$ fills the space between two long co-axial cylinders of radii $R_1$ and $R_2$ (where $R_1 < R_2$). The inner cylinder is **stationary** while the outer one rotates with constant angular velocity $\\omega_2$. The flow is **laminar**.\n\nThe friction force per unit area on a cylindrical surface of radius $r$ is:\n$$\\sigma = \\eta r \\frac{\\partial \\omega}{\\partial r}$$\n\n**Find:**\n(a) The angular velocity $\\omega(r)$ of the fluid as a function of radius\n(b) The moment of friction forces acting on a unit length of the outer cylinder",
+      "problem_statement": "A particle performs a **random walk** on a 1D line. At each time step $\\Delta t$, it moves:\n- Right by $+\\Delta x$ with probability $\\frac{1}{2}$\n- Left by $-\\Delta x$ with probability $\\frac{1}{2}$\n\n**Derive** the equation governing the probability density $P(x,t)$ in the continuous limit ($\\Delta x, \\Delta t \\to 0$).\n\n**This is the Diffusion Equation** — the foundation of Brownian motion, stock price models, and AI image generation!",
       "explanation": {
-        "understanding_the_problem": "This is the **Couette flow** problem—a fundamental result in fluid mechanics. We need to find the velocity profile of a viscous fluid between rotating cylinders.\n\nThe key insight is that in steady-state laminar flow, the torque on any cylindrical shell must be constant (no angular acceleration).",
-        "brute_force": "Consider a cylindrical shell of radius $r$ and unit length. The torque $N$ on this shell is:\n\n$$N = (\\text{stress}) \\times (\\text{area}) \\times (\\text{moment arm})$$\n$$N = \\sigma \\cdot (2\\pi r \\cdot 1) \\cdot r = 2\\pi \\eta r^3 \\frac{d\\omega}{dr}$$\n\nFor steady flow, $N$ must be independent of $r$ (constant torque transmission).",
-        "bottleneck": "Setting up the correct differential equation and solving with the right boundary conditions requires careful attention to the physics.",
-        "optimized_approach": "**Step 1: Differential Equation**\n\nSince torque is constant:\n$$2\\pi \\eta r^3 \\frac{d\\omega}{dr} = C$$\n\nSimplifying:\n$$r^2 \\frac{d\\omega}{dr} = \\frac{C}{2\\pi\\eta} = C'$$\n\n**Step 2: Solve the ODE**\n\n$$d\\omega = \\frac{C'}{r^2} dr$$\n$$\\omega(r) = -\\frac{C'}{r} + C''$$\n\n**Step 3: Apply Boundary Conditions**\n\n- At $r = R_1$: $\\omega(R_1) = 0$ (inner cylinder stationary)\n- At $r = R_2$: $\\omega(R_2) = \\omega_2$ (outer cylinder rotating)\n\nSolving for constants:\n$$\\omega(r) = \\omega_2 \\cdot \\frac{R_2^2}{R_2^2 - R_1^2} \\left(1 - \\frac{R_1^2}{r^2}\\right)$$\n\n**Step 4: Torque on Outer Cylinder**\n\n$$N = 2\\pi \\eta R_2^3 \\left.\\frac{d\\omega}{dr}\\right|_{r=R_2} = \\frac{4\\pi \\eta \\omega_2 R_1^2 R_2^2}{R_2^2 - R_1^2}$$",
-        "algorithm_steps": "1. Write torque balance: $N = 2\\pi\\eta r^3 \\frac{d\\omega}{dr} = const$\n2. Separate variables: $d\\omega = \\frac{C}{r^2}dr$\n3. Integrate: $\\omega = -C/r + C'$\n4. Apply BC1: $\\omega(R_1) = 0$\n5. Apply BC2: $\\omega(R_2) = \\omega_2$\n6. Solve for constants and substitute"
+        "understanding_the_problem": "This derivation (Einstein, 1905) connects **discrete probability** (coin flips) to **continuous differential equations** (the heat equation).\n\nThe key insight is that Taylor expansion reveals the hidden calculus structure inside a simple random walk.\n\n**Why This Matters:**\n- **Physics**: Explains Brownian motion (pollen jiggling in water) — proved atoms exist!\n- **Finance**: Replace 'position' with 'stock price' → Black-Scholes equation\n- **AI**: This is the math behind **Diffusion Models** (Stable Diffusion, Midjourney)",
+        "brute_force": "**Step 1: The Master Equation**\n\nIf a particle is at position $x$ at time $t + \\Delta t$, it must have come from either $(x - \\Delta x)$ or $(x + \\Delta x)$ at time $t$:\n\n$$P(x, t + \\Delta t) = \\frac{1}{2}P(x - \\Delta x, t) + \\frac{1}{2}P(x + \\Delta x, t)$$\n\nThis is the discrete 'Master Equation' for the random walk.",
+        "bottleneck": "The equation is discrete (finite steps). We need to extract the continuous differential equation hiding inside.",
+        "optimized_approach": "**Step 2: Taylor Expand the Left Side (Time)**\n\nExpand $P(x, t + \\Delta t)$ to first order in time:\n$$P(x, t + \\Delta t) \\approx P(x,t) + \\frac{\\partial P}{\\partial t}\\Delta t$$\n\n**Step 3: Taylor Expand the Right Side (Space)**\n\nExpand each spatial term to second order:\n$$P(x \\pm \\Delta x, t) \\approx P(x,t) \\pm \\frac{\\partial P}{\\partial x}\\Delta x + \\frac{1}{2}\\frac{\\partial^2 P}{\\partial x^2}(\\Delta x)^2$$\n\n**Step 4: Substitute into Master Equation**\n\nLeft side:\n$$P + \\frac{\\partial P}{\\partial t}\\Delta t$$\n\nRight side (add the two terms):\n$$\\frac{1}{2}\\left[P - \\frac{\\partial P}{\\partial x}\\Delta x + \\frac{1}{2}\\frac{\\partial^2 P}{\\partial x^2}(\\Delta x)^2\\right] + \\frac{1}{2}\\left[P + \\frac{\\partial P}{\\partial x}\\Delta x + \\frac{1}{2}\\frac{\\partial^2 P}{\\partial x^2}(\\Delta x)^2\\right]$$\n\n**Step 5: The Magic Cancellation**\n\nThe first-order spatial terms **cancel** (because the walk is symmetric):\n$$\\pm\\frac{\\partial P}{\\partial x}\\Delta x \\to 0$$\n\nWhat survives:\n$$P + \\frac{1}{2}\\frac{\\partial^2 P}{\\partial x^2}(\\Delta x)^2$$\n\n**Step 6: Combine and Simplify**\n\n$$P + \\frac{\\partial P}{\\partial t}\\Delta t = P + \\frac{1}{2}\\frac{\\partial^2 P}{\\partial x^2}(\\Delta x)^2$$\n\nCancel $P$ and divide by $\\Delta t$:\n$$\\frac{\\partial P}{\\partial t} = \\frac{(\\Delta x)^2}{2\\Delta t}\\frac{\\partial^2 P}{\\partial x^2}$$",
+        "algorithm_steps": "1. Write Master Equation: $P(x,t+\\Delta t) = \\frac{1}{2}P(x-\\Delta x,t) + \\frac{1}{2}P(x+\\Delta x,t)$\n2. Taylor expand LHS in time (1st order)\n3. Taylor expand RHS in space (2nd order)\n4. Substitute and observe: first-order $\\partial P/\\partial x$ terms cancel!\n5. Simplify: $\\frac{\\partial P}{\\partial t} = D\\frac{\\partial^2 P}{\\partial x^2}$\n6. Define diffusion coefficient: $D = \\frac{(\\Delta x)^2}{2\\Delta t}$",
+        "result_analysis": "**Final Result — The Diffusion Equation:**\n\n$$\\frac{\\partial P}{\\partial t} = D\\frac{\\partial^2 P}{\\partial x^2}$$\n\nwhere the **Diffusion Coefficient** is:\n$$D = \\frac{(\\Delta x)^2}{2\\Delta t}$$\n\n**Why First-Order Canceled:**\n\nThe $\\partial P/\\partial x$ terms canceled because the walk is **symmetric** (equal probability left and right). If we had biased probabilities, we'd get an additional **drift term** $v\\frac{\\partial P}{\\partial x}$ — this is the Fokker-Planck equation!\n\n**Physical Interpretation:**\n\n- The equation says probability **spreads out** over time (second derivative drives diffusion)\n- Peaked distributions flatten; edges blur\n- This is why ink drops spread in water, heat conducts through metal, and perfume fills a room\n\n**Einstein's 1905 Result:**\n\nEinstein showed that for a particle of radius $r$ in fluid of viscosity $\\eta$ at temperature $T$:\n$$D = \\frac{k_B T}{6\\pi\\eta r}$$\n\nBy measuring the spread of Brownian particles, Perrin verified this and calculated Avogadro's number — proving atoms exist!\n\n**Applications:**\n\n- **Brownian Motion**: Pollen grains jiggling in water\n- **Black-Scholes**: Replace $x$ with stock price → foundation of options pricing\n- **AI Diffusion Models**: Stable Diffusion, Midjourney, DALL-E 3 all use this equation! They add noise (forward diffusion) then learn to reverse it (denoising)\n- **Heat Conduction**: Same equation governs temperature flow"
       },
-      "code": "// Couette Flow - Angular Velocity Profile\nfunction couetteFlow(R1, R2, omega2, eta) {\n  // Velocity profile function\n  const omega = (r) => {\n    const factor = R2 * R2 / (R2 * R2 - R1 * R1);\n    return omega2 * factor * (1 - R1 * R1 / (r * r));\n  };\n  \n  // Derivative of omega at r\n  const dOmegaDr = (r) => {\n    const factor = R2 * R2 / (R2 * R2 - R1 * R1);\n    return omega2 * factor * (2 * R1 * R1 / (r * r * r));\n  };\n  \n  // Torque per unit length on outer cylinder\n  const torque = 2 * Math.PI * eta * R2 * R2 * R2 * dOmegaDr(R2);\n  \n  // Sample the velocity profile\n  const profile = [];\n  for (let i = 0; i <= 10; i++) {\n    const r = R1 + (R2 - R1) * i / 10;\n    profile.push({ r: r, omega: omega(r) });\n  }\n  \n  return { omega, torque, profile };\n}\n\n// Example: R1 = 1, R2 = 2, ω₂ = 10, η = 0.1\nconst result = couetteFlow(1, 2, 10, 0.1);\nconsole.log('Torque:', result.torque.toFixed(4), 'N·m/m');",
-      "complexity": {
-        "time": "O(1)",
-        "space": "O(1)",
-        "explanation_time": "Analytical solution - direct formula evaluation.",
-        "explanation_space": "Constants only."
-      },
-      "annotations": [
-        {
-          "lines": [
-            4,
-            5,
-            6
-          ],
-          "text": "Velocity profile: ω(r) derived from constant torque condition"
-        },
-        {
-          "lines": [
-            10,
-            11,
-            12
-          ],
-          "text": "Derivative needed for shear stress calculation"
-        },
-        {
-          "lines": [
-            16
-          ],
-          "text": "Torque: N = 2πηr³(dω/dr) evaluated at R₂"
-        }
-      ],
       "quizzes": [
         {
-          "question": "What type of flow is this called?",
+          "question": "Why does the first-order spatial derivative cancel?",
           "options": [
-            "Poiseuille flow",
-            "Couette flow",
-            "Stokes flow",
-            "Turbulent flow"
+            "Taylor series doesn't have first-order terms",
+            "The walk is symmetric (equal probability left/right)",
+            "Space is continuous",
+            "Time is discrete"
           ],
           "correct": 1
         },
         {
-          "question": "What quantity is constant across radii in steady flow?",
+          "question": "What is the Diffusion Coefficient D in terms of step size and time?",
           "options": [
-            "Angular velocity",
-            "Linear velocity",
-            "Torque",
-            "Pressure"
-          ],
-          "correct": 2
-        },
-        {
-          "question": "What type of equation do we solve?",
-          "options": [
-            "Algebraic equation",
-            "First-order ODE",
-            "Second-order ODE",
-            "PDE"
+            "D = Δx/Δt",
+            "D = (Δx)²/(2Δt)",
+            "D = Δt/(Δx)²",
+            "D = 2ΔxΔt"
           ],
           "correct": 1
         },
         {
-          "question": "What are the boundary conditions?",
+          "question": "What physical phenomenon did this derivation explain?",
           "options": [
-            "ω = 0 at both cylinders",
-            "ω = 0 at R₁, ω = ω₂ at R₂",
-            "dω/dr = 0 at boundaries",
-            "Periodic conditions"
+            "Planetary orbits",
+            "Brownian motion (pollen in water)",
+            "Electromagnetic waves",
+            "Nuclear decay"
           ],
           "correct": 1
         },
         {
-          "question": "What does viscosity η physically represent?",
+          "question": "What modern AI technology uses this equation?",
           "options": [
-            "Density",
-            "Resistance to flow/shearing",
-            "Compressibility",
-            "Surface tension"
+            "ChatGPT (transformers)",
+            "Stable Diffusion / Midjourney (diffusion models)",
+            "AlphaGo (reinforcement learning)",
+            "BERT (language models)"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What would happen if probabilities were biased (not 50/50)?",
+          "options": [
+            "Equation unchanged",
+            "Add a drift term (Fokker-Planck equation)",
+            "No diffusion occurs",
+            "Probability becomes negative"
           ],
           "correct": 1
         }
@@ -5266,109 +5173,78 @@
     },
     {
       "id": "physics-4",
-      "title": "Van der Waals Gas Entropy",
+      "title": "The Brachistochrone Problem (1696)",
       "difficulty": "Medium",
       "related": [
         {
-          "id": "physics-3",
-          "title": "Viscous Flow in Cylinders",
-          "category": "physics"
-        },
-        {
-          "id": "physics-5",
-          "title": "Crossed E×B Fields",
+          "id": "physics-2",
+          "title": "Expanding Particle Cloud",
           "category": "physics"
         }
       ],
       "tags": [
-        "thermodynamics",
-        "entropy",
-        "van-der-waals"
+        "calculus-of-variations",
+        "optimization",
+        "cycloid",
+        "lagrangian-mechanics"
       ],
-      "problem_statement": "Find the **entropy increment** $\\Delta S$ of one mole of a **Van der Waals gas** due to the isothermal variation of volume from $V_1$ to $V_2$.\n\nThe Van der Waals equation of state is:\n$$\\left(P + \\frac{a}{V^2}\\right)(V - b) = RT$$\n\nwhere $a$ and $b$ are the Van der Waals corrections.\n\n**Given:**\n- Initial volume: $V_1$\n- Final volume: $V_2$\n- Temperature: $T$ (constant)\n- Van der Waals constants: $a$, $b$",
+      "problem_statement": "A bead slides frictionlessly down a wire from point $A$ to point $B$ (which is lower but not directly below $A$). Gravity pulls the bead downward.\n\n**What shape of wire** minimizes the travel time from $A$ to $B$?\n\n**Historical Context:** Johann Bernoulli posed this challenge in 1696 to the greatest mathematicians of Europe. Newton, Leibniz, and others all solved it — launching the field of **Calculus of Variations**.",
       "explanation": {
-        "understanding_the_problem": "This problem extends beyond the ideal gas law to incorporate **real gas effects**. The Van der Waals equation accounts for:\n\n1. **Intermolecular attraction** (the $a/V^2$ term)\n2. **Finite molecular volume** (the $b$ term)\n\nWe need to find $\\Delta S$ for an isothermal process.",
-        "brute_force": "For an isothermal process, we use the fundamental thermodynamic relation:\n\n$$TdS = dU + PdV$$\n\nFor a Van der Waals gas:\n- Internal energy depends on volume: $\\left(\\frac{\\partial U}{\\partial V}\\right)_T = \\frac{a}{V^2}$\n- Pressure: $P = \\frac{RT}{V-b} - \\frac{a}{V^2}$",
-        "bottleneck": "The key insight is that the $a/V^2$ terms from $dU$ and $PdV$ will cancel, leaving a simpler expression.",
-        "optimized_approach": "**Step 1: Write the entropy differential**\n\nAt constant $T$:\n$$dS = \\frac{1}{T}\\left[\\left(\\frac{\\partial U}{\\partial V}\\right)_T dV + P dV\\right]$$\n\n**Step 2: Substitute Van der Waals relations**\n\n$$dS = \\frac{1}{T}\\left[\\frac{a}{V^2}dV + \\left(\\frac{RT}{V-b} - \\frac{a}{V^2}\\right)dV\\right]$$\n\n**Step 3: Simplify**\n\nThe $\\frac{a}{V^2}$ terms cancel:\n$$dS = \\frac{R}{V-b}dV$$\n\n**Step 4: Integrate**\n\n$$\\Delta S = \\int_{V_1}^{V_2} \\frac{R}{V-b}dV = R \\ln\\left(\\frac{V_2 - b}{V_1 - b}\\right)$$\n\n**Note:** This is remarkably similar to the ideal gas result $\\Delta S = R\\ln(V_2/V_1)$, but with effective volumes $(V - b)$.",
-        "algorithm_steps": "1. Write $TdS = dU + PdV$\n2. For VdW gas at constant T: $dU = (a/V²)dV$\n3. Substitute $P = RT/(V-b) - a/V²$\n4. Combine: $TdS = (a/V² + RT/(V-b) - a/V²)dV$\n5. Simplify: $dS = R/(V-b)dV$\n6. Integrate: $\\Delta S = R \\ln[(V_2-b)/(V_1-b)]$"
+        "understanding_the_problem": "This is the founding problem of **Calculus of Variations** — the math of optimizing not just numbers, but entire *functions* (curves).\n\nIntuition might suggest:\n- **Straight line?** Shortest distance, but the bead starts slowly (low speed at top).\n- **Steep drop first?** Gains speed early, but path becomes longer.\n\nThe optimal curve balances these tradeoffs. The answer is neither a line nor a parabola — it's a **Cycloid**!",
+        "brute_force": "**Setting Up the Time Integral**\n\nUsing energy conservation, the speed at height $y$ below the start is:\n$$v = \\sqrt{2gy}$$\n\nThe time to traverse a small arc length $ds$ is:\n$$dt = \\frac{ds}{v} = \\frac{\\sqrt{1 + (dy/dx)^2}}{\\sqrt{2gy}}dx$$\n\nTotal time:\n$$T = \\int_0^{x_B} \\frac{\\sqrt{1 + y'^2}}{\\sqrt{2gy}} dx$$\n\nWe need to find the function $y(x)$ that minimizes this integral.",
+        "bottleneck": "This is not ordinary calculus — we're minimizing over all possible *curves*, not just finding the minimum of a function of one variable.",
+        "optimized_approach": "**The Euler-Lagrange Equation**\n\nFor functionals of the form $\\int F(y, y', x) dx$, the minimizing curve satisfies:\n$$\\frac{\\partial F}{\\partial y} - \\frac{d}{dx}\\frac{\\partial F}{\\partial y'} = 0$$\n\nSince our $F$ doesn't depend on $x$ explicitly, there's a shortcut (Beltrami identity):\n$$F - y'\\frac{\\partial F}{\\partial y'} = C$$\n\n**Solving the ODE**\n\nAfter substitution and simplification, this leads to:\n$$y(1 + y'^2) = 2R$$\n\nfor some constant $R$. This is the differential equation of a **Cycloid**!\n\n**Parametric Solution:**\n$$x = R(\\theta - \\sin\\theta), \\quad y = R(1 - \\cos\\theta)$$",
+        "algorithm_steps": "1. Write time as functional: $T[y] = \\int \\frac{\\sqrt{1+y'^2}}{\\sqrt{2gy}} dx$\n2. Identify the Lagrangian $F(y, y')$\n3. Apply Beltrami identity (since $F$ is independent of $x$)\n4. Solve the resulting ODE: $y(1 + y'^2) = const$\n5. Recognize solution as parametric cycloid equations",
+        "result_analysis": "**Final Answer — The Cycloid:**\n\n$$x(\\theta) = R(\\theta - \\sin\\theta)$$\n$$y(\\theta) = R(1 - \\cos\\theta)$$\n\nwhere $R$ is chosen so the curve passes through point $B$.\n\n**What is a Cycloid?**\n\nIt's the curve traced by a point on the rim of a rolling wheel! Imagine a circle rolling along a ceiling — the path of a point on its edge is exactly the brachistochrone.\n\n**Why is it Faster Than a Straight Line?**\n\nThe cycloid **drops steeply at first**, gaining speed quickly while the path is still short. The 'extra' distance is compensated by higher velocity.\n\n**The Tautochrone Property:**\n\nRemarkably, the cycloid is also **isochronous** — a ball released from *any* point on a cycloid takes the **same time** to reach the bottom! This was used in Huygens' pendulum clocks.\n\n**Applications:**\n\n- **Lagrangian Mechanics**: This problem birthed the principle of 'Least Action'\n- **Roller Coaster Design**: Optimizing thrill vs. safety\n- **Optics**: Fermat's principle (light takes the fastest path) uses the same math\n- **Machine Learning**: Gradient descent is a discrete version of this optimization"
       },
-      "code": "// Van der Waals Gas Entropy Change\nconst R = 8.314; // J/(mol·K)\n\nfunction vdwEntropyChange(V1, V2, a, b) {\n  // For isothermal process:\n  // ΔS = R * ln((V2 - b) / (V1 - b))\n  \n  const effectiveV1 = V1 - b;\n  const effectiveV2 = V2 - b;\n  \n  if (effectiveV1 <= 0 || effectiveV2 <= 0) {\n    throw new Error('Volume must be greater than excluded volume b');\n  }\n  \n  const deltaS = R * Math.log(effectiveV2 / effectiveV1);\n  \n  // Compare with ideal gas\n  const deltaSideal = R * Math.log(V2 / V1);\n  \n  return {\n    deltaS: deltaS,\n    deltaSideal: deltaSideal,\n    correction: deltaS - deltaSideal\n  };\n}\n\n// Example: V1 = 0.022 m³, V2 = 0.044 m³, b = 0.001 m³\nconst result = vdwEntropyChange(0.022, 0.044, 0.1, 0.001);\nconsole.log('ΔS (VdW):', result.deltaS.toFixed(3), 'J/(mol·K)');\nconsole.log('ΔS (ideal):', result.deltaSideal.toFixed(3), 'J/(mol·K)');",
-      "complexity": {
-        "time": "O(1)",
-        "space": "O(1)",
-        "explanation_time": "Single logarithm evaluation.",
-        "explanation_space": "Constant space for calculation."
-      },
-      "annotations": [
-        {
-          "lines": [
-            8,
-            9
-          ],
-          "text": "Effective volume: V - b accounts for molecular exclusion"
-        },
-        {
-          "lines": [
-            15
-          ],
-          "text": "Key result: ΔS = R ln[(V₂-b)/(V₁-b)]"
-        },
-        {
-          "lines": [
-            18
-          ],
-          "text": "Compare with ideal gas: ΔS = R ln(V₂/V₁)"
-        }
-      ],
       "quizzes": [
         {
-          "question": "What do the Van der Waals constants a and b represent?",
+          "question": "What is the shape of the curve that minimizes travel time?",
           "options": [
-            "Temperature and pressure",
-            "Intermolecular attraction (a) and molecular volume (b)",
-            "Entropy and enthalpy",
-            "Specific heats"
-          ],
-          "correct": 1
-        },
-        {
-          "question": "Why do the a/V² terms cancel in the entropy calculation?",
-          "options": [
-            "They don't cancel",
-            "One appears in dU, the opposite in PdV",
-            "Isothermal process requirement",
-            "Mathematical coincidence"
-          ],
-          "correct": 1
-        },
-        {
-          "question": "For an isothermal process, what is held constant?",
-          "options": [
-            "Pressure",
-            "Volume",
-            "Temperature",
-            "Entropy"
+            "Straight line",
+            "Parabola",
+            "Cycloid",
+            "Catenary"
           ],
           "correct": 2
         },
         {
-          "question": "How does VdW entropy compare to ideal gas entropy for expansion?",
+          "question": "What is a cycloid?",
           "options": [
-            "Always smaller",
-            "Always larger",
-            "Depends on b relative to V",
-            "Exactly equal"
+            "The graph of y = 1/x",
+            "The path traced by a point on a rolling wheel",
+            "A spiral curve",
+            "An ellipse"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Why isn't a straight line the fastest path?",
+          "options": [
+            "Gravity doesn't work on straight lines",
+            "The bead moves slowly at the top where speed is low",
+            "Friction is higher on straight lines",
+            "The mass of the bead changes"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What branch of mathematics was founded by this problem?",
+          "options": [
+            "Number Theory",
+            "Topology",
+            "Calculus of Variations",
+            "Abstract Algebra"
           ],
           "correct": 2
         },
         {
-          "question": "What happens to ΔS if b → 0?",
+          "question": "What other remarkable property does the cycloid have?",
           "options": [
-            "Goes to infinity",
-            "Becomes ideal gas result",
-            "Becomes zero",
-            "Becomes negative"
+            "Infinite length",
+            "Tautochrone (same descent time from any point)",
+            "Zero curvature",
+            "Constant speed descent"
           ],
           "correct": 1
         }
@@ -5376,111 +5252,78 @@
     },
     {
       "id": "physics-5",
-      "title": "Crossed E×B Fields (Cycloidal Motion)",
-      "difficulty": "Hard",
+      "title": "Shannon's Channel Capacity (1948)",
+      "difficulty": "Medium",
       "related": [
         {
-          "id": "physics-4",
-          "title": "Van der Waals Entropy",
-          "category": "physics"
-        },
-        {
-          "id": "physics-1",
-          "title": "Relativistic Collision",
+          "id": "physics-3",
+          "title": "Random Walk to Diffusion",
           "category": "physics"
         }
       ],
       "tags": [
-        "electrodynamics",
-        "lorentz-force",
-        "coupled-odes"
+        "information-theory",
+        "communication",
+        "logarithms",
+        "signal-processing"
       ],
-      "problem_statement": "A particle with specific charge $q/m$ moves in a region where uniform **perpendicular** electric ($\\vec{E}$) and magnetic ($\\vec{B}$) fields exist. Let $\\vec{E} = E\\hat{j}$ and $\\vec{B} = B\\hat{k}$.\n\nAt $t = 0$, the particle is at the origin with **zero velocity**.\n\n**Find (non-relativistic case):**\n(a) The law of motion $x(t)$ and $y(t)$\n(b) The shape of the trajectory\n(c) The **drift velocity** (mean velocity in $x$-direction)",
+      "problem_statement": "A communication channel has **bandwidth** $B$ (in Hz) and a **signal-to-noise ratio** $S/N$.\n\n**What is the maximum rate** (in bits per second) at which data can be transmitted with arbitrarily low error probability?\n\n**Given:**\n- Bandwidth: $B$ Hz\n- Signal power: $S$\n- Noise power: $N$\n\n**Historical Context:** Claude Shannon proved this result in 1948, founding the field of **Information Theory** and enabling all modern digital communication.",
       "explanation": {
-        "understanding_the_problem": "This classic electrodynamics problem involves solving **coupled differential equations** from the Lorentz force. The particle experiences:\n\n1. Electric force: $\\vec{F}_E = q\\vec{E}$ (constant, in $y$-direction)\n2. Magnetic force: $\\vec{F}_B = q\\vec{v} \\times \\vec{B}$ (velocity-dependent, perpendicular to motion)\n\nThe result is a **cycloidal trajectory** - like a point on a rolling wheel.",
-        "brute_force": "The equations of motion come from Newton's second law with the Lorentz force:\n\n$$m\\frac{d\\vec{v}}{dt} = q(\\vec{E} + \\vec{v} \\times \\vec{B})$$\n\nIn components (with $\\omega_c = qB/m$ the cyclotron frequency):\n\n$$\\frac{dv_x}{dt} = \\omega_c v_y$$\n$$\\frac{dv_y}{dt} = \\frac{qE}{m} - \\omega_c v_x$$",
-        "bottleneck": "These are coupled ODEs. We need to decouple them to solve.",
-        "optimized_approach": "**Step 1: Decouple the ODEs**\n\nDifferentiate the first equation:\n$$\\frac{d^2v_x}{dt^2} = \\omega_c \\frac{dv_y}{dt} = \\omega_c\\left(\\frac{qE}{m} - \\omega_c v_x\\right)$$\n\nThis gives:\n$$\\frac{d^2v_x}{dt^2} + \\omega_c^2 v_x = \\frac{\\omega_c qE}{m}$$\n\n**Step 2: Solve the ODE**\n\nThis is a simple harmonic oscillator with a constant driving term. Solution:\n$$v_x(t) = \\frac{E}{B}(1 - \\cos\\omega_c t)$$\n$$v_y(t) = \\frac{E}{B}\\sin\\omega_c t$$\n\n**Step 3: Integrate for position**\n\n$$x(t) = \\frac{E}{B}\\left(t - \\frac{\\sin\\omega_c t}{\\omega_c}\\right)$$\n$$y(t) = \\frac{E}{B\\omega_c}(1 - \\cos\\omega_c t)$$\n\n**Step 4: Trajectory Shape**\n\nThis is a **cycloid** - the path traced by a point on the rim of a rolling circle.\n\n**Step 5: Drift Velocity**\n\n$$v_{drift} = \\langle v_x \\rangle = \\frac{E}{B}$$\n\nThis is the famous **E×B drift** velocity!",
-        "algorithm_steps": "1. Write Lorentz force: F = q(E + v × B)\n2. Get component equations: $\\dot{v}_x = \\omega_c v_y$, $\\dot{v}_y = qE/m - \\omega_c v_x$\n3. Differentiate and substitute to get: $\\ddot{v}_x + \\omega_c^2 v_x = \\omega_c qE/m$\n4. Solve with IC $v_x(0) = 0$, $\\dot{v}_x(0) = 0$\n5. Integrate $v_x$, $v_y$ to get $x(t)$, $y(t)$\n6. Drift: $v_d = E/B$"
+        "understanding_the_problem": "This is the **fundamental law of digital communication**. Shannon proved that every noisy channel has a maximum data rate $C$ (the 'Channel Capacity') such that:\n\n- **Below $C$**: Error-free communication is possible (with clever coding)\n- **Above $C$**: Errors are unavoidable, no matter how smart the encoding\n\nThis is like a 'speed limit' set by physics itself.",
+        "brute_force": "**Intuition Building:**\n\n1. **More Bandwidth** → More 'lanes' to send data → Higher capacity\n2. **Higher Signal Power** → Easier to distinguish signal from noise → Higher capacity\n3. **More Noise** → Harder to distinguish signal → Lower capacity\n\nThe question is: how do these combine mathematically?",
+        "bottleneck": "The surprising part is the **logarithmic** relationship with $S/N$. Doubling signal power doesn't double capacity!",
+        "optimized_approach": "**Shannon's Derivation (Simplified)**\n\n1. In bandwidth $B$, you can send $2B$ independent samples per second (Nyquist).\n\n2. Each sample can encode information based on how many 'levels' you can distinguish above the noise.\n\n3. With signal power $S$ and noise power $N$, you can reliably distinguish about $\\sqrt{1 + S/N}$ levels.\n\n4. Information per sample = $\\log_2(\\text{levels}) = \\frac{1}{2}\\log_2(1 + S/N)$\n\n5. Total capacity:\n$$C = 2B \\times \\frac{1}{2}\\log_2(1 + S/N) = B\\log_2(1 + S/N)$$",
+        "algorithm_steps": "1. Identify bandwidth $B$ (Hz) — determines samples per second\n2. Identify signal-to-noise ratio $S/N$\n3. Calculate distinguishable levels: $\\approx\\sqrt{1 + S/N}$\n4. Information per sample: $\\frac{1}{2}\\log_2(1 + S/N)$ bits\n5. Multiply by $2B$ samples/sec: $C = B\\log_2(1 + S/N)$ bits/sec",
+        "result_analysis": "**Shannon-Hartley Theorem:**\n\n$$C = B \\log_2\\left(1 + \\frac{S}{N}\\right)$$\n\n**Units:** bits per second (bps)\n\n**Key Insights:**\n\n1. **Bandwidth matters linearly**: Double the bandwidth = double the capacity.\n2. **SNR matters logarithmically**: Doubling signal power adds only ~1 bit/sample.\n3. **Tradeoff**: You can trade bandwidth for power: narrow bandwidth + high power ≈ wide bandwidth + low power.\n\n**Why Logarithmic?**\n\nTo send $n$ bits, you need $2^n$ distinguishable levels. But noise 'blurs' levels together. The number of distinguishable levels scales as $\\sqrt{S/N}$, not $S/N$.\n\n**Real-World Examples:**\n\n- **WiFi 6** (one stream): 160 MHz bandwidth, ~30 dB SNR → **~1.6 Gbps**\n- **5G mmWave**: 400 MHz bandwidth, ~20 dB SNR → **~2.7 Gbps**\n- **Fiber Optic**: 4 THz bandwidth, ~25 dB SNR → **~33 Tbps**\n\n**Applications:**\n\n- **WiFi/5G**: Shannon's limit is why your WiFi has a speed limit!\n- **Fiber Optics**: Pushing channels to theoretical limits\n- **Space Communication**: NASA calculates optimal power for deep space probes\n- **Compression**: MP3/JPEG approach Shannon's source coding theorem"
       },
-      "code": "// Crossed E×B Fields - Cycloidal Motion\nfunction cycloidalMotion(E, B, qOverM, tMax, dt) {\n  const omega_c = qOverM * B;  // Cyclotron frequency\n  const vDrift = E / B;        // E×B drift velocity\n  \n  // Analytical solutions\n  const trajectory = [];\n  \n  for (let t = 0; t <= tMax; t += dt) {\n    const vx = vDrift * (1 - Math.cos(omega_c * t));\n    const vy = vDrift * Math.sin(omega_c * t);\n    \n    const x = vDrift * (t - Math.sin(omega_c * t) / omega_c);\n    const y = vDrift / omega_c * (1 - Math.cos(omega_c * t));\n    \n    trajectory.push({ t, x, y, vx, vy });\n  }\n  \n  // Arc length between velocity zeros (cycloid arc)\n  const arcLength = 8 * vDrift / omega_c;\n  \n  return {\n    trajectory,\n    driftVelocity: vDrift,\n    cyclotronPeriod: 2 * Math.PI / omega_c,\n    arcLength\n  };\n}\n\n// Example: E = 100 V/m, B = 0.01 T, q/m = 1e8 C/kg (electron-like)\nconst result = cycloidalMotion(100, 0.01, 1e8, 1e-6, 1e-9);\nconsole.log('Drift velocity:', result.driftVelocity, 'm/s');\nconsole.log('Cyclotron period:', result.cyclotronPeriod * 1e9, 'ns');",
-      "complexity": {
-        "time": "O(n)",
-        "space": "O(n)",
-        "explanation_time": "Linear in number of time steps for numerical trajectory.",
-        "explanation_space": "Stores trajectory points."
-      },
-      "annotations": [
-        {
-          "lines": [
-            3,
-            4
-          ],
-          "text": "Key parameters: ωc = qB/m (cyclotron), vd = E/B (drift)"
-        },
-        {
-          "lines": [
-            10,
-            11
-          ],
-          "text": "Velocity oscillates with cyclotron frequency"
-        },
-        {
-          "lines": [
-            13,
-            14
-          ],
-          "text": "Position: cycloid shape from integration of velocities"
-        }
-      ],
       "quizzes": [
         {
-          "question": "What is the shape of the trajectory?",
+          "question": "What happens if you try to transmit faster than the channel capacity?",
           "options": [
-            "Circle",
-            "Ellipse",
-            "Cycloid",
-            "Parabola"
-          ],
-          "correct": 2
-        },
-        {
-          "question": "What is the cyclotron frequency?",
-          "options": [
-            "qE/m",
-            "qB/m",
-            "E/B",
-            "eB/mc"
+            "The signal gets louder",
+            "Errors become unavoidable",
+            "The bandwidth increases",
+            "Nothing, it just works"
           ],
           "correct": 1
         },
         {
-          "question": "What is the E×B drift velocity?",
+          "question": "If you double the bandwidth, what happens to capacity?",
           "options": [
-            "qE/m",
-            "qB/m",
-            "E/B",
-            "EB"
-          ],
-          "correct": 2
-        },
-        {
-          "question": "Why are the ODEs 'coupled'?",
-          "options": [
-            "They share variables (vx appears in vy equation)",
-            "They have the same solution",
-            "They are linear",
-            "They cannot be solved"
+            "Doubles",
+            "Quadruples",
+            "Stays the same",
+            "Halves"
           ],
           "correct": 0
         },
         {
-          "question": "At what times is the velocity zero?",
+          "question": "If you double the signal power (with same noise), capacity increases by approximately:",
           "options": [
-            "Never",
-            "At t = 0 only",
-            "At t = 2πn/ωc",
-            "At t = πn/ωc"
+            "2x",
+            "1 bit per sample",
+            "No change",
+            "4x"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "What field did Shannon found with this theorem?",
+          "options": [
+            "Quantum Mechanics",
+            "Information Theory",
+            "Thermodynamics",
+            "Number Theory"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Which technology uses Shannon's theorem to calculate maximum data rates?",
+          "options": [
+            "Only radio",
+            "Only fiber optics",
+            "All digital communication (WiFi, 5G, fiber, etc.)",
+            "Only satellite"
           ],
           "correct": 2
         }

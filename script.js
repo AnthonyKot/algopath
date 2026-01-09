@@ -393,18 +393,38 @@ const ProblemRenderer = {
         const formatMarkdown = (text) => {
             if (!text) return '';
 
-            // Process inline styles first
+            // 1. Extract fenced code blocks and replace with placeholders
+            const codeBlocks = [];
+            let processedText = text.replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => {
+                codeBlocks.push({ lang, code });
+                return `__CODE_BLOCK_${codeBlocks.length - 1}__`;
+            });
+
+            // 2. Process inline styles
             const processInline = (s) => s
                 .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
                 .replace(/`([^`]+)`/g, '<code>$1</code>');
 
-            const lines = text.split('\n');
+            const lines = processedText.split('\n');
             const result = [];
             let inList = false;
 
             for (const line of lines) {
+                // Check if line is a code block placeholder
+                const codeBlockMatch = line.match(/__CODE_BLOCK_(\d+)__/);
+                if (codeBlockMatch) {
+                    if (inList) {
+                        result.push('</ul>');
+                        inList = false;
+                    }
+                    const index = parseInt(codeBlockMatch[1]);
+                    const { lang, code } = codeBlocks[index];
+                    // Clean up whitespace but preserve structure
+                    result.push(`<pre><code class="language-${lang || 'text'}">${code.trim()}</code></pre>`);
+                    continue;
+                }
+
                 // Match bullet/numbered lists: "- item", "* item", "1. item", "a. item"
-                // Allow leading whitespace for indented items
                 const listMatch = line.match(/^\s*([-*]|\d+\.|[a-z]\.)\s+(.+)$/);
 
                 if (listMatch) {
@@ -419,10 +439,14 @@ const ProblemRenderer = {
                         inList = false;
                     }
                     if (line.trim() === '') {
-                        result.push('<br>');
+                        // Only add break if previous line wasn't a code block (for cleaner spacing)
+                        const lastElement = result[result.length - 1];
+                        if (lastElement && !lastElement.startsWith('<pre>')) {
+                            result.push('<br>');
+                        }
                     } else {
-                        // Add callout-box class for paragraphs starting with bold text
                         const processed = processInline(line);
+                        // Add callout-box class for paragraphs starting with bold text
                         if (processed.startsWith('<strong>')) {
                             result.push(`<p class="callout-box">${processed}</p>`);
                         } else {
@@ -508,24 +532,43 @@ const ProblemRenderer = {
                 id: 'algorithm',
                 title: '4. The Optimized Algorithm',
                 content: `<div>${formatMarkdown(explanation.algorithm_steps)}</div>`
-            },
-            {
+            }
+        ];
+
+        // Add Result Analysis section if it exists (for physics problems)
+        if (explanation.result_analysis) {
+            sections.push({
+                id: 'result_analysis',
+                title: `${sections.length + 2}. Result Analysis & Applications`,
+                content: `<div class="result-analysis">${formatMarkdown(explanation.result_analysis)}</div>`
+            });
+        }
+
+
+        // Only add code section if problem.code exists
+        if (problem.code) {
+            sections.push({
                 id: 'code',
-                title: '5. Code Implementation',
+                title: `${sections.length + 2}. Code Implementation`,
                 content: `<div class="code-snippet">
                             <pre><code class="language-javascript" data-annotations="${this.escapeHtml(JSON.stringify(problem.annotations || []))}">${this.escapeHtml(problem.code)}</code></pre>
                          </div>`
-            },
-            {
+            });
+        }
+
+        // Only add complexity section if problem.complexity exists
+        if (problem.complexity) {
+            sections.push({
                 id: 'complexity',
-                title: '6. Complexity Analysis',
+                title: `${sections.length + 2}. Complexity Analysis`,
                 content: `<p><strong>Time Complexity:</strong> <code class="language-text">${problem.complexity.time}</code></p>
                          <div>${formatMarkdown(problem.complexity.explanation_time)}</div>
                          <br>
                          <p><strong>Space Complexity:</strong> <code class="language-text">${problem.complexity.space}</code></p>
                          <div>${formatMarkdown(problem.complexity.explanation_space)}</div>`
-            }
-        ];
+            });
+        }
+
 
         // Render sections with quiz gates (if quizzes exist)
         const hasQuizzes = quizzes.length > 0;
@@ -559,11 +602,19 @@ const ProblemRenderer = {
                     </div>
 
                     <!-- Problem Statement - Always Visible -->
-                    <!-- Problem Definition -->
                     <div class="problem-definition">
                         <h4><i class="fas fa-file-alt"></i> Problem Statement</h4>
                         <div>${formatMarkdown(problem.problem_statement)}</div>
                     </div>
+
+                    ${problem.diagram ? `
+                    <div class="diagram-section" style="margin: 1.5rem 0; text-align: center;">
+                        <h4 style="margin-bottom: 1rem; color: var(--text-primary);"><i class="fas fa-project-diagram"></i> Visualization</h4>
+                        <div class="mermaid">
+                            ${problem.diagram}
+                        </div>
+                    </div>
+                    ` : ''}
 
                     <div class="explanation-section">
                         <h4>1. Understanding the Problem</h4>
@@ -714,6 +765,29 @@ const ProblemRenderer = {
 
         this.handleDeepLink();
         setTimeout(() => this.applySyntaxHighlighting(), 50);
+
+        // Initialize Mermaid diagrams if present
+        // Initialize Mermaid diagrams if present
+        const initMermaid = async () => {
+            try {
+                if (!document.querySelector('.mermaid')) return;
+
+                if (!window.mermaid) {
+                    const mermaidModule = await import('https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs');
+                    window.mermaid = mermaidModule.default;
+                    window.mermaid.initialize({ startOnLoad: false, theme: 'default' });
+                }
+
+                await window.mermaid.run({
+                    nodes: document.querySelectorAll('.mermaid')
+                });
+            } catch (e) {
+                console.warn('Mermaid rendering failed:', e);
+            }
+        };
+
+        // Start initialization
+        initMermaid();
 
         // Dispatch event for any page-specific post-processing (e.g., KaTeX rendering)
         document.dispatchEvent(new Event('problemsLoaded'));
