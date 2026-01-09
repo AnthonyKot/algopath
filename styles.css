@@ -372,6 +372,22 @@ body {
     transition: color 0.3s ease;
 }
 
+.bridge-card {
+    border-left: 4px solid #10b981;
+    /* Green/Teal accent for 'Production' feel */
+}
+
+.bridge-algo {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-family: 'Monaco', monospace;
+    font-size: 0.9em;
+    background: rgba(16, 185, 129, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
 /* Resources Section */
 .resources-section {
     padding: 80px 0;
@@ -1472,4 +1488,236 @@ footer {
     .quiz-check-btn {
         width: 100%;
     }
+}
+
+/* Senior Engineer's Follow-up Section */
+.senior-section {
+    background: linear-gradient(to right, #2c3e50, #34495e);
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    /* overflow: hidden; -- REMOVED to allow tooltip to pop out */
+    color: #ecf0f1;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #4a6278;
+    cursor: pointer;
+    position: relative;
+    /* Context for children */
+}
+
+[data-theme="light"] .senior-section {
+    background: linear-gradient(to right, #f8f9fa, #e9ecef);
+    color: #2d3436;
+    border: 1px solid #dee2e6;
+}
+
+.senior-header {
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 8px 8px 0 0;
+    /* Maintain top corners */
+}
+
+.senior-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.senior-title i {
+    color: #f1c40f;
+    font-size: 1.2rem;
+}
+
+[data-theme="light"] .senior-title i {
+    color: #d35400;
+}
+
+.senior-title h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.senior-content {
+    padding: 1.5rem;
+    padding-bottom: 2rem;
+    line-height: 1.6;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    max-height: 500px;
+    overflow: hidden;
+    /* Moved here for transition */
+    transition: max-height 0.5s ease, padding 0.3s ease;
+    border-radius: 0 0 8px 8px;
+    /* Maintain bottom corners */
+}
+
+[data-theme="light"] .senior-content {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Collapsed State */
+.senior-section.collapsed .senior-content {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-top: none;
+}
+
+.senior-section.collapsed .collapse-chevron {
+    transform: rotate(-90deg);
+}
+
+.senior-section.collapsed .senior-header {
+    border-radius: 8px;
+    /* Fully rounded when collapsed */
+    transition: border-radius 0.3s ease;
+    /* Smooth corner transition */
+}
+
+.senior-content p {
+    margin-bottom: 1rem;
+}
+
+.senior-content p:last-child {
+    margin-bottom: 0;
+}
+
+.senior-content strong {
+    color: #f1c40f;
+}
+
+[data-theme="light"] .senior-content strong {
+    color: #d35400;
+}
+
+/* Pulse Animation */
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 6px rgba(241, 196, 15, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(241, 196, 15, 0);
+    }
+}
+
+/* Tip Badge & Header Layout */
+.header-right-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.tip-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: rgba(241, 196, 15, 0.2);
+    border: 1px solid rgba(241, 196, 15, 0.4);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #f1c40f;
+    cursor: help;
+    transition: all 0.2s ease;
+    animation: pulse-glow 2s infinite;
+}
+
+[data-theme="light"] .tip-badge {
+    background: rgba(211, 84, 0, 0.1);
+    border-color: rgba(211, 84, 0, 0.3);
+    color: #d35400;
+    animation: none;
+    /* Optional: simpler look for light mode, or use different color */
+}
+
+.tip-badge:hover {
+    background: rgba(241, 196, 15, 0.3);
+    transform: translateY(-1px);
+    animation: none;
+    /* Pause pulse on hover */
+}
+
+[data-theme="light"] .tip-badge:hover {
+    background: rgba(211, 84, 0, 0.2);
+}
+
+/* Tooltip Content Container (Real DOM element) */
+.tooltip-content {
+    position: absolute;
+    bottom: 140%;
+    right: 0;
+    width: 280px;
+    padding: 12px 16px;
+    background: #2c3e50;
+    color: #ecf0f1;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    text-align: left;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    /* Use visibility to prevent checking for clicks when hidden */
+    transform: translateY(10px);
+    transition: all 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    border: 1px solid #4a6278;
+    z-index: 1000;
+    font-weight: 400;
+    cursor: text;
+    /* Indicate text is selectable */
+    user-select: text;
+    /* Enable selection */
+}
+
+/* Arrow for the tooltip */
+.tooltip-content::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    /* Position at bottom of tooltip */
+    right: 20px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: #2c3e50 transparent transparent transparent;
+}
+
+[data-theme="light"] .tooltip-content {
+    background: white;
+    color: #2d3436;
+    border-color: #dee2e6;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .tooltip-content::after {
+    border-color: white transparent transparent transparent;
+}
+
+/* Show on hover */
+.tip-badge:hover .tooltip-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Strong formatting inside tooltip */
+.tooltip-content strong {
+    color: #f1c40f;
+    font-weight: 700;
+}
+
+[data-theme="light"] .tooltip-content strong {
+    color: #d35400;
 }

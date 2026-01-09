@@ -436,6 +436,39 @@ const ProblemRenderer = {
             return result.join('');
         };
 
+        // Helper to render Senior Follow-up
+        const renderFollowUp = (followUp) => {
+            if (!followUp) return '';
+            const guideTooltip = followUp.answering_guide
+                ? `<div class="tip-badge">
+                     <i class="fas fa-lightbulb"></i> Interview Tip
+                     <div class="tooltip-content">
+                        ${followUp.answering_guide}
+                     </div>
+                   </div>`
+                : '';
+
+            return `
+                <div class="senior-section collapsed" onclick="this.classList.toggle('collapsed')">
+                    <div class="senior-header">
+                        <div class="senior-title">
+                            <i class="fas fa-level-up-alt"></i>
+                            <h4>Senior Engineer's Corner</h4>
+                        </div>
+                        <div class="header-right-group">
+                            ${guideTooltip}
+                            <span class="collapse-chevron">▼</span>
+                        </div>
+                    </div>
+                    <div class="senior-content">
+                        ${followUp.scenario ? `<p><strong>Scenario:</strong> ${followUp.scenario}</p>` : ''}
+                        ${followUp.trade_off ? `<p><strong>Trade-off:</strong> ${followUp.trade_off}</p>` : ''}
+                        ${followUp.strategy ? `<p><strong>Strategy:</strong> ${followUp.strategy}</p>` : ''}
+                    </div>
+                </div>
+            `;
+        };
+
         // Helper to render a quiz
         const renderQuiz = (quiz, index, problemId) => {
             if (!quiz) return '';
@@ -533,6 +566,13 @@ const ProblemRenderer = {
 
                     <!-- Quiz-Gated Sections -->
                     ${renderSections()}
+
+                    <!-- Senior Follow-up -->
+                    ${renderFollowUp(problem.follow_up)}
+
+
+
+
 
                     ${problem.leetcode_url ? `
                     <div class="practice-actions">

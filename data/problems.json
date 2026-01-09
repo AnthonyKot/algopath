@@ -22,6 +22,12 @@
         "strings",
         "edit-distance"
       ],
+      "follow_up": {
+        "scenario": "Spell checker for a search engine. Need millisecond response for 'Did you mean?'.",
+        "trade_off": "O(N^2) DP is too slow for real-time query correction on millions of terms.",
+        "strategy": "Use a Levenshtein Automaton or BK-Trees for retrieval. For exact distance between long strings, use Bit-parallelism.",
+        "answering_guide": "The magic phrase is <strong>'fuzzy search'</strong>. If you mention <strong>'Lucene Automaton'</strong> or <strong>'Bit-parallelism'</strong>, you win instantly."
+      },
       "problem_statement": "Given two strings, word1 and word2, find the minimum number of operations required to convert word1 to word2. You have the following three operations permitted on a word: 1. Insert a character 2. Delete a character 3. Replace a character.",
       "explanation": {
         "understanding_the_problem": "We need to find the *minimum* number of edits (insert, delete, replace) to transform one string into another. The 'minimum' requirement is a strong hint that this is an optimization problem, and since it involves sequences (strings), it's a classic candidate for Dynamic Programming.\n\nThe core idea of DP is to solve a complex problem by breaking it down into simpler, overlapping subproblems. The edit distance between `word1` and `word2` depends on the edit distances of their prefixes.",
@@ -636,6 +642,12 @@
         "shortest-path",
         "strings"
       ],
+      "follow_up": {
+        "scenario": "You need to find a path in a graph with millions of nodes (e.g., Social Network connections).",
+        "trade_off": "Standard BFS explores too many nodes (exponential growth of frontier).",
+        "strategy": "Bi-directional BFS. Start from both the source and destination simultaneously. Reduces time complexity from O(b^d) to O(b^(d/2)).",
+        "answering_guide": "Mentioning <strong>'Bi-directional BFS'</strong> is the key differentiator between L4 and L5 here. Explain <em>why</em> it's faster (branching factor)."
+      },
       "problem_statement": "Given two words, beginWord and endWord, and a dictionary's word list, find the length of the shortest transformation sequence from beginWord to endWord, such that: 1. Only one letter can be changed at a time. 2. Each transformed word must exist in the word list. Return 0 if there is no such sequence.",
       "explanation": {
         "understanding_the_problem": "We are asked to find the *shortest* sequence of transformations to get from a starting word to an ending word. The only valid transformation is changing a single letter, and the resulting word must be in a given dictionary. This problem can be perfectly modeled as finding the shortest path in a graph.",
@@ -771,6 +783,12 @@
         "bfs",
         "dag"
       ],
+      "follow_up": {
+        "scenario": "You are building a distributed build system (like Bazel) with thousands of targets.",
+        "trade_off": "Serial execution is too slow. Finding a valid order isn't enough; we need speed.",
+        "strategy": "Parallel Topological Sort (Kahn's with a Thread Pool). Process all nodes with `in-degree 0` in parallel. As tasks finish, decrement neighbors.",
+        "answering_guide": "Connect this to <strong>'Build Systems'</strong>. It shows you understand practical applications of DAGs beyond just abstract graphs."
+      },
       "problem_statement": "You are given a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai. Return an ordering of courses you can take to finish all courses. If there are many valid answers, return any of them. If it is impossible to finish all courses, return an empty array.",
       "explanation": {
         "understanding_the_problem": "This is a classic scheduling problem. We have a set of tasks (courses) and dependencies (prerequisites). The rule `[a, b]` means `b` must be completed before `a`. We need to find a linear sequence of all courses that respects these rules.\n\nThis problem is equivalent to finding a **Topological Sort** of a directed graph. A cycle in the prerequisites (e.g., you need course 1 for course 2, and course 2 for course 1) makes it impossible to finish.",
@@ -1729,6 +1747,12 @@
         "segment-tree",
         "lazy-propagation"
       ],
+      "follow_up": {
+        "scenario": "Range updates on a high-frequency trading ledger (millions of rows).",
+        "trade_off": "Updating every leaf node is O(N), which is too slow for real-time streams.",
+        "strategy": "Lazy Propagation. Defer updates to children until absolutely necessary (during a query or subsequent update).",
+        "answering_guide": "The keyword is <strong>'Deferred Execution'</strong>. Explain that we trade slightly more complex logic for massive <strong>'Write Speed'</strong> gains by caching updates."
+      },
       "problem_statement": "Extend the Segment Tree data structure to support two advanced operations: 1. `rangeAdd(left, right, val)`: Add `val` to every element in the range `[left, right]`. 2. `rangeSum(left, right)`: Find the sum of elements in a given range `[left, right]`.",
       "explanation": {
         "understanding_the_problem": "A standard segment tree can handle point updates and range queries in O(log N) time. However, if we try to use it for a range update, we would have to update every leaf in the range, which could take O(N log N) time. We need a way to make range updates efficient as well.",
@@ -1865,6 +1889,12 @@
         "bit",
         "data-structures"
       ],
+      "follow_up": {
+        "scenario": "Live leaderboard with millions of players and constant score updates.",
+        "trade_off": "Segment Tree uses 4N space (memory overhead). We need something cache-friendly.",
+        "strategy": "Fenwick Tree (BIT). Uses O(N) space and relies on bit manipulation for O(log N) traversal. Implicit bounds.",
+        "answering_guide": "Highlight <strong>'Space Efficiency'</strong> and <strong>'Bit Manipulation'</strong>. Mentioning that BIT is easier to implement (fewer lines of code) than Segment Tree often impresses."
+      },
       "problem_statement": "Design a data structure that efficiently supports two operations: 1. `update(index, delta)`: Add `delta` to the element at `index`. 2. `query(index)`: Get the cumulative sum of elements from the start up to `index`. This can be used to find range sums `(left, right)` by calculating `query(right) - query(left - 1)`.",
       "explanation": {
         "understanding_the_problem": "This problem requires efficient point updates and prefix sum queries. A standard Segment Tree can solve this in O(log N) time, but a Fenwick Tree (also known as a Binary Indexed Tree or BIT) provides the same time complexity while being significantly simpler to implement and requiring less space.",
@@ -1995,6 +2025,12 @@
         "strings",
         "pattern-matching"
       ],
+      "follow_up": {
+        "scenario": "Intrusion Detection System (IDS) filtering network packets against signatures.",
+        "trade_off": "Naive search is vulnerable to algorithmic complexity attacks. Checking one by one is too slow.",
+        "strategy": "Use Aho-Corasick for *multiple* pattern matching (an extension of KMP). It builds a Trie of patterns with failure links.",
+        "answering_guide": "In security/networking, pure KMP is rarely used alone. Mention <strong>'Aho-Corasick'</strong> for *multiple* patterns (like virus signatures)."
+      },
       "problem_statement": "Given a text and a pattern, find all occurrences of the pattern within the text.",
       "explanation": {
         "understanding_the_problem": "The goal is to find a small pattern string within a larger text string efficiently. A naive solution would check for a match at every possible starting position in the text, which is slow.",
@@ -2118,6 +2154,12 @@
         "strings",
         "pattern-matching"
       ],
+      "follow_up": {
+        "scenario": "Plagiarism detection in large codebases or documents.",
+        "trade_off": "Exact string matching is expensive for massive documents.",
+        "strategy": "Content-Defined Chunking (CDC) with Rolling Hash to fingerprint files. Compare fingerprints instead of full text.",
+        "answering_guide": "Focus on <strong>'Fingerprinting'</strong>. Rolling hash is the basis for 'rsync' and 'deduplication' systems. Mentioning <strong>'rsync'</strong> is a pro move."
+      },
       "problem_statement": "Given a text and a pattern, find all occurrences of the pattern within the text.",
       "explanation": {
         "understanding_the_problem": "This algorithm provides an alternative to KMP. Instead of comparing strings character by character, it compares hash values. The core idea is to compute a hash for the pattern and then efficiently compute hashes for all substrings of the text that have the same length as the pattern.",
@@ -3679,6 +3721,12 @@
       "title": "LRU Cache",
       "difficulty": "Hard",
       "leetcode_url": "https://leetcode.com/problems/lru-cache/",
+      "follow_up": {
+        "scenario": "Your cache is used by 1000 concurrent threads. The global lock is a bottleneck.",
+        "trade_off": "Sharding the cache (segments) reduces contention but approximates LRU accuracy globally.",
+        "strategy": "Use a `ConcurrentHashMap` with segmented locks (like Java 7) or a Clock algorithm (Second Chance) to avoid full locking.",
+        "answering_guide": "Acknowledge the lock contention issue immediately. Proposing <strong>'segmentation' (sharding)</strong> is the standard L5 move here. Mentioning <strong>'Clock Algorithm'</strong> shows depth."
+      },
       "related": [
         {
           "id": "design-4",
@@ -3797,6 +3845,12 @@
       "title": "Design Twitter",
       "difficulty": "Hard",
       "leetcode_url": "https://leetcode.com/problems/design-twitter/",
+      "follow_up": {
+        "scenario": "A celebrity like Justin Bieber tweets. Pushing to 100M followers' feeds takes too long (Fan-out on Write).",
+        "trade_off": "Push model gives fast reads but slow writes for celebrities. Pull model is safer for celebrities.",
+        "strategy": "Hybrid Approach: Use Push for normal users and Pull for celebrities. When loading feed, merge pushed tweets with fetched celebrity tweets.",
+        "answering_guide": "Start by contrasting Push vs. Pull models. The <strong>'Hybrid'</strong> approach is the gold standard answer. Explicitly mention the term <strong>'Fan-out on Write'</strong>."
+      },
       "related": [
         {
           "id": "design-4",
@@ -3907,6 +3961,12 @@
       "title": "Design Search Autocomplete System",
       "difficulty": "Hard",
       "leetcode_url": "https://leetcode.com/problems/design-search-autocomplete-system/",
+      "follow_up": {
+        "scenario": "The Trie is too large (100GB) to fit in RAM of a single machine.",
+        "trade_off": "Storing on disk adds latency. Sharding by prefix adds complexity.",
+        "strategy": "Shard by prefix (e.g., A-M on Server 1). Store only top-k hot queries in RAM; keep full tail on disk (SSD) or use a distributed KV store.",
+        "answering_guide": "Focus on data partitioning. <strong>'Sharding by prefix'</strong> is the key phrase. Also mention <strong>'Hot vs. Cold data separation'</strong> to show optimization awareness."
+      },
       "related": [
         {
           "id": "design-5",
@@ -4024,6 +4084,12 @@
       "title": "Design Hit Counter",
       "difficulty": "Hard",
       "leetcode_url": "https://leetcode.com/problems/design-hit-counter/",
+      "follow_up": {
+        "scenario": "You have multiple application servers. Hits are coming to all of them.",
+        "trade_off": "Local counters are fast but don't show global state. Central Redis is a bottleneck.",
+        "strategy": "Aggregate locally for 1 second, then push sum to a central Redis/Service. Precision is traded for scalability (eventual consistency).",
+        "answering_guide": "Highlight the trade-off between Consistency and Availability. <strong>'Local Aggregation'</strong> (buffering) is the winning strategy here."
+      },
       "related": [
         {
           "id": "design-2",
@@ -4142,6 +4208,12 @@
       "title": "Design Add and Search Words Data Structure",
       "difficulty": "Hard",
       "leetcode_url": "https://leetcode.com/problems/design-add-and-search-words-data-structure/",
+      "follow_up": {
+        "scenario": "User searches for '.......' (all dots). This triggers a DFS of the entire Trie.",
+        "trade_off": "Strict regex support vs Denial of Service risk.",
+        "strategy": "Limit the number of dots allowed. Optimize DFS by pruning branches that cannot match the remaining length. Store string lengths in nodes.",
+        "answering_guide": "Frame this as a Security/Reliability issue (DoS). Suggest <strong>'Input Validation'</strong> (limiting dots) and <strong>'Pruning'</strong> as the technical mitigation."
+      },
       "related": [
         {
           "id": "design-3",
@@ -4255,6 +4327,12 @@
       "title": "Sliding Window Maximum",
       "difficulty": "Hard",
       "leetcode_url": "https://leetcode.com/problems/sliding-window-maximum/",
+      "follow_up": {
+        "scenario": "The input stream is infinite and high-speed. K is 1 Million.",
+        "trade_off": "Storing 1M indices in a standard List causes GC pressure and cache misses.",
+        "strategy": "Use a fixed-size circular buffer for the Deque. Optimize memory layout (Int32Array) to prevent pointer chasing.",
+        "answering_guide": "Move beyond the algorithm to <strong>'Memory Locality'</strong> and <strong>'GC Pressure'</strong>. Mentioning <strong>'Typed Arrays'</strong> or <strong>'Ring Buffers'</strong> demonstrates systems knowledge."
+      },
       "related": [
         {
           "id": "optimization-2",
@@ -4372,6 +4450,12 @@
       "title": "Largest Rectangle in Histogram",
       "difficulty": "Hard",
       "leetcode_url": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
+      "follow_up": {
+        "scenario": "The histogram is distributed across 1000 machines (MapReduce).",
+        "trade_off": "Cannot just sum the local results. The largest rectangle might span across machine boundaries.",
+        "strategy": "Each machine computes local max area AND a 'skyline' profile (left/right increasing subsequences). The reducer merges these 1000 compressed profiles.",
+        "answering_guide": "This is a classic <strong>'Divide and Conquer'</strong> at scale. Explain that the result is NOT just the max of local results; <strong>boundary merging</strong> is the key."
+      },
       "related": [
         {
           "id": "optimization-3",
@@ -4488,6 +4572,12 @@
       "title": "Maximal Rectangle",
       "difficulty": "Hard",
       "leetcode_url": "https://leetcode.com/problems/maximal-rectangle/",
+      "follow_up": {
+        "scenario": "The matrix is extremely sparse (99.9% zeros).",
+        "trade_off": "The O(N*M) solution processes mainly empty space, wasting cycles.",
+        "strategy": "Use Sparse Matrix representation (e.g., List of coordinates for 1s). Iterate only through 1s and look for connected components or use 2D Segment Trees.",
+        "answering_guide": "Question the input format. If it's sparse, 'Dense Matrix' algorithms are wrong. pivot to <strong>'Sparse Representation'</strong> (Coordinate List)."
+      },
       "related": [
         {
           "id": "optimization-2",
@@ -4598,6 +4688,12 @@
       "title": "Minimum Window Substring",
       "difficulty": "Hard",
       "leetcode_url": "https://leetcode.com/problems/minimum-window-substring/",
+      "follow_up": {
+        "scenario": "Searching for DNA patterns (A, C, G, T) in a 100GB genome file.",
+        "trade_off": "Hash Map overhead is too high for just 4 characters.",
+        "strategy": "Use Integer arrays (size 128) instead of Maps. Even better: encode ACGT as 2 bits. Fits 32 chars in a single 64-bit integer, allowing bitwise sliding window ops.",
+        "answering_guide": "Show off <strong>'Data Packing'</strong> skills. 2-bit encoding allows <strong>'Bitwise Parallelism'</strong>. This is a very senior optimization for string problems."
+      },
       "related": [
         {
           "id": "optimization-1",
@@ -4714,6 +4810,12 @@
       "title": "Trapping Rain Water",
       "difficulty": "Hard",
       "leetcode_url": "https://leetcode.com/problems/trapping-rain-water/",
+      "follow_up": {
+        "scenario": "Optimizing water calculation for a dynamic terrain (e.g., Minecraft, where blocks are added/removed).",
+        "trade_off": "Recomputing O(N) for every block change is too slow (O(K*N)).",
+        "strategy": "Use a Segment Tree. Each node stores max_height and water_volume. Updates take O(log N). Sub-problems merge by calculating water trapped between left_child_max and right_child_max.",
+        "answering_guide": "Recognize that 'Dynamic Updates' = <strong>'Segment Tree'</strong> (or Fenwick). Explain that pre-computation allows O(log N) updates vs O(N) rebuilds."
+      },
       "related": [
         {
           "id": "optimization-2",
