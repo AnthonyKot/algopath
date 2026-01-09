@@ -3,7 +3,7 @@
     {
       "id": "dp-1",
       "title": "Edit Distance (Levenshtein)",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/edit-distance/",
       "related": [
         {
@@ -28,7 +28,7 @@
         "strategy": "Use a Levenshtein Automaton or BK-Trees for retrieval. For exact distance between long strings, use Bit-parallelism.",
         "answering_guide": "The magic phrase is <strong>'fuzzy search'</strong>. If you mention <strong>'Lucene Automaton'</strong> or <strong>'Bit-parallelism'</strong>, you win instantly."
       },
-      "problem_statement": "Given two strings, word1 and word2, find the minimum number of operations required to convert word1 to word2. You have the following three operations permitted on a word: 1. Insert a character 2. Delete a character 3. Replace a character.",
+      "problem_statement": "Given two strings `word1` and `word2`, return the minimum number of operations required to convert `word1` to `word2`.\n\nYou have the following three operations permitted on a word:\n1. Insert a character\n2. Delete a character\n3. Replace a character\n\n**Example 1:**\n```\nInput: word1 = \"horse\", word2 = \"ros\"\nOutput: 3\nExplanation: \nhorse -> rorse (replace 'h' with 'r')\nrorse -> rose (remove 'r')\nrose -> ros (remove 'e')\n```\n\n**Example 2:**\n```\nInput: word1 = \"intention\", word2 = \"execution\"\nOutput: 5\nExplanation: \nintention -> inention (remove 't')\ninention -> enention (replace 'i' with 'e')\nenention -> exention (replace 'n' with 'x')\nexention -> exection (replace 'n' with 'c')\nexection -> execution (insert 'u')\n```",
       "explanation": {
         "understanding_the_problem": "We need to find the *minimum* number of edits (insert, delete, replace) to transform one string into another. The 'minimum' requirement is a strong hint that this is an optimization problem, and since it involves sequences (strings), it's a classic candidate for Dynamic Programming.\n\nThe core idea of DP is to solve a complex problem by breaking it down into simpler, overlapping subproblems. The edit distance between `word1` and `word2` depends on the edit distances of their prefixes.",
         "brute_force": "We can define a function `dp(i, j)` that gives the edit distance between the first `i` characters of `word1` and the first `j` characters of `word2`. Our goal is to find `dp(m, n)` where `m` and `n` are the lengths of the words.\n\nTo calculate `dp(i, j)`, we look at the last characters, `word1[i-1]` and `word2[j-1]`.\n\n- **If the characters match:** No operation is needed. The cost is just the result of the subproblem for the prefixes without these characters: `dp(i-1, j-1)`.\n- **If the characters don't match:** We must perform an operation. We choose the one with the minimum cost:\n    - **Replace:** `1 + dp(i-1, j-1)` (cost of replace + cost of smaller subproblem)\n    - **Delete:** `1 + dp(i-1, j)` (cost of delete + cost of matching `word1` prefix to `word2`)\n    - **Insert:** `1 + dp(i, j-1)` (cost of insert + cost of matching `word1` to `word2` prefix)",
@@ -138,7 +138,7 @@
     {
       "id": "dp-2",
       "title": "Longest Increasing Subsequence",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/longest-increasing-subsequence/",
       "related": [
         {
@@ -157,7 +157,7 @@
         "binary-search",
         "lis"
       ],
-      "problem_statement": "Given an integer array nums, return the length of the longest strictly increasing subsequence. A subsequence is a sequence that can be derived from an array by deleting some or no elements without changing the order of the remaining elements.",
+      "problem_statement": "Given an integer array `nums`, return the length of the longest strictly increasing subsequence.\n\n**Example 1:**\n```\nInput: nums = [10,9,2,5,3,7,101,18]\nOutput: 4\nExplanation: The longest increasing subsequence is [2,3,7,101], therefore the length is 4.\n```\n\n**Example 2:**\n```\nInput: nums = [0,1,0,3,2,3]\nOutput: 4\n```",
       "explanation": {
         "understanding_the_problem": "We need to find the length of the longest subsequence where each element is strictly greater than the previous one. The elements do not need to be contiguous. For example, in `[10, 9, 2, 5, 3, 7, 101]`, the longest increasing subsequence is `[2, 3, 7, 101]`, so the answer is 4.",
         "brute_force": "This is a classic Dynamic Programming problem. A common DP approach is to define an array, `dp`, where `dp[i]` represents the length of the longest increasing subsequence that **ends at index `i`**.\n\nTo calculate `dp[i]`, we look at all previous indices `j < i`. If `nums[j] < nums[i]`, it means we can potentially extend an increasing subsequence that ended at `j`. We would take the longest such subsequence (`dp[j]`) and add 1. We check this for all valid `j`'s and take the maximum.\n\nThe final answer is the maximum value in the entire `dp` array, since the LIS could end at any index.",
@@ -261,7 +261,7 @@
     {
       "id": "dp-3",
       "title": "Coin Change (Min Coins)",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/coin-change/",
       "related": [
         {
@@ -275,7 +275,7 @@
         "knapsack",
         "greedy"
       ],
-      "problem_statement": "You are given an array of integer `coins` representing coins of different denominations and an integer `amount`. Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1. You may assume that you have an infinite number of each kind of coin.",
+      "problem_statement": "You are given an integer array `coins` representing coins of different denominations and an integer `amount` representing a total amount of money.\n\nReturn the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1.\n\nYou may assume that you have an infinite number of each kind of coin.\n\n**Example 1:**\n```\nInput: coins = [1,2,5], amount = 11\nOutput: 3\nExplanation: 11 = 5 + 5 + 1\n```",
       "explanation": {
         "understanding_the_problem": "We need to form a target `amount` using the fewest possible coins from a given set. We can use each coin denomination as many times as we want. This is a classic optimization problem that fits the Dynamic Programming pattern, specifically a variation known as the **Unbounded Knapsack** problem.",
         "brute_force": "A recursive approach would be to try to solve for `amount` by taking one coin and then recursively solving for `amount - coin`. We would do this for every coin in our set and take the minimum result. For example, `minCoins(amount) = 1 + min(minCoins(amount - c1), minCoins(amount - c2), ...)`.",
@@ -384,14 +384,14 @@
     {
       "id": "dp-4",
       "title": "Burst Balloons",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/burst-balloons/",
       "tags": [
         "dp",
         "interval-dp",
         "optimization"
       ],
-      "problem_statement": "You are given n balloons, indexed from 0 to n - 1. Each balloon has a number painted on it represented by the array nums. You are asked to burst all the balloons. If you burst the ith balloon, you will get nums[left] * nums[i] * nums[right] coins, where left and right are the adjacent indices to i. After the burst, left and right then become adjacent. Find the maximum coins you can collect. Note: You may imagine nums[-1] = nums[n] = 1.",
+      "problem_statement": "You are given `n` balloons, indexed from `0` to `n - 1`. Each balloon is painted with a number on it represented by an array `nums`.\n\nYou are asked to burst all the balloons. If you burst the `i-th` balloon, you will get `nums[i-1] * nums[i] * nums[i+1]` coins. If `i-1` or `i+1` goes out of bounds of the array, then treat it as if there is a balloon with a `1` painted on it.\n\nReturn the maximum coins you can collect by bursting the balloons wisely.\n\n**Example 1:**\n```\nInput: nums = [3,1,5,8]\nOutput: 167\nExplanation:\nnums = [3,1,5,8] -> [3,5,8] -> [3,8] -> [8] -> []\ncoins =  3*1*5    +   3*5*8   +  1*3*8  + 1*8*1 = 167\n```",
       "explanation": {
         "understanding_the_problem": "We need to find the optimal order of bursting balloons to maximize our score. The main difficulty is that bursting a balloon affects the score of future bursts because the 'adjacent' balloons change. This dynamic dependency makes a simple greedy approach unlikely to work.",
         "brute_force": "A standard DP approach might be to define `dp(balloons_left)` as the max score. However, the subproblems are not independent. The score for bursting a balloon in a sub-array depends on the boundaries, which might have been burst already. This makes the state hard to define.\n\nThe key insight is to change our perspective: instead of thinking 'which balloon to burst first?', we should think **'which balloon to burst last?'**",
@@ -503,13 +503,13 @@
     {
       "id": "dp-5",
       "title": "Regular Expression Matching",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "tags": [
         "dp",
         "regex",
         "strings"
       ],
-      "problem_statement": "Given an input string (s) and a pattern (p), implement regular expression matching with support for '.' and '*' where: '.' matches any single character, and '*' matches zero or more of the preceding element. The matching should cover the entire input string (not partial).",
+      "problem_statement": "Given an input string `s` and a pattern `p`, implement regular expression matching with support for `'.'` and `'*'` where:\n\n*   `'.'` Matches any single character.​​​​\n*   `'*'` Matches zero or more of the preceding element.\n\nThe matching should cover the **entire** input string (not partial).\n\n**Example 1:**\n```\nInput: s = \"aa\", p = \"a\"\nOutput: false\nExplanation: \"a\" does not match the entire string \"aa\".\n```\n\n**Example 2:**\n```\nInput: s = \"ab\", p = \".*\"\nOutput: true\nExplanation: \".*\" means \"zero or more (*) of any character (.)\".\n```",
       "explanation": {
         "understanding_the_problem": "This is a complex matching problem due to the special rules for '.' and especially '*'. The '*' character's ability to match 'zero or more' times is a strong indicator that we need to explore multiple possibilities, which makes it a great fit for Dynamic Programming.",
         "brute_force": "We can define a function `isMatch(s_idx, p_idx)` that checks if the substring of `s` starting at `s_idx` matches the sub-pattern of `p` starting at `p_idx`. This leads to a recursive structure.\n\n- If `p[p_idx+1]` is `'*'`, we have two choices: either we match zero instances of `p[p_idx]` and check `isMatch(s_idx, p_idx+2)`, or we match one instance (if `s[s_idx]` matches `p[p_idx]`) and check `isMatch(s_idx+1, p_idx)`.\n- Otherwise, we check if the current characters match and recurse on `isMatch(s_idx+1, p_idx+1)`.",
@@ -636,7 +636,7 @@
     {
       "id": "graphs-1",
       "title": "Word Ladder (Shortest Path)",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "tags": [
         "bfs",
         "shortest-path",
@@ -648,7 +648,7 @@
         "strategy": "Bi-directional BFS. Start from both the source and destination simultaneously. Reduces time complexity from O(b^d) to O(b^(d/2)).",
         "answering_guide": "Mentioning <strong>'Bi-directional BFS'</strong> is the key differentiator between L4 and L5 here. Explain <em>why</em> it's faster (branching factor)."
       },
-      "problem_statement": "Given two words, beginWord and endWord, and a dictionary's word list, find the length of the shortest transformation sequence from beginWord to endWord, such that: 1. Only one letter can be changed at a time. 2. Each transformed word must exist in the word list. Return 0 if there is no such sequence.",
+      "problem_statement": "A **transformation sequence** from word `beginWord` to word `endWord` using a dictionary `wordList` is a sequence of words `beginWord -> s1 -> s2 -> ... -> sk` such that:\n\n1.  Every adjacent pair of words differs by a single letter.\n2.  Every `si` for `1 <= i <= k` is in `wordList`. Note that `beginWord` does not need to be in `wordList`.\n3.  `sk == endWord`\n\nGiven two words, `beginWord` and `endWord`, and a dictionary `wordList`, return the **number of words** in the **shortest transformation sequence** from `beginWord` to `endWord`, or `0` if no such sequence exists.\n\n**Example 1:**\n```\nInput: beginWord = \"hit\", endWord = \"cog\", wordList = [\"hot\",\"dot\",\"dog\",\"lot\",\"log\",\"cog\"]\nOutput: 5\nExplanation: One shortest transformation sequence is \"hit\" -> \"hot\" -> \"dot\" -> \"dog\" -> \"cog\", which is 5 words long.\n```",
       "explanation": {
         "understanding_the_problem": "We are asked to find the *shortest* sequence of transformations to get from a starting word to an ending word. The only valid transformation is changing a single letter, and the resulting word must be in a given dictionary. This problem can be perfectly modeled as finding the shortest path in a graph.",
         "brute_force": "A simple way to visualize this is as a graph where every word is a node. An edge exists between two word-nodes if they are one letter apart. Our task is to find the shortest path from the `beginWord` node to the `endWord` node.\n\nA Depth-First Search (DFS) could explore paths. We'd start from the `beginWord`, find all connected words (one letter different), and recursively explore each of them, keeping track of the path length. We would need a `visited` set to avoid cycles (e.g., `hit` -> `hot` -> `hit`).",
@@ -764,7 +764,7 @@
     {
       "id": "graphs-2",
       "title": "Course Schedule II (Topological Sort)",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/course-schedule-ii/",
       "related": [
         {
@@ -789,7 +789,7 @@
         "strategy": "Parallel Topological Sort (Kahn's with a Thread Pool). Process all nodes with `in-degree 0` in parallel. As tasks finish, decrement neighbors.",
         "answering_guide": "Connect this to <strong>'Build Systems'</strong>. It shows you understand practical applications of DAGs beyond just abstract graphs."
       },
-      "problem_statement": "You are given a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai. Return an ordering of courses you can take to finish all courses. If there are many valid answers, return any of them. If it is impossible to finish all courses, return an empty array.",
+      "problem_statement": "There are a total of `numCourses` courses you have to take, labeled from `0` to `numCourses - 1`. You are given an array `prerequisites` where `prerequisites[i] = [ai, bi]` indicates that you **must** take course `bi` first if you want to take course `ai`.\n\nReturn the ordering of courses you should take to finish all courses. If there are many valid answers, return **any** of them. If it is impossible to finish all courses, return **an empty array**.\n\n**Example 1:**\n```\nInput: numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]\nOutput: [0,2,1,3]\nExplanation: There are a total of 4 courses to take. To take course 3 you should have finished both courses 1 and 2. Both courses 1 and 2 should be taken after you finished course 0.\nSo one correct course order is [0,1,2,3]. Another correct ordering is [0,2,1,3].\n```",
       "explanation": {
         "understanding_the_problem": "This is a classic scheduling problem. We have a set of tasks (courses) and dependencies (prerequisites). The rule `[a, b]` means `b` must be completed before `a`. We need to find a linear sequence of all courses that respects these rules.\n\nThis problem is equivalent to finding a **Topological Sort** of a directed graph. A cycle in the prerequisites (e.g., you need course 1 for course 2, and course 2 for course 1) makes it impossible to finish.",
         "brute_force": "The problem can be modeled as a graph where courses are nodes and prerequisites are directed edges. For a prerequisite `[a, b]`, we draw an edge `b -> a`.\n\nA topological sort is a linear ordering of nodes where for every edge `u -> v`, node `u` comes before node `v`. The core idea is to always find a node with no incoming edges—this is a course with no prerequisites. We can place this course in our schedule.\n\nOnce we 'take' this course, we can remove it and its outgoing edges from the graph. This might create new nodes that now have zero incoming edges. We repeat this process until all courses are taken.",
@@ -907,7 +907,7 @@
     {
       "id": "graphs-3",
       "title": "Network Delay Time (Dijkstra)",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/network-delay-time/",
       "related": [
         {
@@ -926,7 +926,7 @@
         "shortest-path",
         "priority-queue"
       ],
-      "problem_statement": "You are given a network of N nodes, labeled from 1 to N. You are also given times, a list of travel times as directed edges times[i] = [u, v, w], where u is the source node, v is the target node, and w is the time it takes for a signal to travel from source to target. We will send a signal from a given node K. Return the time it takes for all N nodes to receive the signal. If it is impossible for all N nodes to receive the signal, return -1.",
+      "problem_statement": "You are given a network of `n` nodes, labeled from `1` to `n`. You are also given `times`, a list of travel times as directed edges `times[i] = [u, v, w]`, where `u` is the source node, `v` is the target node, and `w` is the time it takes for a signal to travel from source to target.\n\nWe will send a signal from a given node `k`. Return the time it takes for all `n` nodes to receive the signal. If it is impossible for all `n` nodes to receive the signal, return `-1`.\n\n**Example 1:**\n```\nInput: times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2\nOutput: 2\n```",
       "explanation": {
         "understanding_the_problem": "We have a network of nodes with weighted directed connections (travel times). A signal starts at a source node `K` and propagates through the network. The time for the signal to reach any given node is the shortest path time from `K` to that node.\n\nThe problem asks for the time it takes for the *entire network* to get the signal. This means we must find the shortest path from `K` to all other nodes, and the answer will be the *longest* of these shortest paths. If any node is unreachable, its shortest path time will be infinity, and it's impossible to alert the whole network.",
         "brute_force": "This is a classic **single-source shortest path** problem on a weighted, directed graph. The nodes are the network nodes, the edges are the travel times, and the source is `K`.\n\nSince the edge weights (times) are non-negative, this is a perfect scenario for **Dijkstra's Algorithm**. Dijkstra's is a greedy algorithm that finds the shortest paths from a single source to all other nodes in a graph.",
@@ -1044,7 +1044,7 @@
     {
       "id": "graphs-4",
       "title": "Min Cost to Connect Points (Prim's MST)",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/min-cost-to-connect-all-points/",
       "related": [
         {
@@ -1063,7 +1063,7 @@
         "prim",
         "greedy"
       ],
-      "problem_statement": "You are given an array points representing integer coordinates of some points on a 2D-plane, where points[i] = [xi, yi]. The cost of connecting two points [xi, yi] and [xj, yj] is the Manhattan distance between them: |xi - xj| + |yi - yj|. Return the minimum cost to make all points connected. All points are connected if there is exactly one simple path between any two points.",
+      "problem_statement": "You are given an array `points` representing integer coordinates of some points on a 2D-plane, where `points[i] = [xi, yi]`.\n\nThe cost of connecting two points `[xi, yi]` and `[xj, yj]` is the **Manhattan distance** between them: `|xi - xj| + |yi - yj|`.\n\nReturn the minimum cost to make all points connected. All points are connected if there is exactly one simple path between any two points.\n\n**Example 1:**\n```\nInput: points = [[0,0],[2,2],[3,10],[5,2],[7,0]]\nOutput: 20\n```",
       "explanation": {
         "understanding_the_problem": "We are given a set of points and asked to connect all of them with the minimum possible total cost. The rule that 'there is exactly one simple path between any two points' is the definition of a **tree**.\n\nSo, the problem is asking us to find a **Minimum Spanning Tree (MST)**. We can imagine this as a complete graph where every point is a node, and an edge exists between every pair of points, weighted by their Manhattan distance.",
         "brute_force": "There are two primary greedy algorithms for finding an MST: Prim's and Kruskal's.\n\n- **Kruskal's Algorithm:** Sorts all possible edges by weight and adds the smallest ones that don't form a cycle. This is great for sparse graphs.\n- **Prim's Algorithm:** Grows an MST from a single starting node, at each step adding the cheapest edge that connects a node in the MST to a node outside of it.\n\nSince our graph is **dense** (a complete graph where every point is connected to every other), Prim's algorithm is a very natural and efficient choice.",
@@ -1182,7 +1182,7 @@
     {
       "id": "graphs-5",
       "title": "Pacific Atlantic Water Flow",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/pacific-atlantic-water-flow/",
       "related": [
         {
@@ -1201,7 +1201,7 @@
         "multi-source",
         "bfs"
       ],
-      "problem_statement": "Given an m x n matrix of non-negative integers representing the height of each unit cell in a continent, the Pacific ocean touches the left and top edges of the matrix and the Atlantic ocean touches the right and bottom edges. Water can only flow in four directions (up, down, left, or right) from a cell to another one with height equal or lower. Find the list of grid coordinates where water can flow to both the Pacific and Atlantic ocean.",
+      "problem_statement": "There is an `m x n` rectangular island that borders both the **Pacific Ocean** and **Atlantic Ocean**. The **Pacific Ocean** touches the island's left and top edges, and the **Atlantic Ocean** touches the island's right and bottom edges.\n\nThe island is partitioned into a grid of square cells. You are given an `m x n` integer matrix `heights` where `heights[r][c]` represents the height above sea level of the cell at coordinate `(r, c)`.\n\nThe island receives a lot of rain, and the rain water can flow to neighboring cells directly north, south, east, and west if the neighboring cell's height is **less than or equal to** the current cell's height. Water can flow from any cell adjacent to an ocean into the ocean.\n\nReturn a **2D list** of grid coordinates `result` where `result[i] = [ri, ci]` denotes that rain water can flow from cell `(ri, ci)` to **both** the Pacific and Atlantic oceans.\n\n**Example 1:**\n```\nInput: heights = [[1,2,2,3,5],[3,2,3,4,4],[2,4,5,3,1],[6,7,1,4,5],[5,1,1,2,4]]\nOutput: [[0,4],[1,3],[1,4],[2,2],[3,0],[3,1],[4,0]]\n```",
       "explanation": {
         "understanding_the_problem": "Imagine the matrix is a continent, where each number represents the altitude of that piece of land. The edges of the continent are surrounded by two oceans: the Pacific (top and left edges) and the Atlantic (bottom and right edges).\n\nRain falls on the continent, and water can flow from any cell to a neighboring cell (up, down, left, or right) as long as the neighbor's altitude is the **same or lower**.\n\nOur goal is to find every cell on the continent from which water can flow to **both** the Pacific and the Atlantic oceans.",
         "brute_force": "The most intuitive way to solve this is to check each cell one by one. For every single cell `(r, c)` in the matrix, we could start a traversal (like DFS or BFS) and ask two questions:\n1. Can we reach the Pacific (top or left edge)?\n2. Can we reach the Atlantic (bottom or right edge)?\n\nIf the answer to both is 'yes,' we add the cell to our results.",
@@ -1323,7 +1323,7 @@
     {
       "id": "trees-1",
       "title": "Range Sum Queries (Segment Tree)",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/range-sum-query-mutable/",
       "related": [
         {
@@ -1341,7 +1341,7 @@
         "segment-tree",
         "data-structures"
       ],
-      "problem_statement": "We need to design a data structure that can efficiently handle two operations on an array: 1. `update(pos, val)`: Update the element at a given position to a new value. 2. `query(left, right)`: Find the sum of elements in a given range `[left, right]`.",
+      "problem_statement": "Given an integer array `nums`, handle multiple queries of the following types:\n\n1.  **Update**: Update the value of an element in `nums`.\n2.  **Sum Range**: Calculate the sum of the elements of `nums` between indices `left` and `right` **inclusive** where `left <= right`.\n\nImplement the `SegmentTree` class:\n*   `SegmentTree(int[] nums)` Initializes the object with the integer array `nums`.\n*   `void update(int index, int val)` Updates the value of `nums[index]` to be `val`.\n*   `int sumRange(int left, int right)` Returns the sum of the elements of `nums` between indices `left` and `right` inclusive (i.e. `nums[left] + nums[left + 1] + ... + nums[right]`).\n\n**Example 1:**\n```\nInput\n[\"SegmentTree\", \"sumRange\", \"update\", \"sumRange\"]\n[[[1, 3, 5]], [0, 2], [1, 2], [0, 2]]\nOutput\n[null, 9, null, 8]\n\nExplanation\nSegmentTree segmentTree = new SegmentTree([1, 3, 5]);\nsegmentTree.sumRange(0, 2); // return 1 + 3 + 5 = 9\nsegmentTree.update(1, 2);   // nums = [1, 2, 5]\nsegmentTree.sumRange(0, 2); // return 1 + 2 + 5 = 8\n```",
       "explanation": {
         "understanding_the_problem": "A naive approach using a simple array would give us O(1) for updates but O(N) for range sum queries, which is too slow if we have many queries. We need a more advanced data structure that can balance the performance of both operations.",
         "brute_force": "The problem requires a way to handle range queries efficiently. This is the perfect use case for a **Segment Tree**. A Segment Tree is a binary tree where each node represents an interval (or segment) of the original array.\n\n- The **root** represents the entire array `[0, N-1]`.\n- Each **leaf** represents a single element `[i, i]`.\n- Each **internal node** stores aggregate information (in this case, the sum) for the union of its children's intervals.",
@@ -1461,7 +1461,7 @@
     {
       "id": "trees-2",
       "title": "Distance Queries (LCA with Binary Lifting)",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "related": [
         {
           "id": "trees-1",
@@ -1479,7 +1479,7 @@
         "binary-lifting",
         "trees"
       ],
-      "problem_statement": "Given a tree (a connected, undirected graph with no cycles) and multiple queries, each consisting of two nodes `u` and `v`, find the distance between `u` and `v` for each query. The distance is the number of edges on the unique simple path between them.",
+      "problem_statement": "You are given a tree with `n` nodes labeled from `0` to `n - 1`, and an array of `edges` where `edges[i] = [ai, bi]` indicates that there is an undirected edge between the two nodes `ai` and `bi` in the tree.\n\nYou are also given an array `queries` where `queries[i] = [u, v]`. For each query, find the **distance** between node `u` and node `v`.\n\nThe **distance** between two nodes is the number of edges on the unique simple path between them.\n\n**Example 1:**\n```\nInput: n = 6, edges = [[0,1],[0,2],[1,3],[1,4],[2,5]], queries = [[3,5],[4,5]]\nOutput: [3, 3]\nExplanation: \nThe distance between 3 and 5 is 3 (3 -> 1 -> 0 -> 2 -> 5).\nThe distance between 4 and 5 is 3 (4 -> 1 -> 0 -> 2 -> 5).\n```",
       "explanation": {
         "understanding_the_problem": "A naive approach of running a separate BFS/DFS for each query to find the path length would be too slow if there are many queries. A more efficient method relies on finding the **Lowest Common Ancestor (LCA)** of the two nodes.\n\nThe path from node `u` to `v` can be seen as the path from `u` up to `lca(u,v)` and then down to `v`. This gives us a formula for the distance: `dist(u,v) = depth(u) + depth(v) - 2 * depth(lca(u,v))`. The problem now becomes: how to find the LCA efficiently?",
         "brute_force": "To find the LCA of `u` and `v`, we could first bring them to the same depth by moving the deeper node up one parent at a time. Then, we move both nodes up one parent at a time until they meet. This is simple but can take O(N) time per query in the worst case (for a tall, skinny tree).",
@@ -1605,7 +1605,7 @@
     {
       "id": "trees-3",
       "title": "Tree Diameter",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/tree-diameter/",
       "related": [
         {
@@ -1624,7 +1624,7 @@
         "dfs",
         "diameter"
       ],
-      "problem_statement": "Given a tree (a connected, undirected graph with no cycles), find the length of the longest path between any two nodes in the tree. This path is called the diameter of the tree. The length is the number of edges on the path.",
+      "problem_statement": "Given the `root` of a binary tree (or a general tree represented by edges), return *the length of the **diameter** of the tree*.\n\nThe **diameter** of a tree is the length of the longest path between any two nodes in a tree. This path may or may not pass through the root.\n\nThe length of a path between two nodes is represented by the number of edges between them.\n\n**Example 1:**\n```\nInput: edges = [[0,1],[0,2],[1,4],[1,5]]\nOutput: 3\nExplanation: 3 is the length of the path [4,1,0,2] or [5,1,0,2].\n```",
       "explanation": {
         "understanding_the_problem": "We need to find the two nodes in the tree that are the farthest apart and return the number of edges between them. Since it's a tree, there's only one unique path between any two nodes.",
         "brute_force": "A naive approach would be to run a graph traversal (like BFS or DFS) starting from every single node in the tree. For each start node `u`, we would find the node `v` farthest from it and record that distance. The final answer would be the maximum distance found across all starting nodes. This would require N traversals, each taking O(N) time, for a total of O(N²), which is inefficient.",
@@ -1730,7 +1730,7 @@
     {
       "id": "trees-4",
       "title": "Range Add, Range Sum (Lazy Propagation)",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "related": [
         {
           "id": "trees-1",
@@ -1753,7 +1753,7 @@
         "strategy": "Lazy Propagation. Defer updates to children until absolutely necessary (during a query or subsequent update).",
         "answering_guide": "The keyword is <strong>'Deferred Execution'</strong>. Explain that we trade slightly more complex logic for massive <strong>'Write Speed'</strong> gains by caching updates."
       },
-      "problem_statement": "Extend the Segment Tree data structure to support two advanced operations: 1. `rangeAdd(left, right, val)`: Add `val` to every element in the range `[left, right]`. 2. `rangeSum(left, right)`: Find the sum of elements in a given range `[left, right]`.",
+      "problem_statement": "You have an array of integers `nums`. You need to handle multiple queries of the following types efficiently:\n\n1.  **Range Add**: Add a value `val` to all elements `nums[i]` where `left <= i <= right`.\n2.  **Range Sum**: Calculate the sum of elements `nums[i]` where `left <= i <= right`.\n\nImplement the `LazySegmentTree` class:\n*   `LazySegmentTree(int[] nums)` Initializes with `nums`.\n*   `void rangeAdd(int left, int right, int val)` Adds `val` to the subarray `nums[left...right]`.\n*   `int rangeSum(int left, int right)` Returns the sum of the subarray `nums[left...right]`.\n\n**Example 1:**\n```\nInput\n[\"LazySegmentTree\", \"rangeAdd\", \"rangeSum\", \"rangeAdd\", \"rangeSum\"]\n[[[1, 1, 1, 1, 1]], [0, 4, 1], [0, 4], [2, 3, 10], [0, 4]]\nOutput\n[null, null, 10, null, 30]\nExplanation\n// nums starts as [1, 1, 1, 1, 1]\n// rangeAdd(0, 4, 1) -> nums becomes [2, 2, 2, 2, 2]\n// rangeSum(0, 4) -> 10\n// rangeAdd(2, 3, 10) -> nums becomes [2, 2, 12, 12, 2]\n// rangeSum(0, 4) -> 30\n```",
       "explanation": {
         "understanding_the_problem": "A standard segment tree can handle point updates and range queries in O(log N) time. However, if we try to use it for a range update, we would have to update every leaf in the range, which could take O(N log N) time. We need a way to make range updates efficient as well.",
         "brute_force": "The bottleneck is applying updates to a large range. The key idea to solve this is **Lazy Propagation**. Instead of immediately applying an update to all affected children in the tree, we will be 'lazy'. We'll update a high-level node that covers a large part of the range and leave a 'note' (a lazy tag) on it. This note signifies that all its children need this update eventually.",
@@ -1870,7 +1870,7 @@
     {
       "id": "trees-5",
       "title": "Fenwick Tree (Binary Indexed Tree)",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/range-sum-query-mutable/",
       "related": [
         {
@@ -1895,7 +1895,7 @@
         "strategy": "Fenwick Tree (BIT). Uses O(N) space and relies on bit manipulation for O(log N) traversal. Implicit bounds.",
         "answering_guide": "Highlight <strong>'Space Efficiency'</strong> and <strong>'Bit Manipulation'</strong>. Mentioning that BIT is easier to implement (fewer lines of code) than Segment Tree often impresses."
       },
-      "problem_statement": "Design a data structure that efficiently supports two operations: 1. `update(index, delta)`: Add `delta` to the element at `index`. 2. `query(index)`: Get the cumulative sum of elements from the start up to `index`. This can be used to find range sums `(left, right)` by calculating `query(right) - query(left - 1)`.",
+      "problem_statement": "Given an integer array `nums`, handle multiple queries of the following types:\n\n1.  **Update**: Add a value `delta` to the element at `index`.\n2.  **Prefix Sum**: Calculate the sum of the elements of `nums` between indices `0` and `index` **inclusive**.\n\nImplement the `FenwickTree` class:\n*   `FenwickTree(int n)` Initializes a tree with `n+1` size.\n*   `void update(int index, int delta)` Adds `delta` to `nums[index]`.\n*   `int query(int index)` Returns the prefix sum up to `index`.\n\n**Example 1:**\n```\nInput\n[\"FenwickTree\", \"update\", \"query\", \"update\", \"query\"]\n[[5], [2, 1], [4], [2, 3], [4]]\nOutput\n[null, null, 1, null, 4]\n```",
       "explanation": {
         "understanding_the_problem": "This problem requires efficient point updates and prefix sum queries. A standard Segment Tree can solve this in O(log N) time, but a Fenwick Tree (also known as a Binary Indexed Tree or BIT) provides the same time complexity while being significantly simpler to implement and requiring less space.",
         "brute_force": "A naive array gives O(1) updates but O(N) prefix sums. A pre-calculated prefix sum array gives O(1) queries but O(N) updates. We need to balance these, which is what a BIT does.",
@@ -2006,7 +2006,7 @@
     {
       "id": "strings-1",
       "title": "KMP Pattern Matching",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/",
       "related": [
         {
@@ -2031,7 +2031,7 @@
         "strategy": "Use Aho-Corasick for *multiple* pattern matching (an extension of KMP). It builds a Trie of patterns with failure links.",
         "answering_guide": "In security/networking, pure KMP is rarely used alone. Mention <strong>'Aho-Corasick'</strong> for *multiple* patterns (like virus signatures)."
       },
-      "problem_statement": "Given a text and a pattern, find all occurrences of the pattern within the text.",
+      "problem_statement": "Given two strings `text` and `pattern`, return **all** indices in `text` where `pattern` starts.\n\n**Example 1:**\n```\nInput: text = \"abxabcabcaby\", pattern = \"abcaby\"\nOutput: [6]\n```\n**Example 2:**\n```\nInput: text = \"aaaaa\", pattern = \"aa\"\nOutput: [0, 1, 2, 3]\n```",
       "explanation": {
         "understanding_the_problem": "The goal is to find a small pattern string within a larger text string efficiently. A naive solution would check for a match at every possible starting position in the text, which is slow.",
         "brute_force": "The naive approach is to slide the pattern over the text one position at a time. At each position, you compare the pattern with the corresponding substring of the text. This has a time complexity of O((N-M+1) * M) \u2248 O(N*M), where N is the length of the text and M is the length of the pattern.",
@@ -2135,7 +2135,7 @@
     {
       "id": "strings-2",
       "title": "Rabin-Karp Rolling Hash",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/repeated-dna-sequences/",
       "related": [
         {
@@ -2160,7 +2160,7 @@
         "strategy": "Content-Defined Chunking (CDC) with Rolling Hash to fingerprint files. Compare fingerprints instead of full text.",
         "answering_guide": "Focus on <strong>'Fingerprinting'</strong>. Rolling hash is the basis for 'rsync' and 'deduplication' systems. Mentioning <strong>'rsync'</strong> is a pro move."
       },
-      "problem_statement": "Given a text and a pattern, find all occurrences of the pattern within the text.",
+      "problem_statement": "Given two strings `text` and `pattern`, return **all** indices in `text` where `pattern` starts.\n\n**Example 1:**\n```\nInput: text = \"abxabcabcaby\", pattern = \"abcaby\"\nOutput: [6]\n```",
       "explanation": {
         "understanding_the_problem": "This algorithm provides an alternative to KMP. Instead of comparing strings character by character, it compares hash values. The core idea is to compute a hash for the pattern and then efficiently compute hashes for all substrings of the text that have the same length as the pattern.",
         "brute_force": "A naive hashing approach would be to calculate the hash of the pattern, then iterate through all N-M+1 substrings of the text, calculate the hash for each, and compare. However, calculating the hash for each substring from scratch would take O(M) time, leading to the same O(N*M) complexity as the naive string search.",
@@ -2257,7 +2257,7 @@
     {
       "id": "strings-3",
       "title": "Z-Algorithm for Pattern Finding",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/",
       "related": [
         {
@@ -2276,7 +2276,7 @@
         "strings",
         "prefix-function"
       ],
-      "problem_statement": "Given a text and a pattern, find all occurrences of the pattern within the text.",
+      "problem_statement": "Given two strings `text` and `pattern`, return **all** indices in `text` where `pattern` starts.\n\n**Example 1:**\n```\nInput: text = \"abxabcabcaby\", pattern = \"abcaby\"\nOutput: [6]\n```",
       "explanation": {
         "understanding_the_problem": "The Z-Algorithm is another linear-time pattern searching algorithm. It's based on creating a 'Z-array' from a combined string.",
         "brute_force": "The core of the algorithm is the Z-array. For a string `S`, `Z[i]` is the length of the longest substring starting from `S[i]` which is also a prefix of `S`. A naive way to compute this array would be to iterate `i` from 1 to N-1 and, for each `i`, manually compare `S[i...]` with `S[0...]`, which would take O(N²) time.",
@@ -2373,7 +2373,7 @@
     {
       "id": "strings-4",
       "title": "Suffix Array Construction",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "related": [
         {
           "id": "strings-3",
@@ -2391,7 +2391,7 @@
         "strings",
         "sorting"
       ],
-      "problem_statement": "A Suffix Array is a sorted array of all suffixes of a given string. It is a powerful data structure used for a wide range of problems on strings. The challenge is to construct this array efficiently.",
+      "problem_statement": "Given a string `s`, return the **suffix array** of `s`.\n\nA **suffix array** is a sorted array of all suffixes of `s`. It is an array of integers representing the starting indices of all suffixes of `s` required to list them in **lexicographical order**.\n\n**Example 1:**\n```\nInput: s = \"banana\"\nOutput: [5, 3, 1, 0, 4, 2]\nExplanation: \nSuffixes: [\"a\", \"ana\", \"anana\", \"banana\", \"na\", \"nana\"]\nIndices: [5, 3, 1, 0, 4, 2]\n```",
       "explanation": {
         "understanding_the_problem": "We need to create an array of integers that represent the starting indices of all suffixes of a string, such that if we were to list the suffixes in that order, they would be lexicographically sorted.",
         "brute_force": "The most straightforward way is to actually generate all N suffixes of the string and then use a standard sorting algorithm. Generating all suffixes takes O(N²) time and space. Sorting them would then take O(N * N log N) because each comparison can take up to O(N) time. This is far too slow.",
@@ -2482,7 +2482,7 @@
     {
       "id": "strings-5",
       "title": "Manacher's (Longest Palindrome)",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/longest-palindromic-substring/",
       "related": [
         {
@@ -2501,7 +2501,7 @@
         "palindrome",
         "strings"
       ],
-      "problem_statement": "Given a string s, find the longest palindromic substring in s.",
+      "problem_statement": "Given a string `s`, return the **longest palindromic substring** in `s`.\n\n**Example 1:**\n```\nInput: s = \"babad\"\nOutput: \"bab\"\nExplanation: \"aba\" is also a valid answer.\n```",
       "explanation": {
         "understanding_the_problem": "We need to find the longest substring (contiguous part of the string) that reads the same forwards and backwards.",
         "brute_force": "A common approach is 'Expand from Center'. We can iterate through every possible center of a palindrome. A center can be a single character (for odd-length palindromes) or the space between two characters (for even-length). From each center, we expand outwards as long as the characters match. This takes O(N²) time.",
@@ -2606,7 +2606,7 @@
     {
       "id": "math-1",
       "title": "Modular Exponentiation",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/powx-n/",
       "related": [
         {
@@ -2723,7 +2723,7 @@
     {
       "id": "math-2",
       "title": "Sieve of Eratosthenes",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/count-primes/",
       "related": [
         {
@@ -2833,7 +2833,7 @@
     {
       "id": "math-3",
       "title": "Extended Euclidean Algorithm",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "related": [
         {
           "id": "math-1",
@@ -2942,7 +2942,7 @@
     {
       "id": "math-4",
       "title": "Chinese Remainder Theorem",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "related": [
         {
           "id": "math-3",
@@ -3051,7 +3051,7 @@
     {
       "id": "math-5",
       "title": "Fast Fourier Transform (FFT)",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "related": [
         {
           "id": "math-4",
@@ -3163,7 +3163,7 @@
     {
       "id": "geometry-1",
       "title": "Point in Polygon Test",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "related": [
         {
           "id": "geometry-2",
@@ -3278,7 +3278,7 @@
     {
       "id": "geometry-2",
       "title": "Line Segment Intersection",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "related": [
         {
           "id": "geometry-1",
@@ -3388,7 +3388,7 @@
     {
       "id": "geometry-3",
       "title": "Convex Hull (Monotone Chain)",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "leetcode_url": "https://leetcode.com/problems/erect-the-fence/",
       "related": [
         {
@@ -3498,7 +3498,7 @@
     {
       "id": "geometry-4",
       "title": "Closest Pair of Points",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "related": [
         {
           "id": "geometry-3",
@@ -3613,7 +3613,7 @@
     {
       "id": "geometry-5",
       "title": "Rotating Calipers (Diameter)",
-      "difficulty": "Hard",
+      "difficulty": "Medium",
       "related": [
         {
           "id": "geometry-3",
@@ -3744,7 +3744,7 @@
         "hash-table",
         "doubly-linked-list"
       ],
-      "problem_statement": "Design a data structure for a 'Least Recently Used' (LRU) cache. It must support `get(key)` and `put(key, value)` operations in O(1) time. When the cache is full and a new item is added, the least recently used item should be evicted.",
+      "problem_statement": "Design a data structure that follows the constraints of a **[Least Recently Used (LRU) cache](https://en.wikipedia.org/wiki/Cache_replacement_policies#LRU)**.\n\nImplement the `LRUCache` class:\n*   `LRUCache(int capacity)` Initialize the LRU cache with positive size `capacity`.\n*   `int get(int key)` Return the value of the `key` if the key exists, otherwise return `-1`.\n*   `void put(int key, int value)` Update the value of the `key` if the `key` exists. Otherwise, add the `key-value` pair to the cache. If the number of keys exceeds the `capacity` from this operation, **evict** the least recently used key.\n\nThe functions `get` and `put` must each run in `O(1)` average time complexity.\n\n**Example 1:**\n```\nInput\n[\"LRUCache\", \"put\", \"put\", \"get\", \"put\", \"get\", \"put\", \"get\", \"get\", \"get\"]\n[[2], [1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]\nOutput\n[null, null, null, 1, null, -1, null, -1, 3, 4]\n```",
       "explanation": {
         "understanding_the_problem": "We need a data structure that can store key-value pairs up to a certain `capacity`. When we access or add an item, it becomes the 'most recently used'. When we need to make space, we evict the 'least recently used' item. All operations must be very fast (O(1)).",
         "brute_force": "A simple hash map gives O(1) `get` and `put`, but it doesn't track usage order. A linked list can track order (by moving nodes to the front), but `get` would take O(N) to find the item. We need to combine the strengths of both.",
@@ -3868,7 +3868,7 @@
         "heap",
         "merge-k-lists"
       ],
-      "problem_statement": "Design a simplified Twitter where users can post tweets, follow/unfollow others, and get a news feed of the 10 most recent tweets from their own posts and the posts of people they follow.",
+      "problem_statement": "Design a simplified Twitter where users can post tweets, follow/unfollow others, and get a news feed of the 10 most recent tweets from their own posts and the posts of people they follow.\n\nImplement the `Twitter` class:\n*   `Twitter()` Initializes your twitter object.\n*   `void postTweet(int userId, int tweetId)` Composes a new tweet with ID `tweetId` by the user `userId`. Each call to this function will be made with a unique `tweetId`.\n*   `List<Integer> getNewsFeed(int userId)` Retrieves the `10` most recent tweet IDs in the user's news feed. Each item in the news feed must be posted by users who the user followed or by the user themself. Tweets must be ordered from most recent to least recent.\n*   `void follow(int followerId, int followeeId)` The user with ID `followerId` started following the user with ID `followeeId`.\n*   `void unfollow(int followerId, int followeeId)` The user with ID `followerId` started unfollowing the user with ID `followeeId`.\n\n**Example 1:**\n```\nInput\n[\"Twitter\", \"postTweet\", \"getNewsFeed\", \"follow\", \"postTweet\", \"getNewsFeed\", \"unfollow\", \"getNewsFeed\"]\n[[], [1, 5], [1], [1, 2], [2, 6], [1], [1, 2], [1]]\nOutput\n[null, null, [5], null, null, [6, 5], null, [5]]\n```",
       "explanation": {
         "understanding_the_problem": "We need to manage user relationships (who follows whom) and user content (tweets). The most complex operation is `getNewsFeed`, which requires fetching content from multiple users and finding the most recent items.",
         "brute_force": "1.  Store follow relationships in a `Map<userId, Set<userId>>`.\n2.  Store tweets in a `Map<userId, List<Tweet>>`, where each tweet has a global timestamp.\n3.  For `getNewsFeed`, gather all tweets from the user and everyone they follow into a single list, sort this large list by timestamp, and take the top 10. ",
@@ -3984,7 +3984,7 @@
         "trie",
         "heap"
       ],
-      "problem_statement": "Design a system that suggests the top 3 'hot' sentences given a prefix that the user is typing. 'Hotness' is based on how many times a sentence has been searched for before. Sentences with the same hotness should be sorted lexicographically.",
+      "problem_statement": "Design a search autocomplete system for a search engine. Users may input a sentence (at least one word and end with a special character `'#'`).\n\nFor each character they type except `'#'`, you return the **top 3 historical hot sentences** that have prefix the same as the part of sentence already typed. Here are the specific rules:\n\n1.  The hot degree for a sentence is defined as the number of times a user typed the exactly same sentence before.\n2.  The returned top 3 hot sentences should be sorted by hot degree (The first is the hottest one). If several sentences have the same degree of hotness, you need to use ASCII-code order (smaller one appears first).\n3.  If less than 3 hot sentences exist, then just return as many as you can.\n4.  When the input is a special character, it means the sentence ends, and in this case, you need to return an empty list.\n\n**Example 1:**\n```\nInput\n[\"AutocompleteSystem\", \"input\", \"input\", \"input\", \"input\"]\n[[[\"i love you\", \"island\", \"ironman\", \"i love leetcode\"], [5, 3, 2, 2]], [\"i\"], [\" \"], [\"a\"], [\"#\"]]\nOutput\n[null, [\"i love you\", \"island\", \"i love leetcode\"], [\"i love you\", \"i love leetcode\"], [], []]\n```",
       "explanation": {
         "understanding_the_problem": "We need to perform prefix-based searches and return a ranked list of results. This is a classic application for a **Trie (Prefix Tree)**.",
         "brute_force": "A naive approach would be to iterate through all known sentences every time the user types a character, check if each sentence starts with the current prefix, and then sort all matches to find the top 3. This would be extremely slow.",
@@ -4107,7 +4107,7 @@
         "sliding-window",
         "circular-buffer"
       ],
-      "problem_statement": "Design a hit counter that can count the number of hits in the last 5 minutes (300 seconds). It must support a `hit(timestamp)` method and a `getHits(timestamp)` method.",
+      "problem_statement": "Design a hit counter that counts the number of hits received in the past `5` minutes (i.e., the past `300` seconds).\n\nYour system should accept a `timestamp` parameter (in seconds granularity), and you may assume that calls are being made to the system in chronological order (i.e., `timestamp` is monotonically increasing). Several hits may arrive roughly at the same time.\n\nImplement the `HitCounter` class:\n*   `HitCounter()` Initializes the object of the hit counter system.\n*   `void hit(int timestamp)` Records a hit that happened at `timestamp`.\n*   `int getHits(int timestamp)` Returns the number of hits in the past 5 minutes from `timestamp` (i.e., the past `300` seconds).\n\n**Example 1:**\n```\nInput\n[\"HitCounter\", \"hit\", \"hit\", \"hit\", \"getHits\", \"hit\", \"getHits\", \"getHits\"]\n[[], [1], [2], [3], [4], [300], [300], [301]]\nOutput\n[null, null, null, null, 3, null, 4, 3]\n```",
       "explanation": {
         "understanding_the_problem": "We need to count events within a rolling time window. The key constraints are the fixed size of the window (300 seconds) and the potential for a very high number of hits, making it infeasible to store every single hit.",
         "brute_force": "A simple but unscalable solution is to store a list of timestamps for every hit. When `getHits` is called, we would iterate through the list, remove timestamps older than 300 seconds, and return the list's size. This would be slow and consume unbounded memory.",
@@ -4232,7 +4232,7 @@
         "dfs",
         "wildcard"
       ],
-      "problem_statement": "Design a data structure that supports adding new words and finding if a string matches any previously added string. The search can include a `.` wildcard character that matches any single letter.",
+      "problem_statement": "Design a data structure that supports adding new words and finding if a string matches any previously added string.\n\nImplement the `WordDictionary` class:\n*   `WordDictionary()` Initializes the object.\n*   `void addWord(word)` Adds `word` to the data structure, it can be matched later.\n*   `bool search(word)` Returns `true` if there is any string in the data structure that matches `word` or `false` otherwise. `word` may contain dots `.` where `.` can be matched with any letter.\n\n**Example 1:**\n```\nInput\n[\"WordDictionary\",\"addWord\",\"addWord\",\"addWord\",\"search\",\"search\",\"search\",\"search\"]\n[[],[\"bad\"],[\"dad\"],[\"mad\"],[\"pad\"],[\"bad\"],[\".ad\"],[\"b..\"]]\nOutput\n[null,null,null,null,false,true,true,true]\n```",
       "explanation": {
         "understanding_the_problem": "We need to store a dictionary of words and perform searches that can include wildcards. This is another problem that is perfectly suited for a **Trie (Prefix Tree)**.",
         "brute_force": "Storing words in a simple list or hash set would make `addWord` easy. However, searching for a word with a wildcard like 'b.d' would require iterating through every word in the dictionary and checking it against the pattern, which would be very slow.",
@@ -4350,7 +4350,7 @@
         "deque",
         "monotonic"
       ],
-      "problem_statement": "Given an array of integers `nums` and a window size `k`, find the maximum value in each sliding window as it moves from left to right across the array.",
+      "problem_statement": "You are given an array of integers `nums`, there is a sliding window of size `k` which is moving from the very left of the array to the very right. You can only see the `k` numbers in the window. Each time the sliding window moves right by one position.\n\nReturn *the max sliding window*.\n\n**Example 1:**\n```\nInput: nums = [1,3,-1,-3,5,3,6,7], k = 3\nOutput: [3,3,5,5,6,7]\nExplanation: \nWindow position                Max\n---------------               -----\n[1  3  -1] -3  5  3  6  7       3\n 1 [3  -1  -3] 5  3  6  7       3\n 1  3 [-1  -3  5] 3  6  7       5\n 1  3  -1 [-3  5  3] 6  7       5\n 1  3  -1  -3 [5  3  6] 7       6\n 1  3  -1  -3  5 [3  6  7]      7\n```",
       "explanation": {
         "understanding_the_problem": "We need to find the maximum element within a fixed-size window that slides across an array. A new maximum is produced for each position the window slides to.",
         "brute_force": "For each of the `N-k+1` possible windows, we could iterate through the `k` elements within it to find the maximum. This would have a time complexity of O(N*k), which is too slow if N and k are large.",
@@ -4473,7 +4473,7 @@
         "monotonic",
         "optimization"
       ],
-      "problem_statement": "Given an array of integers `heights` representing the bars of a histogram, find the area of the largest rectangle that can be formed in the histogram.",
+      "problem_statement": "Given an array of integers `heights` representing the histogram's bar height where the width of each bar is `1`, return *the area of the largest rectangle in the histogram*.\n\n**Example 1:**\n```\nInput: heights = [2,1,5,6,2,3]\nOutput: 10\nExplanation: The largest rectangle has an area = 10 units.\n```",
       "explanation": {
         "understanding_the_problem": "We need to find the largest rectangular area that can be inscribed within the given histogram bars.",
         "brute_force": "For each bar `i`, we can try to form the largest rectangle that has this bar as its height. To do this, we would expand left and right from `i` to find the boundaries (the first bars shorter than `heights[i]`). This would take O(N) for each bar, leading to an overall O(N²) time complexity.",
@@ -4595,7 +4595,7 @@
         "stack",
         "histogram"
       ],
-      "problem_statement": "Given a 2D binary matrix filled with 0s and 1s, find the largest rectangle containing only 1s and return its area.",
+      "problem_statement": "Given a `rows x cols` binary `matrix` filled with `0`'s and `1`'s, find the largest rectangle containing only `1`'s and return *its area*.\n\n**Example 1:**\n```\nInput: matrix = [[\"1\",\"0\",\"1\",\"0\",\"0\"],[\"1\",\"0\",\"1\",\"1\",\"1\"],[\"1\",\"1\",\"1\",\"1\",\"1\"],[\"1\",\"0\",\"0\",\"1\",\"0\"]]\nOutput: 6\nExplanation: The largest rectangle is shown in the bolded 1s.\n```",
       "explanation": {
         "understanding_the_problem": "We need to find the largest all-1s rectangle within a grid.",
         "brute_force": "We could check every possible rectangle. A rectangle is defined by its top-left and bottom-right corners. This would be O(M² * N²) rectangles, and for each, we'd have to check if it's all 1s, leading to a very slow solution.",
@@ -4711,7 +4711,7 @@
         "two-pointers",
         "hash-map"
       ],
-      "problem_statement": "Given a string `s` and a string `t`, find the minimum length substring of `s` which contains all the characters of `t` (including duplicates). If there is no such window, return the empty string.",
+      "problem_statement": "Given two strings `s` and `t` of lengths `m` and `n` respectively, return *the **minimum window substring** of `s` such that every character in `t` (including duplicates) is included in the window. If there is no such substring, return the empty string `\"\"`*.\n\nThe testcases will be generated such that the answer is **unique**.\n\n**Example 1:**\n```\nInput: s = \"ADOBECODEBANC\", t = \"ABC\"\nOutput: \"BANC\"\nExplanation: The minimum window substring \"BANC\" includes 'A', 'B', and 'C' from string t.\n```",
       "explanation": {
         "understanding_the_problem": "We need to find the shortest contiguous block in string `s` that covers all characters required by string `t`.",
         "brute_force": "We could generate every possible substring of `s`, and for each one, check if it contains all the characters of `t`. This would be very inefficient, around O(N³).",
@@ -4833,7 +4833,7 @@
         "optimization",
         "greedy"
       ],
-      "problem_statement": "Given an array of non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.",
+      "problem_statement": "Given `n` non-negative integers representing an elevation map where the width of each bar is `1`, compute how much water it can trap after raining.\n\n**Example 1:**\n```\nInput: height = [0,1,0,2,1,0,1,3,2,1,2,1]\nOutput: 6\nExplanation: The above elevation map (black section) is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped.\n```",
       "explanation": {
         "understanding_the_problem": "Imagine the given array as a 2D profile. After it rains, water will be trapped between taller bars. We need to calculate the total volume of this trapped water.",
         "brute_force": "For any given bar `i`, the amount of water it can hold above it is determined by the height of the tallest bar to its left (`max_left`) and the tallest bar to its right (`max_right`). The water level above bar `i` will be `min(max_left, max_right)`. The trapped water is `min(max_left, max_right) - height[i]`. We could iterate through each bar, and for each one, scan its left and right sides to find the max heights. This would be O(N²).",

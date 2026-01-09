@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>L4/L5 FAANG Algorithms Guide</title>
-    <meta name="description" content="Interactive guide for senior-level algorithm problems commonly asked at top tech companies like FAANG.">
+    <meta name="description"
+        content="Interactive guide for senior-level algorithm problems commonly asked at top tech companies like FAANG.">
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
+
 <body>
     <!-- Header Mount Point -->
     <div id="header-mount"></div>
@@ -46,68 +49,89 @@
             <div class="container">
                 <h2>Algorithm Categories</h2>
                 <div class="algorithms-grid">
-                    <div class="algorithm-card" data-category="dp">
-                        <div class="card-icon"><i class="fas fa-route"></i></div>
-                        <h3>Dynamic Programming</h3>
-                        <p>Advanced DP techniques including multi-dimensional, optimization, and state compression</p>
-                        <div class="card-difficulty">Hard</div>
-                        <a href="dp.html" class="btn btn-outline">View Problems</a>
-                    </div>
-
-                    <div class="algorithm-card" data-category="graphs">
-                        <div class="card-icon"><i class="fas fa-project-diagram"></i></div>
-                        <h3>Graph Algorithms</h3>
-                        <p>Complex graph problems: flow networks, matching, shortest paths, and topological sorting</p>
-                        <div class="card-difficulty">Hard</div>
-                        <a href="graphs.html" class="btn btn-outline">View Problems</a>
-                    </div>
-
-                    <div class="algorithm-card" data-category="trees">
-                        <div class="card-icon"><i class="fas fa-sitemap"></i></div>
-                        <h3>Advanced Trees</h3>
-                        <p>Segment trees, Fenwick trees, LCAs, and tree decomposition methods</p>
-                        <div class="card-difficulty">Hard</div>
-                        <a href="trees.html" class="btn btn-outline">View Problems</a>
-                    </div>
-
-                    <div class="algorithm-card" data-category="strings">
-                        <div class="card-icon"><i class="fas fa-align-left"></i></div>
-                        <h3>String Algorithms</h3>
-                        <p>Suffix arrays, KMP, Rabin-Karp, and advanced pattern matching</p>
-                        <div class="card-difficulty">Hard</div>
-                        <a href="strings.html" class="btn btn-outline">View Problems</a>
-                    </div>
-
-                    <div class="algorithm-card" data-category="math">
-                        <div class="card-icon"><i class="fas fa-calculator"></i></div>
-                        <h3>Number Theory</h3>
-                        <p>Modular arithmetic, FFT, binary exponentiation, and combinatorial problems</p>
-                        <div class="card-difficulty">Hard</div>
-                        <a href="math.html" class="btn btn-outline">View Problems</a>
-                    </div>
-
-                    <div class="algorithm-card" data-category="geometry">
-                        <div class="card-icon"><i class="fas fa-shapes"></i></div>
-                        <h3>Computational Geometry</h3>
-                        <p>Convex hulls, line intersections, polygon problems, and geometric transformations</p>
-                        <div class="card-difficulty">Hard</div>
-                        <a href="geometry.html" class="btn btn-outline">View Problems</a>
-                    </div>
-
+                    <!-- Design (Critical) -->
                     <div class="algorithm-card" data-category="design">
                         <div class="card-icon"><i class="fas fa-cogs"></i></div>
                         <h3>System Design</h3>
-                        <p>Rate limiting, caching, scalability, and distributed systems patterns</p>
-                        <div class="card-difficulty">Expert</div>
+                        <p>Architect massive-scale systems. Master trade-offs (CAP), sharding, and resilient distributed
+                            patterns for 100M+ users.</p>
+                        <div class="card-difficulty" style="color: #e74c3c; border-color: #e74c3c;">Critical Priority
+                        </div>
                         <a href="design.html" class="btn btn-outline">View Problems</a>
                     </div>
 
+                    <!-- DP (Very High) -->
+                    <div class="algorithm-card" data-category="dp">
+                        <div class="card-icon"><i class="fas fa-route"></i></div>
+                        <h3>Dynamic Programming</h3>
+                        <p>Solve complex optimization problems. Master multidimensional state transitions, bitmasking,
+                            and space-reduction techniques.</p>
+                        <div class="card-difficulty" style="color: #e67e22; border-color: #e67e22;">Very High Priority
+                        </div>
+                        <a href="dp.html" class="btn btn-outline">View Problems</a>
+                    </div>
+
+                    <!-- Graphs (Very High) -->
+                    <div class="algorithm-card" data-category="graphs">
+                        <div class="card-icon"><i class="fas fa-project-diagram"></i></div>
+                        <h3>Graph Algorithms</h3>
+                        <p>Model complex relationships. Implement advanced shortest paths (Dijkstra), Network Flow, and
+                            Disjoint Set Union (DSU).</p>
+                        <div class="card-difficulty" style="color: #e67e22; border-color: #e67e22;">Very High Priority
+                        </div>
+                        <a href="graphs.html" class="btn btn-outline">View Problems</a>
+                    </div>
+
+                    <!-- Trees (High) -->
+                    <div class="algorithm-card" data-category="trees">
+                        <div class="card-icon"><i class="fas fa-sitemap"></i></div>
+                        <h3>Advanced Trees</h3>
+                        <p>Handle hierarchical data at scale. Master Segment Trees for range queries, Binary Lifting for
+                            LCA, and Tries.</p>
+                        <div class="card-difficulty" style="color: #f39c12; border-color: #f39c12;">High Priority</div>
+                        <a href="trees.html" class="btn btn-outline">View Problems</a>
+                    </div>
+
+                    <!-- Optimization (Medium) -->
                     <div class="algorithm-card" data-category="optimization">
                         <div class="card-icon"><i class="fas fa-tachometer-alt"></i></div>
                         <h3>Optimization</h3>
-                        <p>Advanced optimization techniques, greedy algorithms, and approximation methods</p>
-                        <div class="card-difficulty">Hard</div>
+                        <p>Squeeze maximum efficiency. Master Sliding Window, Monotonic Queues, and 'Binary Search on
+                            Answer'.</p>
+                        <div class="card-difficulty" style="color: #f1c40f; border-color: #f1c40f;">Medium Priority
+                        </div>
                         <a href="optimization.html" class="btn btn-outline">View Problems</a>
+                    </div>
+
+                    <!-- Strings (Medium) -->
+                    <div class="algorithm-card" data-category="strings">
+                        <div class="card-icon"><i class="fas fa-align-left"></i></div>
+                        <h3>String Algorithms</h3>
+                        <p>Process massive text data. Master KMP for linear-time matching, Rolling Hash, and Tries for
+                            key lookups.</p>
+                        <div class="card-difficulty" style="color: #f1c40f; border-color: #f1c40f;">Medium Priority
+                        </div>
+                        <a href="strings.html" class="btn btn-outline">View Problems</a>
+                    </div>
+
+                    <!-- Math (Low) -->
+                    <div class="algorithm-card" data-category="math">
+                        <div class="card-icon"><i class="fas fa-calculator"></i></div>
+                        <h3>Number Theory</h3>
+                        <p>Unlock efficient computation. Master Modular Arithmetic, Combinatorics, and Number Theory.
+                        </p>
+                        <div class="card-difficulty" style="color: #95a5a6; border-color: #95a5a6;">Low Priority</div>
+                        <a href="math.html" class="btn btn-outline">View Problems</a>
+                    </div>
+
+                    <!-- Geometry (Low) -->
+                    <div class="algorithm-card" data-category="geometry">
+                        <div class="card-icon"><i class="fas fa-shapes"></i></div>
+                        <h3>Computational Geometry</h3>
+                        <p>Solve spatial problems. Master Convex Hulls, sweeping line algorithms, and vector
+                            cross-products.</p>
+                        <div class="card-difficulty" style="color: #95a5a6; border-color: #95a5a6;">Low Priority</div>
+                        <a href="geometry.html" class="btn btn-outline">View Problems</a>
                     </div>
                 </div>
             </div>
@@ -161,4 +185,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>

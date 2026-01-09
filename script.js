@@ -559,6 +559,12 @@ const ProblemRenderer = {
                     </div>
 
                     <!-- Problem Statement - Always Visible -->
+                    <!-- Problem Definition -->
+                    <div class="problem-definition">
+                        <h4><i class="fas fa-file-alt"></i> Problem Statement</h4>
+                        <div>${formatMarkdown(problem.problem_statement)}</div>
+                    </div>
+
                     <div class="explanation-section">
                         <h4>1. Understanding the Problem</h4>
                         <div>${formatMarkdown(problem.explanation.understanding_the_problem)}</div>
