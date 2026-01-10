@@ -1,0 +1,335 @@
+{
+  "categories": {
+    "dp": {
+      "id": "dp",
+      "name": "Dynamic Programming Mastery",
+      "shortName": "Dynamic Programming",
+      "description": "Solve complex optimization problems. Master multidimensional state transitions, bitmasking, and space-reduction techniques to turn O(2^N) into O(N^3).",
+      "sectionTitle": "Key DP Problems",
+      "problemIds": [
+        "dp-1",
+        "dp-2",
+        "dp-3",
+        "dp-4",
+        "dp-5"
+      ],
+      "stats": {
+        "priority": "Very High",
+        "priorityColor": "#e67e22",
+        "metric": "1700-2200",
+        "metricLabel": "CF Rating"
+      },
+      "seo": {
+        "title": "Dynamic Programming - L4/L5 FAANG Algorithms Guide",
+        "description": "Advanced Dynamic Programming problems for senior-level FAANG interviews."
+      }
+    },
+    "graphs": {
+      "id": "graphs",
+      "name": "Graph Algorithms Mastery",
+      "shortName": "Graph Algorithms",
+      "description": "Model complex relationships. Implement advanced shortest paths (Dijkstra, Bellman-Ford), Network Flow, and Disjoint Set Union (DSU) for real-world connectivity.",
+      "sectionTitle": "Key Graph Problems",
+      "problemIds": [
+        "graphs-1",
+        "graphs-2",
+        "graphs-3",
+        "graphs-4",
+        "graphs-5",
+        "graphs-6",
+        "graphs-7"
+      ],
+      "stats": {
+        "priority": "Very High",
+        "priorityColor": "#e67e22",
+        "metric": "1700-2200",
+        "metricLabel": "CF Rating"
+      },
+      "seo": {
+        "title": "Graph Algorithms - L4/L5 FAANG Algorithms Guide",
+        "description": "Advanced Graph Algorithms for senior-level FAANG interviews: flows, matching, shortest paths."
+      }
+    },
+    "trees": {
+      "id": "trees",
+      "name": "Advanced Tree Algorithms",
+      "shortName": "Advanced Trees",
+      "description": "Handle hierarchical data at scale. Master Segment Trees for range queries, Binary Lifting for LCA, and Trie structures for prefix matching.",
+      "sectionTitle": "Key Tree Problems",
+      "problemIds": [
+        "trees-1",
+        "trees-2",
+        "trees-3",
+        "trees-4",
+        "trees-5"
+      ],
+      "stats": {
+        "priority": "High",
+        "priorityColor": "#e67e22",
+        "metric": "1700-2300",
+        "metricLabel": "CF Rating"
+      },
+      "seo": {
+        "title": "Advanced Trees - L4/L5 FAANG Algorithms Guide",
+        "description": "Advanced Tree algorithms: Segment trees, Fenwick trees, LCA, tree DP for Codeforces problems."
+      }
+    },
+    "strings": {
+      "id": "strings",
+      "name": "Advanced String Algorithms",
+      "shortName": "String Algorithms",
+      "description": "Process massive text data. Master KMP for linear-time matching, Rolling Hash for efficient comparison, and Tries for diverse alphabet inputs.",
+      "sectionTitle": "Key String Problems",
+      "problemIds": [
+        "strings-1",
+        "strings-2",
+        "strings-3",
+        "strings-4",
+        "strings-5"
+      ],
+      "stats": {
+        "priority": "Medium",
+        "priorityColor": "#f1c40f",
+        "metric": "1700-2400",
+        "metricLabel": "CF Rating"
+      },
+      "seo": {
+        "title": "String Algorithms - L4/L5 FAANG Algorithms Guide",
+        "description": "Advanced String algorithms: KMP, Rabin-Karp, suffix arrays, Z-algorithm for Codeforces problems."
+      }
+    },
+    "math": {
+      "id": "math",
+      "name": "Number Theory & Combinatorics",
+      "shortName": "Number Theory",
+      "description": "Unlock efficient computation. Master Modular Arithmetic for cryptography, Combinatorics for counting, and Number Theory for prime factorization.",
+      "sectionTitle": "Key Math Problems",
+      "problemIds": [
+        "math-1",
+        "math-2",
+        "math-3",
+        "math-4",
+        "math-5"
+      ],
+      "stats": {
+        "priority": "Low",
+        "priorityColor": "#95a5a6",
+        "metric": "1700-2400",
+        "metricLabel": "CF Rating"
+      },
+      "seo": {
+        "title": "Number Theory - L4/L5 FAANG Algorithms Guide",
+        "description": "Advanced Number Theory: modular arithmetic, FFT, binary exponentiation, combinatorial problems."
+      }
+    },
+    "geometry": {
+      "id": "geometry",
+      "name": "Computational Geometry",
+      "shortName": "Geometry",
+      "description": "Master spatial algorithms. From Convex Hulls to Sweep Line techniques, visualize and solve complex geometric problems efficiently.",
+      "sectionTitle": "Core Geometry Problems",
+      "problemIds": [
+        "geometry-1",
+        "geometry-2"
+      ],
+      "stats": {
+        "priority": "Specialized",
+        "priorityColor": "#9b59b6",
+        "priorityLabel": "Interview Focus",
+        "metric": "1800+",
+        "metricLabel": "Difficulty"
+      },
+      "seo": {
+        "title": "Geometry Algorithms - L4/L5 FAANG Algorithms Guide",
+        "description": "Computational Geometry for senior engineering interviews: Convex Hull, Closest Pair, and sweep-line algorithms."
+      }
+    },
+    "design": {
+      "id": "design",
+      "name": "System Design Patterns",
+      "shortName": "System Design",
+      "description": "Architect massive-scale systems. Master trade-offs between consistency and availability (CAP), database sharding strategies, and resilient distributed patterns for 100M+ users.",
+      "sectionTitle": "Key System Design Problems",
+      "problemIds": [
+        "design-1",
+        "design-2",
+        "design-3",
+        "design-4",
+        "design-5"
+      ],
+      "stats": {
+        "priority": "Critical",
+        "priorityColor": "#e74c3c",
+        "metric": "Senior (L5+)",
+        "metricLabel": "Target Level"
+      },
+      "seo": {
+        "title": "System Design - L4/L5 FAANG Algorithms Guide",
+        "description": "System Design: rate limiting, caching, load balancing, distributed systems for L4/L5 interviews."
+      }
+    },
+    "optimization": {
+      "id": "optimization",
+      "name": "Optimization Techniques",
+      "shortName": "Optimization",
+      "description": "Squeeze maximum efficiency. Master Sliding Window, Monotonic Queues, and 'Binary Search on Answer' to solve constraints that seem impossible.",
+      "sectionTitle": "Key Optimization Problems",
+      "problemIds": [
+        "optimization-1",
+        "optimization-2",
+        "optimization-3",
+        "optimization-4",
+        "optimization-5"
+      ],
+      "stats": {
+        "priority": "Medium",
+        "priorityColor": "#f1c40f",
+        "metric": "1600-2400",
+        "metricLabel": "CF Rating"
+      },
+      "seo": {
+        "title": "Optimization Techniques - L4/L5 FAANG Algorithms Guide",
+        "description": "Optimization techniques: two pointers, binary search, divide and conquer, meet in the middle for Codeforces."
+      }
+    },
+    "physics": {
+      "id": "physics",
+      "name": "Mathematical Physics",
+      "shortName": "Physics",
+      "description": "Bridge the gap between abstract mathematics and physical reality. Master relativistic mechanics, coupled differential equations, and thermodynamic state functions through rigorous problem-solving.",
+      "sectionTitle": "Key Physics Problems",
+      "problemIds": [
+        "physics-1",
+        "physics-2",
+        "physics-3",
+        "physics-4",
+        "physics-5"
+      ],
+      "icon": "fas fa-atom",
+      "stats": {
+        "priority": "Advanced",
+        "priorityColor": "#9b59b6",
+        "priorityLabel": "Math Level",
+        "metric": "Classic",
+        "metricLabel": "Problem Source"
+      },
+      "seo": {
+        "title": "Mathematical Physics - L4/L5 FAANG Algorithms Guide",
+        "description": "Advanced Mathematical Physics problems with detailed walkthroughs and LaTeX formulas."
+      },
+      "features": {
+        "katex": true
+      }
+    }
+  },
+  "ui": {
+    "loading": "Loading problems...",
+    "error": "Failed to load problems.",
+    "labels": {
+      "problems": "Problems",
+      "interviewPriority": "Interview Priority",
+      "cfRating": "CF Rating"
+    },
+    "nav": {
+      "home": "Home",
+      "problems": "Problems",
+      "concepts": "Concepts",
+      "resources": "Resources",
+      "geometry": "Geometry",
+      "search": "Search...",
+      "print": "Print"
+    },
+    "homepage": {
+      "algorithmCategories": "Algorithm Categories",
+      "priority": "Priority",
+      "viewProblems": "View Problems",
+      "additionalResources": "Additional Resources",
+      "resourcesList": [
+        {
+          "name": "CP Algorithms",
+          "url": "https://cp-algorithms.com/",
+          "description": "Comprehensive algorithm reference"
+        },
+        {
+          "name": "GeeksforGeeks",
+          "url": "https://www.geeksforgeeks.org/",
+          "description": "Detailed problem solutions"
+        },
+        {
+          "name": "LeetCode",
+          "url": "https://leetcode.com/",
+          "description": "Practice platform with company problems"
+        },
+        {
+          "name": "TopCoder",
+          "url": "https://www.topcoder.com/",
+          "description": "Competitive programming tutorials"
+        }
+      ],
+      "hero": {
+        "titleHtml": "Master <span class=\"highlight\">L4/L5 FAANG</span> Algorithms",
+        "description": "Interactive guide for senior-level algorithm problems. From dynamic programming mastery to system design patterns - everything you need for top tech interviews.",
+        "startBtn": "Start Learning",
+        "statLabels": {
+          "problems": "Problems",
+          "categories": "Categories",
+          "metric": "CF Rating"
+        }
+      },
+      "wisdom": {
+        "title": "Wisdom of the Elders",
+        "cards": [
+          {
+            "icon": "fas fa-network-wired",
+            "title": "Caching",
+            "quote": "There are only two hard things in Computer Science: cache invalidation and naming things.",
+            "author": "Phil Karlton",
+            "lesson": "Data freshness vs. speed."
+          },
+          {
+            "icon": "fas fa-server",
+            "title": "CAP Theorem",
+            "quote": "Consistency, Availability, Partition Tolerance. Pick two.",
+            "author": "Eric Brewer",
+            "lesson": "When the network cable is cut, do you lie to the user or show an error?"
+          },
+          {
+            "icon": "fas fa-tachometer-alt",
+            "title": "Premature Optimization",
+            "quote": "Premature optimization is the root of all evil.",
+            "author": "Donald Knuth",
+            "lesson": "Don't build a distributed system when a single Postgres instance will do."
+          }
+        ]
+      }
+    },
+    "problem": {
+      "problemStatement": "Problem Statement",
+      "visualization": "Visualization",
+      "understanding": "1. Understanding the Problem",
+      "seniorCorner": "Senior Engineer's Corner",
+      "interviewTip": "Interview Tip",
+      "practiceNext": "Practice Next",
+      "solveOnLeetcode": "Solve on LeetCode",
+      "naiveTitle": "The Naive Approach & Its Bottleneck",
+      "bottleneckTitle": "The Bottleneck",
+      "insightTitle": "The Key Insight",
+      "optimizedTitle": "The Optimized Algorithm",
+      "codeTitle": "Code Implementation",
+      "complexityTitle": "Complexity Analysis",
+      "timeComplexity": "Time Complexity",
+      "spaceComplexity": "Space Complexity",
+      "checkAnswer": "Check Answer",
+      "correct": "Correct!",
+      "incorrect": "Incorrect. Try again.",
+      "tryAgain": "❌ Try again!",
+      "selectAnswer": "Please select an answer!"
+    }
+  },
+  "site": {
+    "name": "AlgoPath",
+    "defaultLanguage": "en",
+    "defaultCodeLanguage": "javascript",
+    "footer": "© 2026 AlgoPath"
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "id": "graphs-2",
+  "title": "Course Schedule II (Topological Sort)",
+  "difficulty": "Medium",
+  "leetcode_url": "https://leetcode.com/problems/course-schedule-ii/",
+  "related": [
+    {
+      "id": "graphs-1",
+      "title": "Word Ladder",
+      "category": "graphs"
+    },
+    {
+      "id": "graphs-3",
+      "title": "Network Delay Time",
+      "category": "graphs"
+    }
+  ],
+  "tags": [
+    "topological-sort",
+    "bfs",
+    "dag"
+  ],
+  "follow_up": {
+    "scenario": "You are building a distributed build system (like Bazel) with thousands of targets.",
+    "trade_off": "Serial execution is too slow. Finding a valid order isn't enough; we need speed.",
+    "strategy": "Parallel Topological Sort (Kahn's with a Thread Pool). Process all nodes with `in-degree 0` in parallel. As tasks finish, decrement neighbors.",
+    "answering_guide": "Connect this to <strong>'Build Systems'</strong>. It shows you understand practical applications of DAGs beyond just abstract graphs."
+  },
+  "content": {
+    "problem_statement": "There are a total of `numCourses` courses you have to take, labeled from `0` to `numCourses - 1`. You are given an array `prerequisites` where `prerequisites[i] = [ai, bi]` indicates that you **must** take course `bi` first if you want to take course `ai`.\n\nReturn the ordering of courses you should take to finish all courses. If there are many valid answers, return **any** of them. If it is impossible to finish all courses, return **an empty array**.\n\n**Example 1:**\n```\nInput: numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]\nOutput: [0,2,1,3]\nExplanation: There are a total of 4 courses to take. To take course 3 you should have finished both courses 1 and 2. Both courses 1 and 2 should be taken after you finished course 0.\nSo one correct course order is [0,1,2,3]. Another correct ordering is [0,2,1,3].\n```",
+    "explanation": {
+      "understanding_the_problem": "This is a classic scheduling problem. We have a set of tasks (courses) and dependencies (prerequisites). The rule `[a, b]` means `b` must be completed before `a`. We need to find a linear sequence of all courses that respects these rules.\n\nThis problem is equivalent to finding a **Topological Sort** of a directed graph. A cycle in the prerequisites (e.g., you need course 1 for course 2, and course 2 for course 1) makes it impossible to finish.",
+      "brute_force": "The problem can be modeled as a graph where courses are nodes and prerequisites are directed edges. For a prerequisite `[a, b]`, we draw an edge `b -> a`.\n\nA topological sort is a linear ordering of nodes where for every edge `u -> v`, node `u` comes before node `v`. The core idea is to always find a node with no incoming edges—this is a course with no prerequisites. We can place this course in our schedule.\n\nOnce we 'take' this course, we can remove it and its outgoing edges from the graph. This might create new nodes that now have zero incoming edges. We repeat this process until all courses are taken.",
+      "bottleneck": "While the concept is sound, repeatedly scanning the graph to find a new node with zero in-degree after each removal is inefficient. We can do better by keeping track of the in-degrees as they change.",
+      "optimized_approach": "A more efficient method is **Kahn's Algorithm**, which uses a BFS-like approach. It works by keeping track of the 'in-degree' of each node (the number of prerequisites it has). The algorithm processes nodes with an in-degree of 0, and as it 'completes' them, it decrements the in-degree of all subsequent courses, adding new zero-in-degree courses to a queue to be processed.",
+      "algorithm_steps": "1.  **Build Graph and In-Degrees:**\n    a.  Create an adjacency list to represent the course dependencies (`graph`).\n    b.  Create an `in_degree` array, initialized to zeros, to count prerequisites for each course.\n    c.  For each prerequisite `[course, prereq]`, add an edge `prereq -> course` to the graph and increment `in_degree[course]`.\n\n2.  **Initialize Queue:**\n    a.  Create a queue.\n    b.  Add all courses with an in-degree of 0 to the queue. These are the courses with no prerequisites.\n\n3.  **Process Courses:**\n    a.  Initialize an empty list, `topological_order`, to store the result.\n    b.  While the queue is not empty, dequeue a course `u`.\n    c.  Add `u` to `topological_order`.\n    d.  For each neighbor `v` of `u` (i.e., for each course that depends on `u`):\n        i.  Decrement `in_degree[v]`.\n        ii. If `in_degree[v]` becomes 0, add `v` to the queue.\n\n4.  **Check for Cycles:**\n    a.  If `topological_order` contains `numCourses` elements, a valid ordering was found. Return it.\n    b.  Otherwise, the graph had a cycle, and not all courses could be processed. Return an empty array."
+    },
+    "quizzes": [
+      {
+        "question": "What algorithm solves task scheduling with dependencies?",
+        "options": [
+          "BFS",
+          "Topological Sort",
+          "Dijkstra",
+          "Binary Search"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What does 'in-degree' of a node mean?",
+        "options": [
+          "Outgoing edges",
+          "Number of prerequisites",
+          "Node weight",
+          "Distance from source"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Which data structure does Kahn's algorithm use?",
+        "options": [
+          "Stack",
+          "Queue",
+          "Heap",
+          "Tree"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "How do we detect a cycle in this approach?",
+        "options": [
+          "DFS recursion",
+          "Result length < numCourses",
+          "Stack overflow",
+          "Negative edges"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the time complexity?",
+        "options": [
+          "O(N)",
+          "O(N²)",
+          "O(V + E)",
+          "O(N log N)"
+        ],
+        "correct": 2
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function findOrder(numCourses, prerequisites) {\n  const graph = Array(numCourses).fill().map(() => []);\n  const indegree = new Array(numCourses).fill(0);\n  for (let [course, pre] of prerequisites) {\n    graph[pre].push(course);\n    indegree[course]++;\n  }\n  const queue = [];\n  for (let i = 0; i < numCourses; i++) if (!indegree[i]) queue.push(i);\n  const res = [];\n  while (queue.length) {\n    const course = queue.shift();\n    res.push(course);\n    for (let nei of graph[course]) {\n      if (--indegree[nei] === 0) queue.push(nei);\n    }\n  }\n  return res.length === numCourses ? res : [];\n}",
+      "annotations": [
+        {
+          "lines": [
+            2
+          ],
+          "text": "Create Adjacency List to represent the graph (course dependencies)."
+        },
+        {
+          "lines": [
+            3
+          ],
+          "text": "Create In-degree array: counts how many prerequisites each course has."
+        },
+        {
+          "lines": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "text": "Build graph: Pre -> Course. Increment in-degree for the dependent course."
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Kahn's Algorithm: Initialize queue with courses having 0 prerequisites (ready to take)."
+        },
+        {
+          "lines": [
+            11
+          ],
+          "text": "Process courses in queue (BFS-like approach)."
+        },
+        {
+          "lines": [
+            14
+          ],
+          "text": "Decrement in-degree of neighbors. If 0, all prereqs are met -> add to queue."
+        },
+        {
+          "lines": [
+            17
+          ],
+          "text": "If result length equals numCourses, we found a valid order. Otherwise, there's a cycle."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(V + E)",
+    "space": "O(V + E)",
+    "explanation_time": "Let V be the number of courses and E be the number of prerequisites. Building the graph and in-degree map takes O(E) time. The initial scan for zero-in-degree nodes takes O(V). The main BFS loop processes each vertex and each edge exactly once, which takes O(V + E). The total time complexity is therefore O(V + E).",
+    "explanation_space": "The space is dominated by the data structures used. The adjacency list (`graph`) requires O(V + E) space. The `indegree` array and the `queue` both require O(V) space. Therefore, the total space complexity is O(V + E)."
+  },
+  "diagram": "graph TD\n    0((Course 0)) --> 1((Course 1))\n    0 --> 2((Course 2))\n    1 --> 3((Course 3))\n    2 --> 3\n    \n    classDef default fill:#fff,stroke:#333,stroke-width:2px;\n    classDef source fill:#dcfce7,stroke:#166534,stroke-width:2px; \n    classDef sink fill:#fee2e2,stroke:#991b1b,stroke-width:2px;\n    \n    class 0 source;\n    class 3 sink;"
+}

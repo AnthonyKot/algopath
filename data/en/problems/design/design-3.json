@@ -1,0 +1,129 @@
+{
+  "id": "design-3",
+  "title": "Design Search Autocomplete System",
+  "difficulty": "Hard",
+  "leetcode_url": "https://leetcode.com/problems/design-search-autocomplete-system/",
+  "related": [
+    {
+      "id": "design-5",
+      "title": "Design Add and Search Words",
+      "category": "design"
+    },
+    {
+      "id": "design-2",
+      "title": "Design Twitter",
+      "category": "design"
+    }
+  ],
+  "tags": [
+    "design",
+    "trie",
+    "heap"
+  ],
+  "follow_up": {
+    "scenario": "The Trie is too large (100GB) to fit in RAM of a single machine.",
+    "trade_off": "Storing on disk adds latency. Sharding by prefix adds complexity.",
+    "strategy": "Shard by prefix (e.g., A-M on Server 1). Store only top-k hot queries in RAM; keep full tail on disk (SSD) or use a distributed KV store.",
+    "answering_guide": "Focus on data partitioning. <strong>'Sharding by prefix'</strong> is the key phrase. Also mention <strong>'Hot vs. Cold data separation'</strong> to show optimization awareness."
+  },
+  "content": {
+    "problem_statement": "Design a search autocomplete system for a search engine. Users may input a sentence (at least one word and end with a special character `'#'`).\n\nFor each character they type except `'#'`, you return the **top 3 historical hot sentences** that have prefix the same as the part of sentence already typed. Here are the specific rules:\n\n1.  The hot degree for a sentence is defined as the number of times a user typed the exactly same sentence before.\n2.  The returned top 3 hot sentences should be sorted by hot degree (The first is the hottest one). If several sentences have the same degree of hotness, you need to use ASCII-code order (smaller one appears first).\n3.  If less than 3 hot sentences exist, then just return as many as you can.\n4.  When the input is a special character, it means the sentence ends, and in this case, you need to return an empty list.\n\n**Example 1:**\n```\nInput\n[\"AutocompleteSystem\", \"input\", \"input\", \"input\", \"input\"]\n[[[\"i love you\", \"island\", \"ironman\", \"i love leetcode\"], [5, 3, 2, 2]], [\"i\"], [\" \"], [\"a\"], [\"#\"]]\nOutput\n[null, [\"i love you\", \"island\", \"i love leetcode\"], [\"i love you\", \"i love leetcode\"], [], []]\n```",
+    "explanation": {
+      "understanding_the_problem": "We need to perform prefix-based searches and return a ranked list of results. This is a classic application for a **Trie (Prefix Tree)**.",
+      "brute_force": "A naive approach would be to iterate through all known sentences every time the user types a character, check if each sentence starts with the current prefix, and then sort all matches to find the top 3. This would be extremely slow.",
+      "bottleneck": "Scanning the entire list of sentences for every single keystroke is the clear bottleneck.",
+      "optimized_approach": "A **Trie** is the perfect data structure. Each node represents a character, and a path from the root to a node represents a prefix. The key is what we store in the nodes.\n\nEach node in our Trie will store a map or list of all complete sentences that pass through it, along with their hotness scores. When a user types a prefix, we traverse the Trie to the node corresponding to that prefix. We then only need to sort the sentences stored at that specific node, which is a much smaller set than all sentences.",
+      "algorithm_steps": "1.  **Trie Node Structure:** Each node contains `children` pointers and a `sentences` map (`sentence -> hotness`).\n2.  **Constructor:** Build the initial Trie from the given sentences. For each sentence, traverse the Trie, creating nodes as needed. At each node along the path, add the sentence and its hotness score to that node's `sentences` map.\n3.  **`input(c)`:**\n    a.  If `c == '#'`, the user finished typing. Add the current sentence to our data (and update its hotness in all relevant Trie nodes). Reset the state.\n    b.  Otherwise, append `c` to the current prefix and traverse to the next node in the Trie.\n    c.  Retrieve the `sentences` map from the current node.\n    d.  Sort the items in the map based on hotness (desc) and then lexicographically (asc).\n    e.  Return the top 3."
+    },
+    "quizzes": [
+      {
+        "question": "What is the primary data structure used?",
+        "options": [
+          "Hash Table",
+          "Trie (Prefix Tree)",
+          "Binary Search Tree",
+          "Linked List"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Where do we store the 'hot' sentences?",
+        "options": [
+          "Only at leaves",
+          "In every node of the path",
+          "In a separate database",
+          "In the root only"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "How do we handle the '#' character?",
+        "options": [
+          "Ignore it",
+          "It marks the end of a sentence (commit)",
+          "It's a wildcard",
+          "It deletes the last char"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What optimizes the 'top 3' query?",
+        "options": [
+          "Sorting all sentences every time",
+          "Storing a small sorted list at each node",
+          "Using a global heap",
+          "Binary search"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What happens if two sentences have the same hotness?",
+        "options": [
+          "Random order",
+          "Lexicographical (ASCII) order",
+          "Newest first",
+          "Oldest first"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "class AutocompleteSystem {\n  constructor(sentences, times) {\n    this.root = {};\n    this.currentNode = this.root;\n    this.currentSentence = '';\n    \n    for (let i = 0; i < sentences.length; i++) {\n      this.addSentence(sentences[i], times[i]);\n    }\n  }\n  \n  addSentence(sentence, count) {\n    let node = this.root;\n    for (const char of sentence) {\n      if (!node[char]) node[char] = {};\n      node = node[char];\n      if (!node.sentences) node.sentences = new Map();\n      node.sentences.set(sentence, (node.sentences.get(sentence) || 0) + count);\n    }\n  }\n  \n  input(c) {\n    if (c === '#') {\n      this.addSentence(this.currentSentence, 1);\n      this.currentSentence = '';\n      this.currentNode = this.root;\n      return [];\n    }\n    \n    this.currentSentence += c;\n    if (!this.currentNode || !this.currentNode[c]) {\n      this.currentNode = null;\n      return [];\n    }\n    \n    this.currentNode = this.currentNode[c];\n    const candidates = Array.from(this.currentNode.sentences.entries());\n    candidates.sort((a, b) => {\n      if (a[1] !== b[1]) return b[1] - a[1];\n      return a[0].localeCompare(b[0]);\n    });\n    \n    return candidates.slice(0, 3).map(item => item[0]);\n  }\n}",
+      "annotations": [
+        {
+          "lines": [
+            2,
+            10
+          ],
+          "text": "Trie Structure: Root node stores children chars and a map of full sentences passing through it."
+        },
+        {
+          "lines": [
+            13
+          ],
+          "text": "Hotness Map: Each node stores {sentence: frequency} for all words in its subtree."
+        },
+        {
+          "lines": [
+            32
+          ],
+          "text": "Traversal: Follow path down the Trie based on input characters."
+        },
+        {
+          "lines": [
+            40
+          ],
+          "text": "Ranking: Sort candidates at the constant-time node lookup level."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(S*L + P + C*logC)",
+    "space": "O(S*L)",
+    "explanation_time": "Let S be the number of sentences, L be their average length, P be the prefix length, and C be the number of candidates for a prefix. Build time is O(S*L). Each input takes O(P) to traverse the trie, then O(C log C) to sort the candidates. ",
+    "explanation_space": "The space is dominated by the Trie, which in the worst case stores every character of every sentence, leading to O(S*L) space."
+  }
+}

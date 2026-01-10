@@ -135,6 +135,35 @@ body {
     transform: translateY(0);
 }
 
+/* Language Toggle Button */
+.language-toggle {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-inverse);
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.language-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.language-toggle:active {
+    transform: translateY(0);
+}
+
+.lang-flag {
+    font-size: 18px;
+    line-height: 1;
+}
+
 /* Hero Section */
 .hero {
     padding: 120px 0 80px;
@@ -310,8 +339,9 @@ body {
 
 .card-difficulty {
     display: inline-block;
+    /* Default gradient if no inline color */
     background: var(--gradient-accent);
-    color: var(--text-inverse);
+    color: #ffffff;
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 0.8rem;
@@ -320,6 +350,8 @@ body {
     letter-spacing: 1px;
     margin-bottom: 1.5rem;
     transition: background 0.3s ease;
+    border: 1px solid transparent;
+    /* Prepare for border color */
 }
 
 /* Concepts Section */
@@ -386,6 +418,52 @@ body {
     padding: 2px 6px;
     border-radius: 4px;
     display: inline-block;
+}
+
+/* Wisdom Cards Styling */
+.wisdom-card {
+    border-left: 4px solid #8e44ad;
+    /* Purple accent for wisdom */
+    display: flex;
+    flex-direction: column;
+}
+
+.wisdom-quote {
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin: 1rem 0;
+    line-height: 1.6;
+    flex-grow: 1;
+    position: relative;
+    padding-left: 1rem;
+    border-left: 2px solid var(--border-color);
+}
+
+.wisdom-footer {
+    margin-top: auto;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+}
+
+.wisdom-author {
+    display: block;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.wisdom-lesson {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.wisdom-lesson strong {
+    color: #8e44ad;
+}
+
+[data-theme="dark"] .wisdom-lesson strong {
+    color: #9b59b6;
 }
 
 /* Resources Section */
@@ -539,6 +617,22 @@ footer {
     line-height: 1.5;
     white-space: pre-wrap;
     transition: color 0.3s ease;
+}
+
+.code-snippet pre {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+}
+
+/* Ensure code inside the snippet doesn't inherit inline code styles from .explanation-section code */
+.code-snippet code {
+    background: transparent !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    color: var(--code-text) !important;
 }
 
 .insights {
@@ -754,7 +848,7 @@ footer {
     padding: 2px 6px;
     border-radius: 4px;
     font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-    font-size: 0.85em;
+    font-size: 0.95em;
     font-weight: 500;
 }
 
@@ -1047,8 +1141,18 @@ footer {
     backdrop-filter: blur(4px);
 }
 
+[data-theme="dark"] .search-input {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
 .search-input::placeholder {
     color: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="dark"] .search-input::placeholder {
+    color: var(--text-secondary);
 }
 
 .search-input:focus {
@@ -1068,6 +1172,10 @@ footer {
     font-size: 0.9rem;
     pointer-events: none;
     transition: color 0.3s;
+}
+
+[data-theme="dark"] .search-icon {
+    color: var(--text-secondary);
 }
 
 .search-input:focus+.search-icon {
@@ -1090,6 +1198,11 @@ footer {
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.25s ease;
+}
+
+[data-theme="dark"] .search-results {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    border-color: var(--border-color);
 }
 
 .search-results.active {

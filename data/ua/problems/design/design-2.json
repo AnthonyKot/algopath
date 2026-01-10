@@ -1,0 +1,122 @@
+{
+    "id": "design-2",
+    "title": "Проектування Twitter",
+    "difficulty": "Hard",
+    "leetcode_url": "https://leetcode.com/problems/design-twitter/",
+    "related": [
+        {
+            "id": "design-4",
+            "title": "Design Hit Counter",
+            "category": "design"
+        },
+        {
+            "id": "design-1",
+            "title": "LRU Cache",
+            "category": "design"
+        }
+    ],
+    "tags": [
+        "design",
+        "heap",
+        "merge-k-lists"
+    ],
+    "follow_up": {
+        "scenario": "Знаменитість, така як Джастін Бібер, публікує твіт. Надсилання до стрічок 100M підписників займає занадто багато часу (Fan-out on Write).",
+        "trade_off": "Модель Push дає швидке читання, але повільний запис для знаменитостей. Модель Pull безпечніша для знаменитостей.",
+        "strategy": "Гібридний підхід: використовуйте Push для звичайних користувачів і Pull для знаменитостей. При завантаженні стрічки об'єднуйте надіслані твіти з отриманими твітами знаменитостей.",
+        "answering_guide": "Почніть із протиставлення моделей Push та Pull. <strong>'Гібридний'</strong> підхід є золотим стандартом відповіді. Явно згадайте термін <strong>'Fan-out on Write'</strong>."
+    },
+    "content": {
+        "problem_statement": "Проектуйте спрощений Twitter, де користувачі можуть публікувати твіти, підписуватися/відписуватися від інших та отримувати стрічку новин з 10 найбільш нещодавніх твітів зі своїх власних публікацій та публікацій людей, яких вони читають.\n\nРеалізуйте клас `Twitter`:\n*   `Twitter()` Ініціалізує ваш об'єкт Twitter.\n*   `void postTweet(int userId, int tweetId)` Створює новий твіт з ID `tweetId` від користувача `userId`. Кожен виклик цієї функції буде здійснюватися з унікальним `tweetId`.\n*   `List<Integer> getNewsFeed(int userId)` Отримує `10` найбільш нещодавніх ID твітів у стрічці новин користувача. Кожен елемент у стрічці новин має бути опублікований користувачами, за якими стежить користувач, або самим користувачем. Твіти повинні бути впорядковані від найновіших до найстаріших.\n*   `void follow(int followerId, int followeeId)` Користувач з ID `followerId` почав стежити за користувачем з ID `followeeId`.\n*   `void unfollow(int followerId, int followeeId)` Користувач з ID `followerId` припинив стежити за користувачем з ID `followeeId`.\n\n**Приклад 1:**\n```\nInput\n[\"Twitter\", \"postTweet\", \"getNewsFeed\", \"follow\", \"postTweet\", \"getNewsFeed\", \"unfollow\", \"getNewsFeed\"]\n[[], [1, 5], [1], [1, 2], [2, 6], [1], [1, 2], [1]]\nOutput\n[null, null, [5], null, null, [6, 5], null, [5]]\n```",
+        "explanation": {
+            "understanding_the_problem": "Нам потрібно керувати відносинами користувачів (хто за ким стежить) та контентом користувачів (твіти). Найскладнішою операцією є `getNewsFeed`, яка вимагає отримання контенту від кількох користувачів та пошуку найновіших елементів.",
+            "brute_force": "1.  Зберігати відносини підписки в `Map<userId, Set<userId>>`.\n2.  Зберігати твіти в `Map<userId, List<Tweet>>`, де кожен твіт має глобальну часову мітку.\n3.  Для `getNewsFeed` зібрати всі твіти від користувача та всіх, за ким він стежить, в один список, відсортувати цей великий список за часовою міткою і взяти топ-10.",
+            "bottleneck": "Операція `getNewsFeed` дуже неефективна. Якщо користувач читає `k` людей і кожен з них має `T` твітів, сортування об'єднаного списку з `k*T` твітів є повільним і не масштабується.",
+            "optimized_approach": "Задача `getNewsFeed` — це класична задача **'Злиття k-відсортованих списків'**, оскільки список твітів кожного користувача вже відсортований за часом. **Макс-Купа (Max-Heap)** є ідеальною структурою даних для цього.\n\nЗамість об'єднання всіх твітів і сортування, ми можемо підтримувати макс-купу розміром `k+1` (по одній для останнього твіту кожного читаного користувача плюс поточного користувача). Ми витягуємо найновіший твіт (максимальний елемент) з купи, додаємо його до нашого результату, а потім додаємо наступний твіт від того ж користувача до купи. Ми повторюємо це 10 разів.",
+            "algorithm_steps": "1.  **Структури Даних:**\n    - `follows: Map<userId, Set<userId>>`\n    - `tweets: Map<userId, List<[timestamp, tweetId]>>`\n    - `time: global integer` для часових міток.\n2.  **`postTweet(userId, tweetId)`:** Додати `[time++, tweetId]` до списку твітів користувача. O(1).\n3.  **`follow(follower, followee)`:** Додати `followee` до набору `follower`. O(1).\n4.  **`getNewsFeed(userId)` (Оптимізовано):**\n    a.  Створіть макс-купу.\n    b.  Для користувача та кожної особи, за якою він стежить, додайте вказівник на їхній найновіший твіт до купи.\n    c.  Цикл 10 разів: витягніть макс (найновіший) твіт з купи, додайте його до списку результатів, а потім додайте наступний твіт від того ж користувача назад у купу."
+        },
+        "quizzes": [
+            {
+                "question": "Яка основна алгоритмічна проблема в getNewsFeed?",
+                "options": [
+                    "Обіхід графа",
+                    "Злиття k відсортованих списків",
+                    "Динамічне програмування",
+                    "Найкоротший шлях"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Яка структура даних оптимізує злиття твітів?",
+                "options": [
+                    "Стек",
+                    "Черга",
+                    "Мін-Купа",
+                    "Макс-Купа"
+                ],
+                "correct": 3
+            },
+            {
+                "question": "Чому тут використовується 'Pull Model' (отримання при читанні)?",
+                "options": [
+                    "Простіше для малого масштабу",
+                    "Швидше читання",
+                    "Використовує більше пам'яті",
+                    "Важче реалізувати"
+                ],
+                "correct": 0
+            },
+            {
+                "question": "Як ми обробляємо користувача, що читає тисячі людей?",
+                "options": [
+                    "Модель Pull не справляється (затримка)",
+                    "Це просто працює",
+                    "Використовувати більшу купу",
+                    "Кешувати все"
+                ],
+                "correct": 0
+            },
+            {
+                "question": "Яка часова складність getNewsFeed (оптимізована)?",
+                "options": [
+                    "O(T * k)",
+                    "O(1)",
+                    "O(k log k)",
+                    "O(N²)"
+                ],
+                "correct": 2
+            }
+        ]
+    },
+    "code": {
+        "javascript": {
+            "solution": "class Twitter {\n  constructor() {\n    this.tweets = new Map();\n    this.following = new Map();\n    this.timestamp = 0;\n  }\n  \n  postTweet(userId, tweetId) {\n    if (!this.tweets.has(userId)) this.tweets.set(userId, []);\n    this.tweets.get(userId).push([this.timestamp++, tweetId]);\n  }\n  \n  getNewsFeed(userId) {\n    const feeds = [];\n    const userTweets = this.tweets.get(userId) || [];\n    feeds.push(...userTweets);\n    \n    const followees = this.following.get(userId) || new Set();\n    for (const followeeId of followees) {\n      const followeeTweets = this.tweets.get(followeeId) || [];\n      feeds.push(...followeeTweets);\n    }\n    \n    feeds.sort((a, b) => b[0] - a[0]);\n    return feeds.slice(0, 10).map(tweet => tweet[1]);\n  }\n  \n  follow(followerId, followeeId) {\n    if (followerId === followeeId) return;\n    if (!this.following.has(followerId)) {\n      this.following.set(followerId, new Set());\n    }\n    this.following.get(followerId).add(followeeId);\n  }\n  \n  unfollow(followerId, followeeId) {\n    if (this.following.has(followerId)) {\n      this.following.get(followerId).delete(followeeId);\n    }\n  }\n}",
+            "annotations": [
+                {
+                    "lines": [
+                        3
+                    ],
+                    "text": "Data Store: Map<UserId, List<Tweet>> для доступу O(1) до твітів користувача."
+                },
+                {
+                    "lines": [
+                        16
+                    ],
+                    "text": "Aggregation: Зібрати твіти користувача та всіх, за ким він стежить."
+                },
+                {
+                    "lines": [
+                        21
+                    ],
+                    "text": "Sort: Наївний підхід сортує всі зібрані твіти. Злиття купою було б краще тут."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(T*k log(T*k)) для стрічки (наївно), O(1) інше",
+        "space": "O(Tweets + Follows)",
+        "explanation_time": "Наданий код використовує наївний підхід сортування, де `k` — кількість підписок, а `T` — середня кількість їхніх твітів. Складність визначається сортуванням зібраної стрічки. Підхід на основі купи значно покращив би це до O(k log k + 10 log k).",
+        "explanation_space": "Нам потрібно зберігати всі твіти та всі відносини підписки."
+    }
+}

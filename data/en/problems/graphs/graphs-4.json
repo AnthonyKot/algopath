@@ -1,0 +1,145 @@
+{
+  "id": "graphs-4",
+  "title": "Min Cost to Connect Points (Prim's MST)",
+  "difficulty": "Medium",
+  "leetcode_url": "https://leetcode.com/problems/min-cost-to-connect-all-points/",
+  "related": [
+    {
+      "id": "graphs-3",
+      "title": "Network Delay Time",
+      "category": "graphs"
+    },
+    {
+      "id": "graphs-5",
+      "title": "Pacific Atlantic Water Flow",
+      "category": "graphs"
+    }
+  ],
+  "tags": [
+    "mst",
+    "prim",
+    "greedy"
+  ],
+  "content": {
+    "problem_statement": "You are given an array `points` representing integer coordinates of some points on a 2D-plane, where `points[i] = [xi, yi]`.\n\nThe cost of connecting two points `[xi, yi]` and `[xj, yj]` is the **Manhattan distance** between them: `|xi - xj| + |yi - yj|`.\n\nReturn the minimum cost to make all points connected. All points are connected if there is exactly one simple path between any two points.\n\n**Example 1:**\n```\nInput: points = [[0,0],[2,2],[3,10],[5,2],[7,0]]\nOutput: 20\n```",
+    "explanation": {
+      "understanding_the_problem": "We are given a set of points and asked to connect all of them with the minimum possible total cost. The rule that 'there is exactly one simple path between any two points' is the definition of a **tree**.\n\nSo, the problem is asking us to find a **Minimum Spanning Tree (MST)**. We can imagine this as a complete graph where every point is a node, and an edge exists between every pair of points, weighted by their Manhattan distance.",
+      "brute_force": "There are two primary greedy algorithms for finding an MST: Prim's and Kruskal's.\n\n- **Kruskal's Algorithm:** Sorts all possible edges by weight and adds the smallest ones that don't form a cycle. This is great for sparse graphs.\n- **Prim's Algorithm:** Grows an MST from a single starting node, at each step adding the cheapest edge that connects a node in the MST to a node outside of it.\n\nSince our graph is **dense** (a complete graph where every point is connected to every other), Prim's algorithm is a very natural and efficient choice.",
+      "bottleneck": "A naive implementation of Prim's might involve complex data structures. However, a straightforward version is quite elegant and easy to implement, especially when the graph is dense, making it a great approach for this problem.",
+      "optimized_approach": "We will use Prim's algorithm. The core idea is to maintain a set of visited nodes (part of our growing MST) and, for every unvisited node, keep track of the minimum cost to connect it to *any* node in the visited set. At each step, we greedily pick the unvisited node with the smallest connection cost, add it to our MST, and then update the connection costs for all remaining unvisited nodes.",
+      "algorithm_steps": "1.  **Initialization:**\n    a.  Create a `min_dist` array of size N (number of points), initialized to `Infinity`. This stores the minimum cost to connect each point to the growing MST. Pick a starting point (e.g., node 0) and set its distance to 0.\n    b.  Create a `visited` set to track points already included in the MST.\n    c.  Initialize `total_cost = 0`.\n\n2.  **Main Loop:** Repeat N times:\n    a.  **Select Next Node:** Find the unvisited node `u` that has the smallest value in the `min_dist` array. This is the cheapest point to add to our MST.\n    b.  **Add to MST:** If no such node is found (or its distance is infinity), stop. Otherwise, mark `u` as visited and add its `min_dist` value to `total_cost`.\n    c.  **Update Distances:** For every other unvisited node `v`, calculate the Manhattan distance from `u` to `v`. Update `min_dist[v]` to be the minimum of its current value and this new distance.\n\n3.  **Return Result:** After the loop finishes, `total_cost` will hold the weight of the MST."
+    },
+    "quizzes": [
+      {
+        "question": "What problem does MST solve?",
+        "options": [
+          "Shortest path",
+          "Min cost to connect all nodes",
+          "Maximum flow",
+          "Cycle detection"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Which algorithm grows MST from a single node?",
+        "options": [
+          "Kruskal's",
+          "Prim's",
+          "Dijkstra's",
+          "Bellman-Ford"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What greedy choice does Prim's make?",
+        "options": [
+          "Longest edge",
+          "Cheapest edge to unvisited node",
+          "Random edge",
+          "Most connected node"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What is Manhattan distance?",
+        "options": [
+          "|x₁-x₂| + |y₁-y₂|",
+          "√((x₁-x₂)² + (y₁-y₂)²)",
+          "max(|x₁-x₂|, |y₁-y₂|)",
+          "min(|x₁-x₂|, |y₁-y₂|)"
+        ],
+        "correct": 0
+      },
+      {
+        "question": "What's Prim's time complexity for dense graphs?",
+        "options": [
+          "O(N)",
+          "O(N log N)",
+          "O(N²)",
+          "O(N³)"
+        ],
+        "correct": 2
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function minCostConnectPoints(points) {\n  const n = points.length;\n  const visited = new Set();\n  let minCost = 0;\n  const dist = (a,b) => Math.abs(a[0]-b[0]) + Math.abs(a[1]-b[1]);\n  const minDist = new Array(n).fill(Infinity);\n  minDist[0] = 0;\n  for (let i = 0; i < n; i++) {\n    let u = -1;\n    for (let j = 0; j < n; j++) {\n      if (!visited.has(j) && (u === -1 || minDist[j] < minDist[u])) {\n        u = j;\n      }\n    }\n    visited.add(u);\n    minCost += minDist[u];\n    for (let j = 0; j < n; j++) {\n      if (!visited.has(j)) {\n        const d = dist(points[u], points[j]);\n        minDist[j] = Math.min(minDist[j], d);\n      }\n    }\n  }\n  return minCost;\n}",
+      "annotations": [
+        {
+          "lines": [
+            4
+          ],
+          "text": "Helper to calculate Manhattan distance between two points."
+        },
+        {
+          "lines": [
+            5,
+            6
+          ],
+          "text": "Prim's Algorithm: Track min cost to connect each node to MST. Start with node 0 (cost 0)."
+        },
+        {
+          "lines": [
+            7
+          ],
+          "text": "Main loop: add N points to the MST one by one."
+        },
+        {
+          "lines": [
+            9,
+            10,
+            11,
+            12,
+            13
+          ],
+          "text": "Greedy step: Find unvisited node 'u' with smallest connection cost to current MST."
+        },
+        {
+          "lines": [
+            14,
+            15
+          ],
+          "text": "Add 'u' to MST and add its cost to total."
+        },
+        {
+          "lines": [
+            16,
+            17,
+            18,
+            19,
+            21
+          ],
+          "text": "Update step: Update connection costs for all remaining unvisited neighbors of 'u'."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(N²)",
+    "space": "O(N)",
+    "explanation_time": "Let N be the number of points. The main loop runs N times. Inside this loop, we have two nested loops: one to find the unvisited node with the minimum distance (which takes O(N) time) and another to update the distances to all other unvisited nodes (also O(N)). This results in a total time complexity of O(N * N) = O(N²).",
+    "explanation_space": "We use an array `minDist` of size N and a set `visited` which can grow to size N. Both require O(N) space. Therefore, the total space complexity is O(N)."
+  },
+  "diagram": "graph TD\n    0(\"[0,0]\") ---|4| 1(\"[2,2]\")\n    1 ---|3| 3(\"[5,2]\")\n    3 ---|4| 4(\"[7,0]\")\n    1 ---|9| 2(\"[3,10]\")\n    \n    classDef default fill:#fff,stroke:#333,stroke-width:2px;\n    classDef mst fill:#dcfce7,stroke:#166534,stroke-width:2px;\n    \n    class 0,1,2,3,4 mst;"
+}

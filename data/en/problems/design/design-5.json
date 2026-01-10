@@ -1,0 +1,124 @@
+{
+  "id": "design-5",
+  "title": "Design Add and Search Words Data Structure",
+  "difficulty": "Hard",
+  "leetcode_url": "https://leetcode.com/problems/design-add-and-search-words-data-structure/",
+  "related": [
+    {
+      "id": "design-3",
+      "title": "Design Search Autocomplete System",
+      "category": "design"
+    },
+    {
+      "id": "strings-1",
+      "title": "KMP Pattern Matching",
+      "category": "strings"
+    }
+  ],
+  "tags": [
+    "design",
+    "trie",
+    "dfs",
+    "wildcard"
+  ],
+  "follow_up": {
+    "scenario": "User searches for '.......' (all dots). This triggers a DFS of the entire Trie.",
+    "trade_off": "Strict regex support vs Denial of Service risk.",
+    "strategy": "Limit the number of dots allowed. Optimize DFS by pruning branches that cannot match the remaining length. Store string lengths in nodes.",
+    "answering_guide": "Frame this as a Security/Reliability issue (DoS). Suggest <strong>'Input Validation'</strong> (limiting dots) and <strong>'Pruning'</strong> as the technical mitigation."
+  },
+  "content": {
+    "problem_statement": "Design a data structure that supports adding new words and finding if a string matches any previously added string.\n\nImplement the `WordDictionary` class:\n*   `WordDictionary()` Initializes the object.\n*   `void addWord(word)` Adds `word` to the data structure, it can be matched later.\n*   `bool search(word)` Returns `true` if there is any string in the data structure that matches `word` or `false` otherwise. `word` may contain dots `.` where `.` can be matched with any letter.\n\n**Example 1:**\n```\nInput\n[\"WordDictionary\",\"addWord\",\"addWord\",\"addWord\",\"search\",\"search\",\"search\",\"search\"]\n[[],[\"bad\"],[\"dad\"],[\"mad\"],[\"pad\"],[\"bad\"],[\".ad\"],[\"b..\"]]\nOutput\n[null,null,null,null,false,true,true,true]\n```",
+    "explanation": {
+      "understanding_the_problem": "We need to store a dictionary of words and perform searches that can include wildcards. This is another problem that is perfectly suited for a **Trie (Prefix Tree)**.",
+      "brute_force": "Storing words in a simple list or hash set would make `addWord` easy. However, searching for a word with a wildcard like 'b.d' would require iterating through every word in the dictionary and checking it against the pattern, which would be very slow.",
+      "bottleneck": "The search operation is the bottleneck for simple data structures when wildcards are involved.",
+      "optimized_approach": "A **Trie** allows us to search prefix-by-prefix. When we encounter a normal character, we traverse to the corresponding child node. When we encounter a `.` wildcard, it means we can match any character. Therefore, we must explore *all* children of the current node and see if any of them lead to a valid match.",
+      "algorithm_steps": "1.  **Trie Node Structure:** Each node has `children` (a map or array) and a boolean `isEndOfWord`.\n\n2.  **`addWord(word)`:** This is a standard Trie insertion. Traverse the Trie character by character, creating nodes as needed. At the final node, set `isEndOfWord = true`.\n\n3.  **`search(word)`:** This is a recursive DFS-style search.\n    a.  Define `dfs(index, node)` which searches for `word` starting from `index` in the subtree rooted at `node`.\n    b.  **Base Case:** If `index` reaches the end of the word, a match is found if `node.isEndOfWord` is true.\n    c.  Get the current character `c = word[index]`.\n    d.  **If `c` is a `.`:** Iterate through all children of the current `node`. For each `child`, if a recursive call `dfs(index + 1, child)` returns true, then we have found a match, so return true.\n    e.  **If `c` is a normal character:** Check if `node.children` has `c`. If not, no match. If yes, recurse on that child: `dfs(index + 1, node.children[c])`."
+    },
+    "quizzes": [
+      {
+        "question": "Which data structure is best for prefix-based storage?",
+        "options": [
+          "Hash Set",
+          "Trie",
+          "Array",
+          "Linked List"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "How do we handle the '.' wildcard?",
+        "options": [
+          "Ignore it",
+          "Check all children of current node",
+          "Guess the character",
+          "Jump to leaf"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What is the worst-case search complexity with wildcards?",
+        "options": [
+          "O(M)",
+          "O(26^M)",
+          "O(1)",
+          "O(log N)"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What flag is crucial in each Trie node?",
+        "options": [
+          "isVisited",
+          "isEndOfWord",
+          "charValue",
+          "hasChildren"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Does 'addWord' handle wildcards?",
+        "options": [
+          "Yes",
+          "No, only search does",
+          "Ideally yes",
+          "Depends on implementation"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "class WordDictionary {\n  constructor() {\n    this.root = {};\n  }\n  \n  addWord(word) {\n    let node = this.root;\n    for (const char of word) {\n      if (!node[char]) node[char] = {};\n      node = node[char];\n    }\n    node.isEnd = true;\n  }\n  \n  search(word) {\n    return this.dfs(word, 0, this.root);\n  }\n  \n  dfs(word, index, node) {\n    if (index === word.length) {\n      return !!node.isEnd;\n    }\n    \n    const char = word[index];\n    if (char === '.') {\n      for (const key in node) {\n        if (key !== 'isEnd' && this.dfs(word, index + 1, node[key])) {\n          return true;\n        }\n      }\n      return false;\n    } else {\n      if (!node[char]) return false;\n      return this.dfs(word, index + 1, node[char]);\n    }\n  }\n}",
+      "annotations": [
+        {
+          "lines": [
+            7
+          ],
+          "text": "Add: Standard Trie insertion. Create path if missing."
+        },
+        {
+          "lines": [
+            22
+          ],
+          "text": "Wildcard: ' . ' matches any char. Must try ALL children of current node recursively."
+        },
+        {
+          "lines": [
+            29
+          ],
+          "text": "Standard Match: Proceed down specific child path."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(M) for add, O(N*26^M) worst-case for search",
+    "space": "O(Total Chars)",
+    "explanation_time": "`addWord` takes O(M) where M is the word length. `search` also takes O(M) for words without wildcards. With wildcards, the search can branch. In the worst case (a search for '....'), we might have to explore a large portion of the Trie.",
+    "explanation_space": "The space is proportional to the total number of characters in all words stored in the Trie."
+  },
+  "diagram": "graph TD\n    root(( ))\n    \n    root --b--> n1(( ))\n    n1 --a--> n2(( ))\n    n2 --d--> n3((( )))\n    \n    root --d--> n4(( ))\n    n4 --a--> n5(( ))\n    n5 --d--> n6((( )))\n    \n    root --m--> n7(( ))\n    n7 --a--> n8(( ))\n    n8 --d--> n9((( )))\n    \n    classDef default fill:#fff,stroke:#333,stroke-width:2px;\n    classDef endNode fill:#bbf7d0,stroke:#22c55e,stroke-width:4px;\n    class n3,n6,n9 endNode;"
+}

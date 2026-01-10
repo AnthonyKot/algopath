@@ -1,0 +1,121 @@
+{
+  "id": "strings-4",
+  "title": "Suffix Array Construction",
+  "difficulty": "Medium",
+  "related": [
+    {
+      "id": "strings-3",
+      "title": "Z-Algorithm",
+      "category": "strings"
+    },
+    {
+      "id": "strings-5",
+      "title": "Manacher's Algorithm",
+      "category": "strings"
+    }
+  ],
+  "tags": [
+    "suffix-array",
+    "strings",
+    "sorting"
+  ],
+  "content": {
+    "problem_statement": "Given a string `s`, return the **suffix array** of `s`.\n\nA **suffix array** is a sorted array of all suffixes of `s`. It is an array of integers representing the starting indices of all suffixes of `s` required to list them in **lexicographical order**.\n\n**Example 1:**\n```\nInput: s = \"banana\"\nOutput: [5, 3, 1, 0, 4, 2]\nExplanation: \nSuffixes: [\"a\", \"ana\", \"anana\", \"banana\", \"na\", \"nana\"]\nIndices: [5, 3, 1, 0, 4, 2]\n```",
+    "explanation": {
+      "understanding_the_problem": "We need to create an array of integers that represent the starting indices of all suffixes of a string, such that if we were to list the suffixes in that order, they would be lexicographically sorted.",
+      "brute_force": "The most straightforward way is to actually generate all N suffixes of the string and then use a standard sorting algorithm. Generating all suffixes takes O(N²) time and space. Sorting them would then take O(N * N log N) because each comparison can take up to O(N) time. This is far too slow.",
+      "bottleneck": "The sorting step is the bottleneck, specifically the expensive O(N) string comparisons.",
+      "optimized_approach": "A common and much faster approach is the **'Doubling'** or **'Prefix-Doubling'** algorithm, which has a complexity of O(N log² N). Instead of sorting the full suffixes at once, we sort them based on prefixes of exponentially increasing lengths (1, 2, 4, 8, ...).\n\nIn each step `k`, we sort the suffixes based on their first `2^k` characters. The key trick is that a prefix of length `2^k` can be seen as a pair of two prefixes of length `2^(k-1)`, whose relative order (rank) we already computed in the previous step. This turns the expensive string comparison into a simple pair-of-integers comparison, which is much faster.",
+      "algorithm_steps": "1.  **Step k=0:** Sort all suffixes based on their first character. Assign an equivalence class (rank) to each suffix.\n2.  **Iteration:** For `k` from 1 up to `log N`:\n    a.  Create pairs of ranks for each suffix, representing the first `2^k` characters: `(rank of first 2^(k-1) chars, rank of second 2^(k-1) chars)`.\n    b.  Sort the suffixes based on these pairs.\n    c.  Re-calculate the equivalence classes (ranks) based on the new sorted order.\n3.  **Result:** After `log N` iterations, the suffixes are fully sorted, and the suffix array is constructed."
+    },
+    "quizzes": [
+      {
+        "question": "What is a suffix array?",
+        "options": [
+          "Character frequencies",
+          "Sorted indices of all suffixes",
+          "Hash values",
+          "Prefix lengths"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the key idea of prefix-doubling?",
+        "options": [
+          "Sort by increasing prefix lengths",
+          "Use hash tables",
+          "Compare all pairs",
+          "Recursive divide"
+        ],
+        "correct": 0
+      },
+      {
+        "question": "How many iterations does doubling take?",
+        "options": [
+          "N",
+          "N/2",
+          "log N",
+          "N²"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "What's the time complexity of doubling algorithm?",
+        "options": [
+          "O(N)",
+          "O(N log N)",
+          "O(N log² N)",
+          "O(N²)"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "What are suffix arrays used for?",
+        "options": [
+          "Only sorting",
+          "Pattern search, LCP, compression",
+          "Just visualization",
+          "Memory allocation"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function buildSuffixArray(s) {\n  const n = s.length;\n  const sa = Array.from({length: n}, (_, i) => i);\n  const rank = s.split('').map(c => c.charCodeAt(0));\n  const tmp = new Array(n).fill(0);\n  for (let k = 1; k < n; k *= 2) {\n    sa.sort((a, b) => {\n      const ra = rank[a], rb = rank[b];\n      if (ra === rb) {\n        const rak = rank[a+k] || -1, rbk = rank[b+k] || -1;\n        return rak - rbk;\n      }\n      return ra - rb;\n    });\n    tmp[sa[0]] = 0;\n    for (let i = 1; i < n; i++) {\n      const prev = sa[i-1], curr = sa[i];\n      const prevRank = rank[prev] + ',' + (rank[prev+k] || -1);\n      const currRank = rank[curr] + ',' + (rank[curr+k] || -1);\n      tmp[curr] = tmp[prev] + (prevRank < currRank ? 1 : 0);\n    }\n    [rank, tmp] = [tmp, rank];\n  }\n  return sa;\n}",
+      "annotations": [
+        {
+          "lines": [
+            1
+          ],
+          "text": "Function Definition: Constructs the Suffix Array in O(N log² N) time."
+        },
+        {
+          "lines": [
+            6
+          ],
+          "text": "Main loop: Logarithmic steps, doubling prefix length k each time."
+        },
+        {
+          "lines": [
+            8
+          ],
+          "text": "Sorting: Compare suffixes using pair (current rank, next rank)."
+        },
+        {
+          "lines": [
+            21
+          ],
+          "text": "Re-rank: Assign new equivalence classes based on sorted order."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(N log² N)",
+    "space": "O(N)",
+    "explanation_time": "The main loop runs log(N) times. Inside the loop, the dominant operation is sorting, which takes O(N log N) time. This gives a total time complexity of O(N log² N). (Note: More advanced O(N) algorithms like SA-IS exist but are much more complex).",
+    "explanation_space": "We need space for the suffix array itself, plus a couple of arrays for ranks, all of which are O(N)."
+  }
+}

@@ -1,0 +1,127 @@
+{
+    "id": "optimization-4",
+    "title": "Мінімальне Вікно Підрядка",
+    "difficulty": "Hard",
+    "leetcode_url": "https://leetcode.com/problems/minimum-window-substring/",
+    "related": [
+        {
+            "id": "optimization-1",
+            "title": "Sliding Window Maximum",
+            "category": "optimization"
+        },
+        {
+            "id": "strings-2",
+            "title": "Longest Substring Without Repeating Characters",
+            "category": "strings"
+        }
+    ],
+    "tags": [
+        "sliding-window",
+        "two-pointers",
+        "hash-map"
+    ],
+    "follow_up": {
+        "scenario": "Пошук патернів ДНК (A, C, G, T) у файлі геному 100GB.",
+        "trade_off": "Накладні витрати Hash Map занадто високі для лише 4 символів.",
+        "strategy": "Використовуйте масиви цілих чисел (розмір 128) замість Map. Ще краще: кодуйте ACGT як 2 біти. Вміщує 32 символи в одному 64-бітному цілому числі, дозволяючи побітові операції ковзного вікна.",
+        "answering_guide": "Продемонструйте навички <strong>'Упаковки Даних'</strong>. 2-бітне кодування дозволяє <strong>'Побітовий Паралелізм'</strong>. Це оптимізація рівня Senior для рядкових задач."
+    },
+    "content": {
+        "problem_statement": "Дано два рядки `s` та `t` довжиною `m` та `n` відповідно, поверніть * **мінімальне вікно підрядка** `s`, таке що кожен символ в `t` (включаючи дублікати) включено у вікно. Якщо такого підрядка немає, поверніть порожній рядок `\"\"`*.",
+        "explanation": {
+            "understanding_the_problem": "Нам потрібно знайти найкоротший безперервний блок у рядку `s`, який покриває всі символи, необхідні для рядка `t`.",
+            "brute_force": "Ми могли б згенерувати кожен можливий підрядок `s`, і для кожного перевірити, чи містить він усі символи `t`. Це було б дуже неефективно, близько O(N³).",
+            "optimized_approach": "Це класична задача на **Ковзне Вікно**, яку можна вирішити за допомогою двох вказівників (`left` та `right`). Ми розширюємо вікно, рухаючи `right`, та звужуємо його, рухаючи `left`.\n\nМи використовуємо дві хеш-мапи: одну для зберігання частоти символів, необхідних для `t`, та іншу для зберігання частот символів у нашому поточному вікні.",
+            "algorithm_steps": "1. Ініціалізація `need` карти.\n2. `left = 0`, `right = 0`.\n3. Розширення: `right` до кінця.\n4. Звуження: поки валідно, рухати `left`."
+        },
+        "quizzes": [
+            {
+                "question": "Які техніки поєднані тут?",
+                "options": [
+                    "Sliding Window + Hash Map",
+                    "Dynamic Programming + Stack",
+                    "Greedy + Heap",
+                    "DFS + Backtracking"
+                ],
+                "correct": 0
+            },
+            {
+                "question": "Коли ми намагаємося звузити вікно?",
+                "options": [
+                    "Коли вікно валідне (містить усі символи)",
+                    "Коли ми досягаємо кінця рядка",
+                    "На кожному кроці",
+                    "Коли вікно порожнє"
+                ],
+                "correct": 0
+            },
+            {
+                "question": "Що зберігає карта 'need'?",
+                "options": [
+                    "Індекси символів",
+                    "Частоту символів у цільовому рядку T",
+                    "Відвідані символи",
+                    "Результуючий підрядок"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Яка часова складність?",
+                "options": [
+                    "O(N^2)",
+                    "O(N log N)",
+                    "O(|S| + |T|)",
+                    "O(N^3)"
+                ],
+                "correct": 2
+            },
+            {
+                "question": "Що якщо цільовий рядок T має дублікати (наприклад, 'AA')?",
+                "options": [
+                    "Ігнорувати дублікати",
+                    "Вікно також повинно містити дублікати",
+                    "Дублікати неможливі",
+                    "Використовувати Set замість Map"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "complexity": {
+        "time": "O(|s| + |t|)",
+        "space": "O(|s| + |t|)",
+        "explanation_time": "Вказівники обходять рядок `s` один раз.",
+        "explanation_space": "Зберігаємо всі унікальні символи."
+    },
+    "code": {
+        "javascript": {
+            "solution": "function minWindow(s, t) {\n  const need = new Map();\n  for (const char of t) {\n    need.set(char, (need.get(char) || 0) + 1);\n  }\n  \n  let left = 0, right = 0;\n  let valid = 0;\n  let start = 0, len = Infinity;\n  const window = new Map();\n  \n  while (right < s.length) {\n    const c = s[right];\n    right++;\n    \n    if (need.has(c)) {\n      window.set(c, (window.get(c) || 0) + 1);\n      if (window.get(c) === need.get(c)) {\n        valid++;\n      }\n    }\n    \n    while (valid === need.size) {\n      if (right - left < len) {\n        start = left;\n        len = right - left;\n      }\n      \n      const d = s[left];\n      left++;\n      \n      if (need.has(d)) {\n        if (window.get(d) === need.get(d)) {\n          valid--;\n        }\n        window.set(d, window.get(d) - 1);\n      }\n    }\n  }\n  \n  return len === Infinity ? '' : s.substr(start, len);\n}",
+            "annotations": [
+                {
+                    "lines": [
+                        2
+                    ],
+                    "text": "Мапа 'need': Підрахуйте частоту кожного символу в цільовому рядку t."
+                },
+                {
+                    "lines": [
+                        12
+                    ],
+                    "text": "Розширення: Додайте символ у 'right' до поточних лічильників вікна."
+                },
+                {
+                    "lines": [
+                        18
+                    ],
+                    "text": "Перевірка валідності: Якщо у нас достатньо валідних символів, спробуйте звузити."
+                },
+                {
+                    "lines": [
+                        25
+                    ],
+                    "text": "Звуження: Видаліть символ у 'left', щоб знайти менше валідне вікно."
+                }
+            ]
+        }
+    }
+}

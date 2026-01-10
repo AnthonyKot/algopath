@@ -1,0 +1,135 @@
+{
+  "id": "graphs-1",
+  "title": "Word Ladder (Shortest Path)",
+  "difficulty": "Medium",
+  "tags": [
+    "bfs",
+    "shortest-path",
+    "strings"
+  ],
+  "follow_up": {
+    "scenario": "You need to find a path in a graph with millions of nodes (e.g., Social Network connections).",
+    "trade_off": "Standard BFS explores too many nodes (exponential growth of frontier).",
+    "strategy": "Bi-directional BFS. Start from both the source and destination simultaneously. Reduces time complexity from O(b^d) to O(b^(d/2)).",
+    "answering_guide": "Mentioning <strong>'Bi-directional BFS'</strong> is the key differentiator between L4 and L5 here. Explain <em>why</em> it's faster (branching factor)."
+  },
+  "content": {
+    "problem_statement": "A **transformation sequence** from word `beginWord` to word `endWord` using a dictionary `wordList` is a sequence of words `beginWord -> s1 -> s2 -> ... -> sk` such that:\n\n1.  Every adjacent pair of words differs by a single letter.\n2.  Every `si` for `1 <= i <= k` is in `wordList`. Note that `beginWord` does not need to be in `wordList`.\n3.  `sk == endWord`\n\nGiven two words, `beginWord` and `endWord`, and a dictionary `wordList`, return the **number of words** in the **shortest transformation sequence** from `beginWord` to `endWord`, or `0` if no such sequence exists.\n\n**Example 1:**\n```\nInput: beginWord = \"hit\", endWord = \"cog\", wordList = [\"hot\",\"dot\",\"dog\",\"lot\",\"log\",\"cog\"]\nOutput: 5\nExplanation: One shortest transformation sequence is \"hit\" -> \"hot\" -> \"dot\" -> \"dog\" -> \"cog\", which is 5 words long.\n```",
+    "explanation": {
+      "understanding_the_problem": "We are asked to find the *shortest* sequence of transformations to get from a starting word to an ending word. The only valid transformation is changing a single letter, and the resulting word must be in a given dictionary. This problem can be perfectly modeled as finding the shortest path in a graph.",
+      "brute_force": "A simple way to visualize this is as a graph where every word is a node. An edge exists between two word-nodes if they are one letter apart. Our task is to find the shortest path from the `beginWord` node to the `endWord` node.\n\nA Depth-First Search (DFS) could explore paths. We'd start from the `beginWord`, find all connected words (one letter different), and recursively explore each of them, keeping track of the path length. We would need a `visited` set to avoid cycles (e.g., `hit` -> `hot` -> `hit`).",
+      "bottleneck": "DFS explores paths deeply. It might follow a very long, winding path of transformations to its end before it even considers a different, much shorter path. To find the shortest path, DFS would have to explore *every possible path* between `beginWord` and `endWord`, which is highly inefficient.",
+      "optimized_approach": "The problem asks for the **shortest path** in what is effectively an **unweighted graph** (each transformation costs 1). This is the classic use case for **Breadth-First Search (BFS)**.\n\nBFS explores the graph layer by layer. It starts at `beginWord` (layer 0), then finds all words that are 1 change away (layer 1), then all words 2 changes away (layer 2), and so on. Because of this layer-by-layer exploration, the very first time BFS reaches the `endWord`, it is guaranteed to have done so via a shortest possible path.",
+      "algorithm_steps": "1.  **Preprocessing:** Add all words from the `wordList` to a `Set` for efficient O(1) lookups. This set will also double as our 'unvisited' set.\n2.  **Initialization:** Create a `Queue` and add the starting state: `[beginWord, 1]`, representing the word and the current path length.\n3.  **BFS Loop:** While the queue is not empty:\n    a.  Dequeue the current state: `[currentWord, currentLength]`.\n    b.  If `currentWord` is the `endWord`, we have found the shortest path. Return `currentLength`.\n    c.  **Generate Neighbors:** Find all possible next words by iterating through each character of the `currentWord` and replacing it with every letter from 'a' to 'z'.\n    d.  **Check and Enqueue:** For each `newWord` generated:\n        i.  If the `newWord` exists in our word set, it's a valid transformation.\n        ii. Add the new state `[newWord, currentLength + 1]` to the queue.\n        iii. **Crucially, remove the `newWord` from the word set.** This marks it as 'visited', preventing us from processing it again and getting stuck in cycles.\n4.  **No Path:** If the queue becomes empty and we never reached `endWord`, no such path exists. Return 0."
+    },
+    "quizzes": [
+      {
+        "question": "How can we model this problem?",
+        "options": [
+          "Tree",
+          "Graph with edges between similar words",
+          "Array",
+          "Stack"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Why is DFS inefficient for finding shortest path?",
+        "options": [
+          "Too much memory",
+          "Explores long paths first",
+          "Can't handle cycles",
+          "Too slow"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Which algorithm finds shortest path in unweighted graphs?",
+        "options": [
+          "DFS",
+          "Dijkstra",
+          "BFS",
+          "Bellman-Ford"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "Why use a Set instead of Array for the word list?",
+        "options": [
+          "Smaller memory",
+          "O(1) lookups",
+          "Easier to iterate",
+          "Maintains order"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What makes BFS guarantee shortest path?",
+        "options": [
+          "Random exploration",
+          "Layer-by-layer exploration",
+          "Depth priority",
+          "Heuristics"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function ladderLength(beginWord, endWord, wordList) {\n  const wordSet = new Set(wordList);\n  if (!wordSet.has(endWord)) return 0;\n  const queue = [[beginWord, 1]];\n  wordSet.delete(beginWord);\n  while (queue.length) {\n    const [word, steps] = queue.shift();\n    if (word === endWord) return steps;\n    for (let i = 0; i < word.length; i++) {\n      for (let c = 0; c < 26; c++) {\n        const newWord = word.slice(0,i) + String.fromCharCode(97+c) + word.slice(i+1);\n        if (wordSet.has(newWord)) {\n          queue.push([newWord, steps+1]);\n          wordSet.delete(newWord);\n        }\n      }\n    }\n  }\n  return 0;\n}",
+      "annotations": [
+        {
+          "lines": [
+            2
+          ],
+          "text": "Create a Set for O(1) lookups of valid words. Using Array would be too slow (O(N))."
+        },
+        {
+          "lines": [
+            4
+          ],
+          "text": "Initialize BFS queue with [current_word, level]. Level starts at 1."
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Mark start word as visited immediately to prevent cycles."
+        },
+        {
+          "lines": [
+            6
+          ],
+          "text": "Standard BFS loop: process nodes level by level."
+        },
+        {
+          "lines": [
+            9,
+            10
+          ],
+          "text": "Try changing every character (i) to every letter (a-z) to find neighbors."
+        },
+        {
+          "lines": [
+            12
+          ],
+          "text": "If neighbor is in dictionary (and not visited), it's a valid next step."
+        },
+        {
+          "lines": [
+            14
+          ],
+          "text": "Crucial: Remove from set immediately to mark as visited. This guarantees shortest path."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(N * L²)",
+    "space": "O(N * L)",
+    "explanation_time": "Let N be the number of words in the list and L be the length of the words. In the worst case, we visit every word (N). For each word, we iterate through its length (L) and try all 26 alphabet characters. In JavaScript, creating the `newWord` by slicing and concatenating strings takes O(L) time. This results in a complexity of O(N * L * 26 * L), which simplifies to O(N * L²).",
+    "explanation_space": "The `wordSet` stores N words, each of average length L, contributing O(N * L) to space. The queue, in the worst case, could also hold a large fraction of the words, also contributing to the O(N * L) space complexity."
+  },
+  "diagram": "graph TD\n    hit --> hot\n    hit --> dot\n    hot --> dot\n    hot --> lot\n    dot --> lot\n    dot --> dog\n    lot --> log\n    dog --> log\n    dog --> cog\n    log --> cog\n    style hit fill:#4ade80,stroke:#333,stroke-width:2px,color:#000\n    style cog fill:#f87171,stroke:#333,stroke-width:2px,color:#000\n    linkStyle default stroke:#a1a1aa,stroke-width:2px"
+}

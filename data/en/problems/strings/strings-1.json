@@ -1,0 +1,135 @@
+{
+  "id": "strings-1",
+  "title": "KMP Pattern Matching",
+  "difficulty": "Medium",
+  "leetcode_url": "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/",
+  "related": [
+    {
+      "id": "strings-2",
+      "title": "Rabin-Karp Rolling Hash",
+      "category": "strings"
+    },
+    {
+      "id": "strings-3",
+      "title": "Z-Algorithm",
+      "category": "strings"
+    }
+  ],
+  "tags": [
+    "kmp",
+    "strings",
+    "pattern-matching"
+  ],
+  "follow_up": {
+    "scenario": "Intrusion Detection System (IDS) filtering network packets against signatures.",
+    "trade_off": "Naive search is vulnerable to algorithmic complexity attacks. Checking one by one is too slow.",
+    "strategy": "Use Aho-Corasick for *multiple* pattern matching (an extension of KMP). It builds a Trie of patterns with failure links.",
+    "answering_guide": "In security/networking, pure KMP is rarely used alone. Mention <strong>'Aho-Corasick'</strong> for *multiple* patterns (like virus signatures)."
+  },
+  "content": {
+    "problem_statement": "Given two strings `text` and `pattern`, return **all** indices in `text` where `pattern` starts.\n\n**Example 1:**\n```\nInput: text = \"abxabcabcaby\", pattern = \"abcaby\"\nOutput: [6]\n```\n**Example 2:**\n```\nInput: text = \"aaaaa\", pattern = \"aa\"\nOutput: [0, 1, 2, 3]\n```",
+    "explanation": {
+      "understanding_the_problem": "The goal is to find a small pattern string within a larger text string efficiently. A naive solution would check for a match at every possible starting position in the text, which is slow.",
+      "brute_force": "The naive approach is to slide the pattern over the text one position at a time. At each position, you compare the pattern with the corresponding substring of the text. This has a time complexity of O((N-M+1) * M) ≈ O(N*M), where N is the length of the text and M is the length of the pattern.",
+      "bottleneck": "The bottleneck is that when a mismatch occurs, the naive approach shifts the pattern by only one position. We have information from the partial match we just made that could allow us to shift the pattern much further.",
+      "optimized_approach": "The Knuth-Morris-Pratt (KMP) algorithm achieves O(N+M) time by using a precomputed 'Longest Proper Prefix which is also Suffix' (LPS) array. This `lps` array tells us, after a mismatch, the length of the longest proper prefix of the pattern that has already been matched, which is also a suffix of that matched part. This allows us to 'slide' the pattern forward intelligently without re-checking characters we know will match.",
+      "algorithm_steps": "1.  **Preprocessing (O(M)):** Build the `lps` array for the `pattern`. `lps[i]` stores the length of the longest proper prefix of `pattern[0...i]` which is also a suffix of `pattern[0...i]`.\n2.  **Searching (O(N)):** Iterate through the `text` with pointer `i` and `pattern` with pointer `j`. If characters match, increment both. If they mismatch, instead of resetting `j` to 0, we consult the `lps` array (`j = lps[j-1]`) to find the next best position to continue matching from, avoiding redundant comparisons."
+    },
+    "quizzes": [
+      {
+        "question": "What does LPS stand for in KMP?",
+        "options": [
+          "Longest Prefix String",
+          "Longest Proper Prefix also Suffix",
+          "Last Pattern Start",
+          "Linear Pattern Search"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What is the time complexity of KMP?",
+        "options": [
+          "O(N²)",
+          "O(N*M)",
+          "O(N+M)",
+          "O(N log N)"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "What makes KMP faster than naive search?",
+        "options": [
+          "Sorting first",
+          "Avoiding redundant comparisons using LPS",
+          "Parallel processing",
+          "Binary search"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What happens on mismatch after partial match?",
+        "options": [
+          "Start over",
+          "Use LPS to skip ahead",
+          "Reverse string",
+          "Swap characters"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Is the LPS array built in preprocessing?",
+        "options": [
+          "No, during search",
+          "Yes, O(M) time",
+          "Not needed",
+          "Built once per text"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function buildLPS(pattern) {\n  const m = pattern.length;\n  const lps = new Array(m).fill(0);\n  let len = 0;\n  for (let i = 1; i < m; i++) {\n    while (len > 0 && pattern[i] !== pattern[len]) len = lps[len - 1];\n    if (pattern[i] === pattern[len]) len++;\n    lps[i] = len;\n  }\n  return lps;\n}\n\nfunction kmpSearch(text, pattern) {\n  const n = text.length, m = pattern.length;\n  const lps = buildLPS(pattern);\n  const result = [];\n  let i = 0, j = 0;\n  while (i < n) {\n    if (pattern[j] === text[i]) {\n      i++; j++;\n    }\n    if (j === m) {\n      result.push(i - j);\n      j = lps[j - 1];\n    } else if (i < n && pattern[j] !== text[i]) {\n      if (j !== 0) j = lps[j - 1];\n      else i++;\n    }\n  }\n  return result;\n}",
+      "annotations": [
+        {
+          "lines": [
+            6
+          ],
+          "text": "LPS mismatch case: backtrack `len` using previous LPS values."
+        },
+        {
+          "lines": [
+            7
+          ],
+          "text": "Match case: extend the current prefix length."
+        },
+        {
+          "lines": [
+            16
+          ],
+          "text": "Search loop: i scans text, j scans pattern."
+        },
+        {
+          "lines": [
+            19,
+            20
+          ],
+          "text": "Full match found! Record index and use LPS to prepare for next match."
+        },
+        {
+          "lines": [
+            22
+          ],
+          "text": "Mismatch after some matches: Smart jump. Set j to LPS[j-1]."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(N + M)",
+    "space": "O(M)",
+    "explanation_time": "The algorithm has two parts: building the LPS array, which takes O(M) time, and searching the text, which takes O(N) time because the text pointer `i` never moves backward. This gives a total linear time complexity.",
+    "explanation_space": "We need to store the LPS array, which is the same size as the pattern, resulting in O(M) space."
+  }
+}

@@ -1,0 +1,122 @@
+{
+    "id": "optimization-5",
+    "title": "Захоплення Дощової Води",
+    "difficulty": "Hard",
+    "leetcode_url": "https://leetcode.com/problems/trapping-rain-water/",
+    "related": [
+        {
+            "id": "optimization-2",
+            "title": "Largest Rectangle in Histogram",
+            "category": "optimization"
+        },
+        {
+            "id": "optimization-1",
+            "title": "Container With Most Water",
+            "category": "optimization"
+        }
+    ],
+    "tags": [
+        "two-pointers",
+        "optimization",
+        "greedy"
+    ],
+    "content": {
+        "problem_statement": "Дано `n` невід'ємних цілих чисел, що представляють карту висот, де ширина кожної смуги дорівнює `1`, обчисліть скільки води вона може втримати після дощу.\n\n**Приклад 1:**\n```\nInput: height = [0,1,0,2,1,0,1,3,2,1,2,1]\nOutput: 6\nExplanation: Вищенаведена карта висот (чорна секція) представлена масивом [0,1,0,2,1,0,1,3,2,1,2,1]. У цьому випадку, 6 одиниць дощової води (синя секція) затримуються.\n```",
+        "explanation": {
+            "understanding_the_problem": "Уявіть заданий масив як 2D профіль. Після дощу вода затримується між вищими смугами. Нам потрібно обчислити загальний об'єм цієї затриманої води.",
+            "brute_force": "Для будь-якої смуги `i`, кількість води, яку вона може втримати над собою, визначається висотою найвищої смуги ліворуч (`max_left`) та найвищої смуги праворуч (`max_right`). Рівень води над смугою `i` буде `min(max_left, max_right)`. Затримана вода - це `min(max_left, max_right) - height[i]`. Ми могли б ітерувати через кожну смугу, і для кожної сканувати її ліву та праву сторони, щоб знайти максимальні висоти. Це займе O(N²) часу.",
+            "bottleneck": "Підхід O(N²) повільний, тому що ми багаторазово скануємо ліву та праву сторони для кожної смуги.",
+            "optimized_approach": "**1. DP Approach (O(N) часу, O(N) простору):**\nМи можемо попередньо обчислити `max_left` та `max_right` для кожної позиції. Спочатку ітеруйте зліва направо, щоб створити масив `max_lefts`. Потім ітеруйте справа наліво для масиву `max_rights`. Нарешті, у третьому проході, обчисліть затриману воду на кожній смузі за формулою.\n\n**2. Два Вказівники (O(N) часу, O(1) простору):**\nЦе найбільш оптимальне рішення. Ми підтримуємо два вказівники, `left` та `right`, на кінцях масиву, та дві змінні, `left_max` та `right_max`.\nКлючова ідея полягає в тому, що кількість води, затриманої в будь-якій точці, обмежується меншою з двох максимальних стін (`left_max` та `right_max`). Якщо `height[left]` менше `height[right]`, ми знаємо, що `left_max` є обмежуючим фактором для вказівника `left`. Ми можемо безпечно обчислити затриману воду на `left`, оскільки знаємо, що `right_max` принаймні такий же високий, як `height[right]`, який вищий за `height[left]`.",
+            "algorithm_steps": "1. Ініціювати вказівники та максимуми.\n2. Рухати вказівники назустріч.\n3. Якщо `l < r`: оновити максимум або додати воду."
+        },
+        "quizzes": [
+            {
+                "question": "Що визначає висоту води на індексі i?",
+                "options": [
+                    "min(max_left, max_right) - height[i]",
+                    "max(max_left, max_right)",
+                    "Середня висота",
+                    "max_left + max_right"
+                ],
+                "correct": 0
+            },
+            {
+                "question": "Яка просторова складність підходу з двома вказівниками?",
+                "options": [
+                    "O(N)",
+                    "O(1)",
+                    "O(log N)",
+                    "O(N^2)"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Чому ми можемо довіряти 'leftMax', коли height[left] < height[right]?",
+                "options": [
+                    "Ми не можемо",
+                    "Тому що rightMax гарантовано >= height[right] > height[left]",
+                    "Це евристика",
+                    "Магія"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Що відбувається, якщо height[left] >= leftMax?",
+                "options": [
+                    "Оновити leftMax",
+                    "Затримати воду",
+                    "Рухати правий вказівник",
+                    "Нічого не робити"
+                ],
+                "correct": 0
+            },
+            {
+                "question": "Що відбувається, якщо height[left] < leftMax?",
+                "options": [
+                    "Оновити leftMax",
+                    "Затримати воду",
+                    "Рухати правий вказівник",
+                    "Помилка"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "code": {
+        "javascript": {
+            "solution": "function trap(height) {\n  if (height.length < 3) return 0;\n  \n  let left = 0, right = height.length - 1;\n  let leftMax = 0, rightMax = 0;\n  let water = 0;\n  \n  while (left < right) {\n    if (height[left] < height[right]) {\n      if (height[left] >= leftMax) {\n        leftMax = height[left];\n      } else {\n        water += leftMax - height[left];\n      }\n      left++;\n    } else {\n      if (height[right] >= rightMax) {\n        rightMax = height[right];\n      } else {\n        water += rightMax - height[right];\n      }\n      right--;\n    }\n  }\n  \n  return water;\n}",
+            "annotations": [
+                {
+                    "lines": [
+                        8
+                    ],
+                    "text": "Ключова ідея: Коротша стіна визначає рівень води. Якщо left < right, ми довіряємо leftMax."
+                },
+                {
+                    "lines": [
+                        9
+                    ],
+                    "text": "Оновлення Left Max: Ми знайшли вищу стіну, тому вода тут не затримується."
+                },
+                {
+                    "lines": [
+                        11
+                    ],
+                    "text": "Затримка води: Поточний стовпець коротший за leftMax, тому він утримує воду."
+                },
+                {
+                    "lines": [
+                        15
+                    ],
+                    "text": "Симетрично: Така ж логіка для правої сторони, якщо права стіна коротша."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(N)",
+        "space": "O(1)",
+        "explanation_time": "Два вказівники проходять масив.",
+        "explanation_space": "Константний простір."
+    }
+}

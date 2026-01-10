@@ -1,0 +1,132 @@
+{
+  "id": "trees-3",
+  "title": "Tree Diameter",
+  "difficulty": "Medium",
+  "leetcode_url": "https://leetcode.com/problems/tree-diameter/",
+  "related": [
+    {
+      "id": "trees-2",
+      "title": "LCA Binary Lifting",
+      "category": "trees"
+    },
+    {
+      "id": "graphs-3",
+      "title": "Network Delay Time",
+      "category": "graphs"
+    }
+  ],
+  "tags": [
+    "tree-dp",
+    "dfs",
+    "diameter"
+  ],
+  "content": {
+    "problem_statement": "Given the `root` of a binary tree (or a general tree represented by edges), return *the length of the **diameter** of the tree*.\n\nThe **diameter** of a tree is the length of the longest path between any two nodes in a tree. This path may or may not pass through the root.\n\nThe length of a path between two nodes is represented by the number of edges between them.\n\n**Example 1:**\n```\nInput: edges = [[0,1],[0,2],[1,4],[1,5]]\nOutput: 3\nExplanation: 3 is the length of the path [4,1,0,2] or [5,1,0,2].\n```",
+    "explanation": {
+      "understanding_the_problem": "We need to find the two nodes in the tree that are the farthest apart and return the number of edges between them. Since it's a tree, there's only one unique path between any two nodes.",
+      "brute_force": "A naive approach would be to run a graph traversal (like BFS or DFS) starting from every single node in the tree. For each start node `u`, we would find the node `v` farthest from it and record that distance. The final answer would be the maximum distance found across all starting nodes. This would require N traversals, each taking O(N) time, for a total of O(N²), which is inefficient.",
+      "bottleneck": "The O(N²) approach is slow because it re-computes many of the same path lengths repeatedly. There are two much more efficient O(N) solutions.",
+      "optimized_approach": "**Method 1: Two Traversals (BFS/DFS)**\nThis method relies on a neat property: one of the endpoints of any tree diameter will always be the node that is farthest from an arbitrary starting node.\n1. Pick any node `s` and find the node `u` farthest from it.\n2. Start from `u` and find the node `v` farthest from it.\n3. The distance between `u` and `v` is the diameter.\n\n**Method 2: DP on Trees (as in the code)**\nThis is a single-pass DFS approach. For any node `u`, the longest path that passes through `u` is the sum of the two longest 'downward' paths starting from `u` into its subtrees. We can use DFS to compute this.\n\nThe function `dfs(node)` will return the length of the longest downward path starting at `node`. While doing so, it also calculates the two longest downward paths for each node (`max1`, `max2`) and uses their sum (`max1 + max2`) to update a global `diameter` variable.",
+      "algorithm_steps": "The provided code uses the DP on Trees method:\n\n1.  **Initialization:**\n    a.  Build an adjacency list for the tree.\n    b.  Initialize a global `diameter` variable to 0.\n\n2.  **Define DFS function `dfs(currentNode, parentNode)`:**\n    a.  This function will return the longest single downward path from `currentNode`.\n    b.  Inside, initialize `max1 = 0` and `max2 = 0`.\n    c.  For each `neighbor` of `currentNode` (that isn't its parent), recursively call `dfs(neighbor, currentNode)`. This gives the longest path from the neighbor down. Add 1 to it to get the path length from `currentNode`.\n    d.  Use this result to update `max1` and `max2`.\n    e.  At the end of the neighbor loop, a potential diameter passing through `currentNode` is `max1 + max2`. Update the global `diameter = max(diameter, max1 + max2)`.\n    f.  Return `max1` to be used by the parent's calculation.\n\n3.  **Execution:** Call `dfs` on an arbitrary root (e.g., node 0) and return the final `diameter`."
+    },
+    "quizzes": [
+      {
+        "question": "What is tree diameter?",
+        "options": [
+          "Node count",
+          "Longest path between any two nodes",
+          "Tree height",
+          "Edge weight sum"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the two-BFS/DFS method?",
+        "options": [
+          "Sort nodes",
+          "Find farthest from any node, then farthest from that",
+          "Binary search",
+          "Hash nodes"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "In the DP method, what do max1 and max2 track?",
+        "options": [
+          "Min paths",
+          "Two longest downward paths",
+          "Node values",
+          "Edge weights"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "How is diameter updated at each node?",
+        "options": [
+          "max1 * max2",
+          "max1 + max2",
+          "max(max1, max2)",
+          "min(max1, max2)"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the time complexity?",
+        "options": [
+          "O(N²)",
+          "O(N log N)",
+          "O(N)",
+          "O(2^N)"
+        ],
+        "correct": 2
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function treeDiameter(n, edges) {\n  const adj = Array(n).fill().map(() => []);\n  for (let [u,v] of edges) {\n    adj[u].push(v); adj[v].push(u);\n  }\n  let diameter = 0;\n  function dfs(u, p) {\n    let max1 = 0, max2 = 0;\n    for (let v of adj[u]) if (v !== p) {\n      const h = dfs(v, u) + 1;\n      if (h > max1) { max2 = max1; max1 = h; }\n      else if (h > max2) max2 = h;\n    }\n    diameter = Math.max(diameter, max1 + max2);\n    return max1;\n  }\n  dfs(0, -1);\n  return diameter;\n}",
+      "annotations": [
+        {
+          "lines": [
+            2,
+            3,
+            4
+          ],
+          "text": "Build adjacency list for undirected tree."
+        },
+        {
+          "lines": [
+            6
+          ],
+          "text": "DFS: returns length of longest path STARTING at 'u' and going DOWN."
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Recursively solve for neighbor. Add 1 for the edge u->v."
+        },
+        {
+          "lines": [
+            10,
+            11
+          ],
+          "text": "Track top 2 longest paths branching from current node."
+        },
+        {
+          "lines": [
+            14
+          ],
+          "text": "Global diameter update: The longest path THROUGH u is max1 + max2."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(N)",
+    "space": "O(N)",
+    "explanation_time": "Both the two-traversal method and the DP on Trees method run in O(N) time. They are based on DFS or BFS, which visit each node and edge in the tree exactly once.",
+    "explanation_space": "We need O(N) space for the adjacency list. The recursion stack for the DFS will also be O(H) where H is the height of the tree. In the worst case of a skewed tree, H can be N, so the space complexity is O(N)."
+  },
+  "diagram": "graph TD\n    0((0)) --- 1((1))\n    0 --- 2((2))\n    1 --- 4((4))\n    1 --- 5((5))\n    \n    classDef default fill:#fff,stroke:#333,stroke-width:2px;\n    classDef path fill:#fca5a5,stroke:#b91c1c,stroke-width:2px;\n    \n    class 4,1,0,2 path;\n    linkStyle 0,1,2 stroke:#ef4444,stroke-width:4px;"
+}

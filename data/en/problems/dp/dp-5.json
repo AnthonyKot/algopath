@@ -1,0 +1,137 @@
+{
+  "id": "dp-5",
+  "title": "Regular Expression Matching",
+  "difficulty": "Medium",
+  "tags": [
+    "dp",
+    "regex",
+    "strings"
+  ],
+  "content": {
+    "problem_statement": "Given an input string `s` and a pattern `p`, implement regular expression matching with support for `'.'` and `'*'` where:\n\n*   `'.'` Matches any single character.​​​​\n*   `'*'` Matches zero or more of the preceding element.\n\nThe matching should cover the **entire** input string (not partial).\n\n**Example 1:**\n```\nInput: s = \"aa\", p = \"a\"\nOutput: false\nExplanation: \"a\" does not match the entire string \"aa\".\n```\n\n**Example 2:**\n```\nInput: s = \"ab\", p = \".*\"\nOutput: true\nExplanation: \".*\" means \"zero or more (*) of any character (.)\".\n```",
+    "explanation": {
+      "understanding_the_problem": "This is a complex matching problem due to the special rules for '.' and especially '*'. The '*' character's ability to match 'zero or more' times is a strong indicator that we need to explore multiple possibilities, which makes it a great fit for Dynamic Programming.",
+      "brute_force": "We can define a function `isMatch(s_idx, p_idx)` that checks if the substring of `s` starting at `s_idx` matches the sub-pattern of `p` starting at `p_idx`. This leads to a recursive structure.\n\n- If `p[p_idx+1]` is `'*'`, we have two choices: either we match zero instances of `p[p_idx]` and check `isMatch(s_idx, p_idx+2)`, or we match one instance (if `s[s_idx]` matches `p[p_idx]`) and check `isMatch(s_idx+1, p_idx)`.\n- Otherwise, we check if the current characters match and recurse on `isMatch(s_idx+1, p_idx+1)`.",
+      "bottleneck": "A pure recursive solution would be very slow due to re-computing the same subproblems (e.g., `isMatch(5, 6)`) through different recursive paths. This is the classic 'overlapping subproblems' issue that DP solves.",
+      "optimized_approach": "We use a 2D DP table. Let `dp[i][j]` be a boolean that is `true` if the first `i` characters of string `s` can be matched by the first `j` characters of pattern `p`.\n\nOur goal is to compute `dp[s.length][p.length]`. We fill the table based on the character `p[j-1]`:\n\n- **If `p[j-1]` is not `'*'`:** A match occurs only if the current characters match (`s[i-1] == p[j-1]` or `p[j-1] == '.'`) AND the previous prefixes matched (`dp[i-1][j-1]` was true).\n\n- **If `p[j-1]` is `'*'`:** This is the complex case. The `*` and its preceding character `p[j-2]` can be treated in two ways:\n    1.  **It matches zero elements:** In this case, we effectively ignore `p[j-2]*`. The result is simply `dp[i][j-2]`.\n    2.  **It matches one or more elements:** This is only possible if the current string character `s[i-1]` matches the pattern character `p[j-2]`. If it does, we are essentially extending the match for `*`, so the result depends on `dp[i-1][j]` (we consume a character from `s` but stay at the same pattern position `j` to allow for more matches by `*`).\n\n`dp[i][j]` is true if either of these conditions is met.",
+      "algorithm_steps": "1.  **Initialization:**\n    a.  Create a `dp` table of size `(s.length + 1) x (p.length + 1)`.\n    b.  `dp[0][0] = true` (empty string matches empty pattern).\n    c.  Initialize the first row: `dp[0][j]` is true only if `p` can form an empty string. This happens for patterns like `a*`, `a*b*`, etc. So, if `p[j-1] == '*'`, then `dp[0][j] = dp[0][j-2]`.\n\n2.  **Main Loop:**\n    a.  Iterate `i` from 1 to `s.length`.\n    b.  Iterate `j` from 1 to `p.length`.\n    c.  Apply the state transition logic described above for when `p[j-1]` is `'*'` or not.\n\n3.  **Result:** Return `dp[s.length][p.length]`."
+    },
+    "quizzes": [
+      {
+        "question": "What does dp[i][j] represent?",
+        "options": [
+          "Match count",
+          "s[0..i-1] matches p[0..j-1]?",
+          "Pattern length",
+          "String index"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "How does '*' work in patterns?",
+        "options": [
+          "Match any char",
+          "Match zero or more of preceding",
+          "Match one char",
+          "End of pattern"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What does '.' match?",
+        "options": [
+          "Period only",
+          "Any single character",
+          "Zero chars",
+          "Whitespace"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "When can pattern a* match empty string?",
+        "options": [
+          "Never",
+          "When * matches zero elements",
+          "Only if a exists",
+          "Always"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the complexity of this DP solution?",
+        "options": [
+          "O(N)",
+          "O(N²)",
+          "O(M × N)",
+          "O(2^N)"
+        ],
+        "correct": 2
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function isMatch(s, p) {\n  const m = s.length, n = p.length;\n  const dp = Array(m+1).fill().map(() => Array(n+1).fill(false));\n  dp[0][0] = true;\n  for (let j = 1; j <= n; j++) if (p[j-1] === '*') dp[0][j] = dp[0][j-2];\n  for (let i = 1; i <= m; i++) {\n    for (let j = 1; j <= n; j++) {\n      if (p[j-1] === '*') {\n        dp[i][j] = dp[i][j-2] || (matches(p[j-2], s[i-1]) && (dp[i-1][j] || dp[i][j-1]));\n      } else {\n        dp[i][j] = matches(p[j-1], s[i-1]) && dp[i-1][j-1];\n      }\n    }\n  }\n  return dp[m][n];\n}\nfunction matches(c1, c2) { return c1 === '.' || c1 === c2; }",
+      "annotations": [
+        {
+          "lines": [
+            2,
+            3
+          ],
+          "text": "Create 2D boolean DP table: dp[i][j] = true if s[0..i-1] matches p[0..j-1]"
+        },
+        {
+          "lines": [
+            4
+          ],
+          "text": "Base case: empty string matches empty pattern"
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Initialize first row: handle patterns like a*, a*b* that can match empty string (via * matching zero elements)"
+        },
+        {
+          "lines": [
+            6,
+            7
+          ],
+          "text": "Main DP loops: fill table for all (i, j) combinations"
+        },
+        {
+          "lines": [
+            8,
+            9
+          ],
+          "text": "Case 1 - Star: match zero (dp[i][j-2]) OR match one+ if char matches (dp[i-1][j])"
+        },
+        {
+          "lines": [
+            10,
+            11
+          ],
+          "text": "Case 2 - No star: simple match. Current chars must match AND previous prefixes must match"
+        },
+        {
+          "lines": [
+            15
+          ],
+          "text": "Return whether entire string matches entire pattern"
+        },
+        {
+          "lines": [
+            17
+          ],
+          "text": "Helper: '.' matches any character, otherwise must be exact match"
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(M * N)",
+    "space": "O(M * N)",
+    "explanation_time": "Let M be the length of the string and N be the length of the pattern. We fill a 2D DP table of size M x N. Calculating the value for each cell takes constant time. This results in a time complexity of O(M * N).",
+    "explanation_space": "We use a 2D DP table of size (M+1) x (N+1) to store the results of all subproblems. This requires O(M * N) space."
+  }
+}

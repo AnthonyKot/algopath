@@ -1,0 +1,115 @@
+{
+  "id": "math-3",
+  "title": "Extended Euclidean Algorithm",
+  "difficulty": "Medium",
+  "related": [
+    {
+      "id": "math-1",
+      "title": "Modular Exponentiation",
+      "category": "math"
+    },
+    {
+      "id": "math-4",
+      "title": "Chinese Remainder Theorem",
+      "category": "math"
+    }
+  ],
+  "tags": [
+    "gcd",
+    "modular-inverse",
+    "number-theory"
+  ],
+  "content": {
+    "problem_statement": "Given two integers `a` and `b`, find integers `x` and `y` such that `ax + by = gcd(a, b)`. This is a fundamental algorithm, often used to find the modular multiplicative inverse.",
+    "explanation": {
+      "understanding_the_problem": "The standard Euclidean algorithm finds the `gcd(a, b)`. The extended version does that and also finds the integer coefficients `x` and `y` that satisfy Bézout's identity.",
+      "brute_force": "The standard Euclidean algorithm is based on the recurrence `gcd(a, b) = gcd(b, a % b)`. The extended version is an augmentation of this process. It keeps track of the coefficients at each recursive step.",
+      "bottleneck": "There isn't a 'brute force' in the typical sense. The algorithm itself is the efficient solution.",
+      "optimized_approach": "The algorithm is recursive. The base case is when `b = 0`, where `gcd(a, 0) = a`. The equation is `a*x + 0*y = a`, so `x=1, y=0` is a trivial solution.\n\nFor the recursive step, we call the function on `(b, a % b)`. This gives us `g, x1, y1` such that `b*x1 + (a % b)*y1 = g`. We then substitute `a % b = a - floor(a/b) * b` back into this equation and rearrange the terms to find the new `x` and `y` that correspond to `a` and `b`.",
+      "algorithm_steps": "1.  **Base Case:** If `b` is 0, return `[a, 1, 0]` representing `g, x, y`.\n2.  **Recursive Step:** Call `extendedGCD(b, a % b)` to get `[g, x1, y1]`.\n3.  The new `x` will be `y1`.\n4.  The new `y` will be `x1 - floor(a / b) * y1`.\n5.  Return `[g, x, y]`.\n\n**Modular Inverse:** To find `a^-1 mod m`, we solve `ax + my = 1`. The `x` value returned by `extendedGCD(a, m)` is the modular inverse (if the gcd is 1)."
+    },
+    "quizzes": [
+      {
+        "question": "What equation does Extended Euclidean solve?",
+        "options": [
+          "ax = b mod m",
+          "ax + by = gcd(a,b)",
+          "a^b mod m",
+          "ab = c"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What is the base case when b = 0?",
+        "options": [
+          "x=0, y=1",
+          "x=1, y=0",
+          "x=a, y=b",
+          "No solution"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "How is modular inverse found?",
+        "options": [
+          "Division",
+          "Solve ax + my = 1 for x",
+          "Exponentiation",
+          "Random search"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "When does modular inverse exist?",
+        "options": [
+          "Always",
+          "When gcd(a,m) = 1",
+          "When a > m",
+          "When m is prime"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the time complexity?",
+        "options": [
+          "O(N)",
+          "O(log(min(a,b)))",
+          "O(ab)",
+          "O(1)"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function extendedGCD(a, b) {\n  if (b === 0) {\n    return [a, 1, 0];\n  }\n  const [g, x1, y1] = extendedGCD(b, a % b);\n  return [g, y1, x1 - Math.floor(a / b) * y1];\n}\n\nfunction modInverse(a, mod) {\n  const [g, x, y] = extendedGCD(a, mod);\n  if (g !== 1) {\n    return -1;\n  }\n  return ((x % mod) + mod) % mod;\n}",
+      "annotations": [
+        {
+          "lines": [
+            2
+          ],
+          "text": "Base Case: gcd(a, 0) = a. Solution: 1*a + 0*0 = a."
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Recursive Call: Solve for gcd(b, a % b). Returns [g, x1, y1]."
+        },
+        {
+          "lines": [
+            6
+          ],
+          "text": "Update Coefficients: x = y1, y = x1 - floor(a/b)*y1. (Based on b*x1 + (a%b)*y1 = g)"
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(log(min(a,b)))",
+    "space": "O(log(min(a,b)))",
+    "explanation_time": "The number of recursive calls is the same as the standard Euclidean algorithm, which is logarithmic in the size of the smaller input.",
+    "explanation_space": "The space complexity is determined by the depth of the recursion stack, which is also logarithmic."
+  }
+}

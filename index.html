@@ -8,7 +8,7 @@
     <meta name="description"
         content="Interactive guide for senior-level algorithm problems commonly asked at top tech companies like FAANG.">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="vendor/fontawesome/fontawesome-free-6.5.1-web/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -55,7 +55,8 @@
                         <h3>System Design</h3>
                         <p>Architect massive-scale systems. Master trade-offs (CAP), sharding, and resilient distributed
                             patterns for 100M+ users.</p>
-                        <div class="card-difficulty" style="color: #e74c3c; border-color: #e74c3c;">Critical Priority
+                        <div class="card-difficulty"
+                            style="background-color: #e74c3c; border-color: #e74c3c; color: #fff;">Critical Priority
                         </div>
                         <a href="design.html" class="btn btn-outline">View Problems</a>
                     </div>
@@ -66,7 +67,8 @@
                         <h3>Dynamic Programming</h3>
                         <p>Solve complex optimization problems. Master multidimensional state transitions, bitmasking,
                             and space-reduction techniques.</p>
-                        <div class="card-difficulty" style="color: #e67e22; border-color: #e67e22;">Very High Priority
+                        <div class="card-difficulty"
+                            style="background-color: #e67e22; border-color: #e67e22; color: #fff;">Very High Priority
                         </div>
                         <a href="dp.html" class="btn btn-outline">View Problems</a>
                     </div>
@@ -77,7 +79,8 @@
                         <h3>Graph Algorithms</h3>
                         <p>Model complex relationships. Implement advanced shortest paths (Dijkstra), Network Flow, and
                             Disjoint Set Union (DSU).</p>
-                        <div class="card-difficulty" style="color: #e67e22; border-color: #e67e22;">Very High Priority
+                        <div class="card-difficulty"
+                            style="background-color: #e67e22; border-color: #e67e22; color: #fff;">Very High Priority
                         </div>
                         <a href="graphs.html" class="btn btn-outline">View Problems</a>
                     </div>
@@ -88,7 +91,8 @@
                         <h3>Advanced Trees</h3>
                         <p>Handle hierarchical data at scale. Master Segment Trees for range queries, Binary Lifting for
                             LCA, and Tries.</p>
-                        <div class="card-difficulty" style="color: #f39c12; border-color: #f39c12;">High Priority</div>
+                        <div class="card-difficulty"
+                            style="background-color: #f39c12; border-color: #f39c12; color: #fff;">High Priority</div>
                         <a href="trees.html" class="btn btn-outline">View Problems</a>
                     </div>
 
@@ -98,7 +102,8 @@
                         <h3>Optimization</h3>
                         <p>Squeeze maximum efficiency. Master Sliding Window, Monotonic Queues, and 'Binary Search on
                             Answer'.</p>
-                        <div class="card-difficulty" style="color: #f1c40f; border-color: #f1c40f;">Medium Priority
+                        <div class="card-difficulty"
+                            style="background-color: #f1c40f; border-color: #f1c40f; color: #fff;">Medium Priority
                         </div>
                         <a href="optimization.html" class="btn btn-outline">View Problems</a>
                     </div>
@@ -109,7 +114,8 @@
                         <h3>String Algorithms</h3>
                         <p>Process massive text data. Master KMP for linear-time matching, Rolling Hash, and Tries for
                             key lookups.</p>
-                        <div class="card-difficulty" style="color: #f1c40f; border-color: #f1c40f;">Medium Priority
+                        <div class="card-difficulty"
+                            style="background-color: #f1c40f; border-color: #f1c40f; color: #fff;">Medium Priority
                         </div>
                         <a href="strings.html" class="btn btn-outline">View Problems</a>
                     </div>
@@ -120,7 +126,8 @@
                         <h3>Number Theory</h3>
                         <p>Unlock efficient computation. Master Modular Arithmetic, Combinatorics, and Number Theory.
                         </p>
-                        <div class="card-difficulty" style="color: #95a5a6; border-color: #95a5a6;">Low Priority</div>
+                        <div class="card-difficulty"
+                            style="background-color: #95a5a6; border-color: #95a5a6; color: #fff;">Low Priority</div>
                         <a href="math.html" class="btn btn-outline">View Problems</a>
                     </div>
 
@@ -130,7 +137,8 @@
                         <h3>Computational Geometry</h3>
                         <p>Solve spatial problems. Master Convex Hulls, sweeping line algorithms, and vector
                             cross-products.</p>
-                        <div class="card-difficulty" style="color: #95a5a6; border-color: #95a5a6;">Low Priority</div>
+                        <div class="card-difficulty"
+                            style="background-color: #95a5a6; border-color: #95a5a6; color: #fff;">Low Priority</div>
                         <a href="geometry.html" class="btn btn-outline">View Problems</a>
                     </div>
 
@@ -140,7 +148,8 @@
                         <h3>Mathematical Physics</h3>
                         <p>Bridge math and reality. Master relativity, coupled ODEs, thermodynamics, and electrodynamics
                             with LaTeX formulas.</p>
-                        <div class="card-difficulty" style="color: #9b59b6; border-color: #9b59b6;">Advanced Math</div>
+                        <div class="card-difficulty"
+                            style="background-color: #9b59b6; border-color: #9b59b6; color: #fff;">Advanced Math</div>
                         <a href="physics.html" class="btn btn-outline">View Problems</a>
                     </div>
                 </div>
@@ -152,26 +161,7 @@
             <div class="container">
                 <h2>System Design Bridges</h2>
                 <div class="concepts-grid">
-                    <div class="concept-item bridge-card">
-                        <h3><i class="fas fa-network-wired"></i>Distributed Caching</h3>
-                        <p class="bridge-algo"><strong>Algo:</strong> Hash Maps, LRU Cache</p>
-                        <p>Powering Redis, Memcached, and CDN edge caching strategies.</p>
-                    </div>
-                    <div class="concept-item bridge-card">
-                        <h3><i class="fas fa-database"></i>Database Indexes</h3>
-                        <p class="bridge-algo"><strong>Algo:</strong> B-Trees, LSM Trees (Merge Sort)</p>
-                        <p>How relational databases (Postgres) and NoSQL stores (Cassandra) organize data on disk.</p>
-                    </div>
-                    <div class="concept-item bridge-card">
-                        <h3><i class="fas fa-filter"></i>Rate Limiting</h3>
-                        <p class="bridge-algo"><strong>Algo:</strong> Sliding Window, Token Bucket</p>
-                        <p>Protecting APIs from DDoS attacks and managing traffic spikes (Gateway service).</p>
-                    </div>
-                    <div class="concept-item bridge-card">
-                        <h3><i class="fas fa-globe"></i>Web Crawlers</h3>
-                        <p class="bridge-algo"><strong>Algo:</strong> BFS, Bloom Filters</p>
-                        <p>Discovering URLs, avoiding cycles, and checking for visited pages efficiently.</p>
-                    </div>
+                    <!-- Dynamic Wisdom Cards will be injected here -->
                 </div>
             </div>
         </section>
@@ -181,10 +171,7 @@
             <div class="container">
                 <h2>Additional Resources</h2>
                 <ul class="resource-list">
-                    <li><a href="https://cp-algorithms.com/">CP Algorithms</a> - Comprehensive algorithm reference</li>
-                    <li><a href="https://www.geeksforgeeks.org/">GeeksforGeeks</a> - Detailed problem solutions</li>
-                    <li><a href="https://leetcode.com/">LeetCode</a> - Practice platform with company problems</li>
-                    <li><a href="https://www.topcoder.com/">TopCoder</a> - Competitive programming tutorials</li>
+                    <!-- Dynamic Resources will be injected here -->
                 </ul>
             </div>
         </section>
@@ -193,7 +180,7 @@
     <!-- Footer Mount Point -->
     <div id="footer-mount"></div>
 
-    <script src="script.js"></script>
+    <script src="scripts/script.js"></script>
 </body>
 
 </html>

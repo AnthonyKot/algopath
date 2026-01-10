@@ -1,0 +1,144 @@
+{
+  "id": "trees-1",
+  "title": "Range Sum Queries (Segment Tree)",
+  "difficulty": "Medium",
+  "leetcode_url": "https://leetcode.com/problems/range-sum-query-mutable/",
+  "related": [
+    {
+      "id": "trees-4",
+      "title": "Lazy Propagation",
+      "category": "trees"
+    },
+    {
+      "id": "trees-5",
+      "title": "Fenwick Tree",
+      "category": "trees"
+    }
+  ],
+  "tags": [
+    "segment-tree",
+    "data-structures"
+  ],
+  "content": {
+    "problem_statement": "Given an integer array `nums`, handle multiple queries of the following types:\n\n1.  **Update**: Update the value of an element in `nums`.\n2.  **Sum Range**: Calculate the sum of the elements of `nums` between indices `left` and `right` **inclusive** where `left <= right`.\n\nImplement the `SegmentTree` class:\n*   `SegmentTree(int[] nums)` Initializes the object with the integer array `nums`.\n*   `void update(int index, int val)` Updates the value of `nums[index]` to be `val`.\n*   `int sumRange(int left, int right)` Returns the sum of the elements of `nums` between indices `left` and `right` inclusive (i.e. `nums[left] + nums[left + 1] + ... + nums[right]`).\n\n**Example 1:**\n```\nInput\n[\"SegmentTree\", \"sumRange\", \"update\", \"sumRange\"]\n[[[1, 3, 5]], [0, 2], [1, 2], [0, 2]]\nOutput\n[null, 9, null, 8]\n\nExplanation\nSegmentTree segmentTree = new SegmentTree([1, 3, 5]);\nsegmentTree.sumRange(0, 2); // return 1 + 3 + 5 = 9\nsegmentTree.update(1, 2);   // nums = [1, 2, 5]\nsegmentTree.sumRange(0, 2); // return 1 + 2 + 5 = 8\n```",
+    "explanation": {
+      "understanding_the_problem": "A naive approach using a simple array would give us O(1) for updates but O(N) for range sum queries, which is too slow if we have many queries. We need a more advanced data structure that can balance the performance of both operations.",
+      "brute_force": "The problem requires a way to handle range queries efficiently. This is the perfect use case for a **Segment Tree**. A Segment Tree is a binary tree where each node represents an interval (or segment) of the original array.\n\n- The **root** represents the entire array `[0, N-1]`.\n- Each **leaf** represents a single element `[i, i]`.\n- Each **internal node** stores aggregate information (in this case, the sum) for the union of its children's intervals.",
+      "bottleneck": "The key is that a query for any range can be answered by combining the information from a small number of pre-computed nodes in the tree. Similarly, updating a single element only requires updating the nodes on the path from that leaf to the root.",
+      "optimized_approach": "By storing pre-computed sums in the tree's nodes, a Segment Tree allows us to perform both point updates and range sum queries in O(log N) time.\n\n- **Query `(l, r)`:** We traverse the tree. If a node's interval is completely inside our query range, we use its value directly. If it partially overlaps, we recurse on its children. This covers our query range with a logarithmic number of nodes.\n- **Update `(pos, val)`:** We find the leaf corresponding to `pos` and update its value. Then, we walk back up to the root, updating the sum of each parent node along the way. This is a single path of length O(log N).",
+      "algorithm_steps": "1.  **Build Tree:** We represent the tree using an array (size `4N` is safe). A recursive function `build(node, start, end)` populates the tree. If `start == end`, it's a leaf. Otherwise, it recursively builds the left and right children and sets its own value to their sum.\n\n2.  **Update Operation:** A recursive function `update(node, start, end, pos, val)` finds the leaf corresponding to `pos`. It updates the leaf's value and then updates the sums of all parent nodes on the recursion path back to the root.\n\n3.  **Query Operation:** A recursive function `query(node, start, end, l, r)` finds the answer for range `[l, r]`. \n    - If the node's range is outside `[l, r]`, return 0.\n    - If the node's range is completely inside `[l, r]`, return the node's value.\n    - Otherwise, the ranges partially overlap. Return the sum of recursive calls to the left and right children."
+    },
+    "quizzes": [
+      {
+        "question": "What operations does a Segment Tree efficiently support?",
+        "options": [
+          "Only point queries",
+          "Range queries and point updates",
+          "Only sorting",
+          "Random access only"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the time complexity for query and update?",
+        "options": [
+          "O(N)",
+          "O(1)",
+          "O(log N)",
+          "O(N²)"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "What does each node in the tree represent?",
+        "options": [
+          "Single element",
+          "Aggregate of an interval",
+          "Pointer to child",
+          "Hash value"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "How do we handle partial overlap during query?",
+        "options": [
+          "Skip node",
+          "Recurse on both children",
+          "Return 0",
+          "Use lazy tag"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Why use array size 4N for the tree?",
+        "options": [
+          "For padding",
+          "Safe upper bound for complete binary tree",
+          "Memory alignment",
+          "Faster access"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "class SegmentTree {\n  constructor(arr) {\n    this.n = arr.length;\n    this.tree = new Array(4 * this.n);\n    this.build(1, 0, this.n - 1, arr);\n  }\n  build(node, l, r, arr) {\n    if (l === r) this.tree[node] = arr[l];\n    else {\n      const mid = Math.floor((l + r) / 2);\n      this.build(node * 2, l, mid, arr);\n      this.build(node * 2 + 1, mid + 1, r, arr);\n      this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];\n    }\n  }\n  update(pos, val, node = 1, l = 0, r = this.n - 1) {\n    if (l === r) this.tree[node] = val;\n    else {\n      const mid = Math.floor((l + r) / 2);\n      if (pos <= mid) this.update(pos, val, node * 2, l, mid);\n      else this.update(pos, val, node * 2 + 1, mid + 1, r);\n      this.tree[node] = this.tree[node * 2] + this.tree[node * 2 + 1];\n    }\n  }\n  query(qL, qR, node = 1, l = 0, r = this.n - 1) {\n    if (qL > r || qR < l) return 0;\n    if (qL <= l && r <= qR) return this.tree[node];\n    const mid = Math.floor((l + r) / 2);\n    return this.query(qL, qR, node * 2, l, mid) +\n           this.query(qL, qR, node * 2 + 1, mid + 1, r);\n  }\n}",
+      "annotations": [
+        {
+          "lines": [
+            4,
+            5
+          ],
+          "text": "Allocate array of size 4N. This is a safe upper bound for a segment tree."
+        },
+        {
+          "lines": [
+            7,
+            8
+          ],
+          "text": "Build: Leaf node (l == r) holds the array value."
+        },
+        {
+          "lines": [
+            12,
+            13
+          ],
+          "text": "Internal node: sum of left and right children. This is the 'merge' step."
+        },
+        {
+          "lines": [
+            16,
+            21
+          ],
+          "text": "Update: find leaf, update it, then update all parents on the way up."
+        },
+        {
+          "lines": [
+            25
+          ],
+          "text": "Query: Range outside node range -> return 0 (identity for sum)."
+        },
+        {
+          "lines": [
+            26
+          ],
+          "text": "Query: Range completely covers node range -> return pre-calculated answer."
+        },
+        {
+          "lines": [
+            28,
+            29
+          ],
+          "text": "Query: Partial overlap -> recurse on both sides and sum the results."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(log N) per query/update",
+    "space": "O(N)",
+    "explanation_time": "The tree is balanced, so its height is O(log N). Both `update` and `query` operations traverse the tree from the root to a leaf or a set of nodes, taking O(log N) time. The initial build takes O(N) time as it visits every node once.",
+    "explanation_space": "We use an array to represent the tree. To avoid out-of-bounds issues with indexing, an array of size 4*N is sufficient for a balanced binary tree of N leaves. This results in O(N) space complexity."
+  }
+}

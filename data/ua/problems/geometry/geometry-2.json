@@ -1,0 +1,30 @@
+{
+    "id": "geometry-2",
+    "title": "Найближча Пара Точок",
+    "difficulty": "Hard",
+    "leetcode_url": "https://en.wikipedia.org/wiki/Closest_pair_of_points_problem",
+    "tags": [
+        "geometry",
+        "divide-and-conquer"
+    ],
+    "content": {
+        "problem_statement": "Дано масив `points`, де `points[i] = [xi, yi]`, знайдіть пару точок з **мінімальною Евклідовою відстанню** між ними.",
+        "explanation": {
+            "understanding_the_problem": "Знайти дві точки, найближчі одна до одної. Наївний O(N²) занадто повільний для великих N.",
+            "brute_force": "Обчисліть відстань між кожною парою точок і відстежуйте мінімум.",
+            "optimized_approach": "**Розділяй і Володарюй (O(N log N)):**\n1. Відсортуйте за координатою X.\n2. Розділіть набір на дві половини.\n3. Рекурсивно знайдіть мінімальну відстань у лівій (`dL`) та правій (`dR`) половинах.\n4. Нехай `d = min(dL, dR)`.\n5. **Крок Об'єднання:** Найближча пара може перетинати розділову лінію. Перевірте точки в межах смуги шириною `d` навколо центральної лінії. Відсортуйте їх за координатою Y і порівняйте кожну точку з наступними 7 точками (геометричне доведення гарантує, що цього достатньо).",
+            "algorithm_steps": "1. Попередньо відсортуйте точки за X та Y.\n2. `solve(points)`: Якщо N <= 3, перебір (brute force).\n3. Розділіть на Ліву та Праву.\n4. `d = min(solve(Left), solve(Right))`.\n5. Створіть масив `strip` точок у межах `d` від середньої лінії.\n6. Ітеруйте `strip`, перевіряючи сусідів у межах `d`. Оновіть min distance."
+        }
+    },
+    "code": {
+        "javascript": {
+            "solution": "// Conceptual JS implementation\nfunction closestPair(points) {\n    points.sort((a,b) => a[0] - b[0]);\n    return recursiveClosest(points);\n}"
+        }
+    },
+    "complexity": {
+        "time": "O(N log N)",
+        "space": "O(N)",
+        "explanation_time": "T(N) = 2T(N/2) + O(N). За Теоремою Майстра це O(N log N).",
+        "explanation_space": "Стек рекурсії та допоміжні масиви для розділення/злиття."
+    }
+}

@@ -1,0 +1,125 @@
+{
+  "id": "dp-4",
+  "title": "Burst Balloons",
+  "difficulty": "Medium",
+  "leetcode_url": "https://leetcode.com/problems/burst-balloons/",
+  "tags": [
+    "dp",
+    "interval-dp",
+    "optimization"
+  ],
+  "content": {
+    "problem_statement": "You are given `n` balloons, indexed from `0` to `n - 1`. Each balloon is painted with a number on it represented by an array `nums`.\n\nYou are asked to burst all the balloons. If you burst the `i-th` balloon, you will get `nums[i-1] * nums[i] * nums[i+1]` coins. If `i-1` or `i+1` goes out of bounds of the array, then treat it as if there is a balloon with a `1` painted on it.\n\nReturn the maximum coins you can collect by bursting the balloons wisely.\n\n**Example 1:**\n```\nInput: nums = [3,1,5,8]\nOutput: 167\nExplanation:\nnums = [3,1,5,8] -> [3,5,8] -> [3,8] -> [8] -> []\ncoins =  3*1*5    +   3*5*8   +  1*3*8  + 1*8*1 = 167\n```",
+    "explanation": {
+      "understanding_the_problem": "We need to find the optimal order of bursting balloons to maximize our score. The main difficulty is that bursting a balloon affects the score of future bursts because the 'adjacent' balloons change. This dynamic dependency makes a simple greedy approach unlikely to work.",
+      "brute_force": "A standard DP approach might be to define `dp(balloons_left)` as the max score. However, the subproblems are not independent. The score for bursting a balloon in a sub-array depends on the boundaries, which might have been burst already. This makes the state hard to define.\n\nThe key insight is to change our perspective: instead of thinking 'which balloon to burst first?', we should think **'which balloon to burst last?'**",
+      "bottleneck": "The standard 'burst first' thinking leads to coupled subproblems. If we burst `nums[i]`, the subproblems `(0, i-1)` and `(i+1, n-1)` are not independent, because a future burst in the left part might need a boundary from the right part.",
+      "optimized_approach": "Let's focus on the **last** balloon to be burst within an interval `(i, j)`. Suppose this last balloon is `k`. When we burst `k`, all other balloons between `i` and `j` are already gone. This means its neighbors must be `i` and `j`. The coins gained from this final burst are `nums[i] * nums[k] * nums[j]`.\n\nThe total score is then `(max score from interval (i, k)) + (max score from interval (k, j)) + nums[i] * nums[k] * nums[j]`. The subproblems `(i, k)` and `(k, j)` are now independent! This is a pattern known as **Interval DP**.",
+      "algorithm_steps": "1.  **Preprocessing:** Pad the `nums` array with a `1` at both ends. This handles the edge cases gracefully. Let the new length be `n`.\n2.  **Initialization:** Create a 2D `dp` table of size `n x n`, where `dp[i][j]` will store the max coins from bursting balloons in the open interval `(i, j)`.\n3.  **Main Loop (Interval DP):**\n    a.  Iterate over the interval length `len`, from 2 up to `n-1`.\n    b.  Iterate over the start index `i`, from 0 up to `n - 1 - len`.\n    c.  The end index `j` will be `i + len`.\n    d.  For our interval `(i, j)`, iterate through every possible last balloon `k` where `i < k < j`.\n    e.  Apply the transition: `dp[i][j] = max(dp[i][j], dp[i][k] + dp[k][j] + nums[i] * nums[k] * nums[j])`.\n\n4.  **Result:** The answer for the entire range `(0, n-1)` will be stored in `dp[0][n-1]`."
+    },
+    "quizzes": [
+      {
+        "question": "What DP pattern does Burst Balloons use?",
+        "options": [
+          "Linear DP",
+          "Interval DP",
+          "Tree DP",
+          "Digit DP"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the key insight for this problem?",
+        "options": [
+          "Burst smallest first",
+          "Think about which to burst LAST",
+          "Use greedy",
+          "Sort balloons"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Why think about 'last balloon' instead of 'first'?",
+        "options": [
+          "Faster execution",
+          "Subproblems become independent",
+          "Easier to code",
+          "Less memory"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What does dp[i][j] represent?",
+        "options": [
+          "Min coins",
+          "Max coins in interval (i,j)",
+          "Balloon count",
+          "Burst order"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the time complexity?",
+        "options": [
+          "O(N)",
+          "O(N²)",
+          "O(N³)",
+          "O(2^N)"
+        ],
+        "correct": 2
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function maxCoins(nums) {\n  const n = nums.length;\n  nums = [1, ...nums, 1];\n  const dp = Array(n+2).fill().map(() => Array(n+2).fill(0));\n  for (let len = 1; len <= n; len++) {\n    for (let i = 1; i + len - 1 <= n; i++) {\n      const j = i + len - 1;\n      for (let k = i; k <= j; k++) {\n        dp[i][j] = Math.max(dp[i][j], nums[i-1]*nums[k]*nums[j+1] + dp[i][k-1] + dp[k+1][j]);\n      }\n    }\n  }\n  return dp[1][n];\n}",
+      "annotations": [
+        {
+          "lines": [
+            2,
+            3
+          ],
+          "text": "Pad array with 1s at both ends to handle boundary cases. Original balloon indices become 1 to n"
+        },
+        {
+          "lines": [
+            4
+          ],
+          "text": "Create 2D DP table: dp[i][j] = max coins from bursting balloons in range [i, j]"
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Outer loop: iterate by interval length (smaller intervals first - bottom-up)"
+        },
+        {
+          "lines": [
+            6,
+            7
+          ],
+          "text": "Middle loop: iterate over all possible start positions for current interval length"
+        },
+        {
+          "lines": [
+            8,
+            9
+          ],
+          "text": "Inner loop: try each balloon k as the LAST to burst in interval. Key insight: when k is last, its neighbors are i-1 and j+1"
+        },
+        {
+          "lines": [
+            13
+          ],
+          "text": "Answer: max coins from bursting all balloons (range 1 to n)"
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(N³)",
+    "space": "O(N²)",
+    "explanation_time": "Let N be the number of balloons in the original array. We have three nested loops to fill the DP table: one for the interval length, one for the start position, and one for the 'last balloon' `k`. Each of these loops runs approximately N times, leading to a cubic time complexity of O(N³).",
+    "explanation_space": "We use a 2D DP table of size roughly (N+2) x (N+2) to store the results of the subproblems. This requires O(N²) space."
+  }
+}

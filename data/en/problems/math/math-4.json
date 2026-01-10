@@ -1,0 +1,115 @@
+{
+  "id": "math-4",
+  "title": "Chinese Remainder Theorem",
+  "difficulty": "Medium",
+  "related": [
+    {
+      "id": "math-3",
+      "title": "Extended Euclidean Algorithm",
+      "category": "math"
+    },
+    {
+      "id": "math-5",
+      "title": "FFT",
+      "category": "math"
+    }
+  ],
+  "tags": [
+    "crt",
+    "modular",
+    "number-theory"
+  ],
+  "content": {
+    "problem_statement": "Solve a system of simultaneous congruences. Given `x ≡ a_i (mod m_i)` for `i = 1...k`, find `x`. The standard version assumes all `m_i` are pairwise coprime.",
+    "explanation": {
+      "understanding_the_problem": "We are looking for a single number `x` that leaves a specific remainder `a_i` when divided by a specific number `m_i`, for a whole set of `(a_i, m_i)` pairs.",
+      "brute_force": "One could start at `a_1` and keep adding `m_1` (`x = a_1, a_1+m_1, a_1+2m_1, ...`) and for each resulting number, check if it satisfies all the other congruences. This is extremely slow.",
+      "bottleneck": "The search space is huge. We need a constructive method to build the solution.",
+      "optimized_approach": "The theorem guarantees a unique solution for `x` modulo `M` (where `M` is the product of all `m_i`). A practical way to find this solution is to solve the system one congruence at a time and merge the results.\n\nStart with the first congruence, `x ≡ a_1 (mod m_1)`. This tells us `x` must be of the form `a_1 + k*m_1`. We substitute this into the second congruence and solve for `k`. This gives us a new, combined congruence `x ≡ a_new (mod m_1*m_2)`. We can repeat this process, merging one congruence at a time, until we have the final answer.",
+      "algorithm_steps": "1.  Start with the first solution `ans = a_1`, `mod = m_1`.\n2.  For each subsequent congruence `x ≡ a_i (mod m_i)`:\n    a. We need to find `k` such that `ans + k*mod ≡ a_i (mod m_i)`.\n    b. This can be solved for `k` using the modular inverse, which we find with the Extended Euclidean Algorithm.\n    c. Once `k` is found, update the answer: `ans = ans + k*mod`.\n    d. Update the combined modulus: `mod = mod * m_i`.\n3. Repeat for all congruences."
+    },
+    "quizzes": [
+      {
+        "question": "What does CRT solve?",
+        "options": [
+          "Polynomial equations",
+          "System of congruences",
+          "Prime factorization",
+          "Matrix equations"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What condition is needed for standard CRT?",
+        "options": [
+          "All m_i equal",
+          "All m_i pairwise coprime",
+          "All a_i prime",
+          "m_i sorted"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "How does the iterative approach work?",
+        "options": [
+          "Solve all at once",
+          "Merge two congruences at a time",
+          "Binary search",
+          "Random sampling"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What algorithm is used in the merge step?",
+        "options": [
+          "Sieve",
+          "Extended Euclidean",
+          "FFT",
+          "Binary exponentiation"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Is the solution unique?",
+        "options": [
+          "No",
+          "Yes, modulo product of all m_i",
+          "Only for primes",
+          "Depends on a_i"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function solveCRT(a, m) {\n  function merge(a1, m1, a2, m2) {\n    const [g, p, q] = extendedGCD(m1, m2);\n    if ((a2 - a1) % g !== 0) {\n      return [-1, 0];\n    }\n    const lcm = (m1 / g) * m2;\n    const x = (a1 + ((a2 - a1) / g * p % (m2 / g)) * m1) % lcm;\n    return [(x % lcm + lcm) % lcm, lcm];\n  }\n  let [ans, mod] = [a[0], m[0]];\n  for (let i = 1; i < a.length; i++) {\n    [ans, mod] = merge(ans, mod, a[i], m[i]);\n    if (ans === -1) return [-1, 0];\n  }\n  return ans;\n}",
+      "annotations": [
+        {
+          "lines": [
+            3
+          ],
+          "text": "Modular Inverse: Solve for 'p' in Bezout equation relative to moduli."
+        },
+        {
+          "lines": [
+            7
+          ],
+          "text": "Merge: Combine two congruences into one. New x satisfies both."
+        },
+        {
+          "lines": [
+            12
+          ],
+          "text": "Iterative Merge: Combine current answer with next congruence."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(k * log M)",
+    "space": "O(k)",
+    "explanation_time": "Where `k` is the number of equations and `M` is the product of the moduli. Each of the `k-1` merge steps involves a call to the Extended Euclidean Algorithm, which is logarithmic in the size of the moduli.",
+    "explanation_space": "The inputs are stored in arrays of size k."
+  }
+}

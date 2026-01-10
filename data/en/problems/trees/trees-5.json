@@ -1,0 +1,140 @@
+{
+  "id": "trees-5",
+  "title": "Fenwick Tree (Binary Indexed Tree)",
+  "difficulty": "Medium",
+  "leetcode_url": "https://leetcode.com/problems/range-sum-query-mutable/",
+  "related": [
+    {
+      "id": "trees-1",
+      "title": "Segment Tree",
+      "category": "trees"
+    },
+    {
+      "id": "trees-4",
+      "title": "Lazy Propagation",
+      "category": "trees"
+    }
+  ],
+  "tags": [
+    "fenwick-tree",
+    "bit",
+    "data-structures"
+  ],
+  "follow_up": {
+    "scenario": "Live leaderboard with millions of players and constant score updates.",
+    "trade_off": "Segment Tree uses 4N space (memory overhead). We need something cache-friendly.",
+    "strategy": "Fenwick Tree (BIT). Uses O(N) space and relies on bit manipulation for O(log N) traversal. Implicit bounds.",
+    "answering_guide": "Highlight <strong>'Space Efficiency'</strong> and <strong>'Bit Manipulation'</strong>. Mentioning that BIT is easier to implement (fewer lines of code) than Segment Tree often impresses."
+  },
+  "content": {
+    "problem_statement": "Given an integer array `nums`, handle multiple queries of the following types:\n\n1.  **Update**: Add a value `delta` to the element at `index`.\n2.  **Prefix Sum**: Calculate the sum of the elements of `nums` between indices `0` and `index` **inclusive**.\n\nImplement the `FenwickTree` class:\n*   `FenwickTree(int n)` Initializes a tree with `n+1` size.\n*   `void update(int index, int delta)` Adds `delta` to `nums[index]`.\n*   `int query(int index)` Returns the prefix sum up to `index`.\n\n**Example 1:**\n```\nInput\n[\"FenwickTree\", \"update\", \"query\", \"update\", \"query\"]\n[[5], [2, 1], [4], [2, 3], [4]]\nOutput\n[null, null, 1, null, 4]\n```",
+    "explanation": {
+      "understanding_the_problem": "This problem requires efficient point updates and prefix sum queries. A standard Segment Tree can solve this in O(log N) time, but a Fenwick Tree (also known as a Binary Indexed Tree or BIT) provides the same time complexity while being significantly simpler to implement and requiring less space.",
+      "brute_force": "A naive array gives O(1) updates but O(N) prefix sums. A pre-calculated prefix sum array gives O(1) queries but O(N) updates. We need to balance these, which is what a BIT does.",
+      "bottleneck": "The core idea of a Fenwick Tree is that any prefix sum can be calculated by summing up a few pre-calculated, non-overlapping sub-range sums. The genius of the data structure lies in how it maps indices to these sub-ranges using bit manipulation.",
+      "optimized_approach": "A BIT uses an array where `tree[i]` stores the sum of a specific range of elements from the original array. The range `tree[i]` is responsible for is determined by the least significant bit (LSB) of `i`.\n\n- **`update(index, delta)`:** When a value at `index` changes, we only need to update the `tree` entries that include this index in their range. Using bit manipulation (`i += i & -i`), we can 'jump' up to parent ranges that are affected, taking O(log N) time.\n- **`query(index)`:** To get a prefix sum, we do the reverse. We start at `tree[index]` and add its value. Then we jump to the next relevant sub-range (`i -= i & -i`) and add its value, and so on. This also takes O(log N) time.",
+      "algorithm_steps": "Note: Fenwick Trees are typically implemented using 1-based indexing.\n\n1.  **`update(index, delta)`:**\n    a.  Start at `i = index + 1`.\n    b.  While `i` is within the bounds of the tree array, add `delta` to `tree[i]`.\n    c.  Move to the next affected index by jumping to the parent range: `i += i & -i`. The expression `i & -i` isolates the least significant bit.\n\n2.  **`query(index)`:**\n    a.  Start at `i = index + 1`.\n    b.  Initialize `sum = 0`.\n    c.  While `i > 0`, add `tree[i]` to `sum`.\n    d.  Move to the next sub-range by removing the LSB: `i -= i & -i`.\n    e.  Return `sum`."
+    },
+    "quizzes": [
+      {
+        "question": "What is another name for Fenwick Tree?",
+        "options": [
+          "Segment Tree",
+          "Binary Indexed Tree",
+          "AVL Tree",
+          "Red-Black Tree"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What bit operation finds the LSB?",
+        "options": [
+          "i | -i",
+          "i ^ -i",
+          "i & -i",
+          "i >> 1"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "Why is Fenwick Tree 1-indexed?",
+        "options": [
+          "Convention",
+          "LSB trick works properly",
+          "Faster access",
+          "Less memory"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the advantage over Segment Tree?",
+        "options": [
+          "Faster queries",
+          "Simpler code and less space",
+          "More operations",
+          "Better for strings"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "How to get range sum [L, R]?",
+        "options": [
+          "query(R) + query(L)",
+          "query(R) - query(L-1)",
+          "query(L+R)",
+          "query(R) * query(L)"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "class FenwickTree {\n  constructor(n) {\n    this.n = n;\n    this.tree = new Array(n + 1).fill(0);\n  }\n  update(i, delta) {\n    for (++i; i <= this.n; i += i & -i) {\n      this.tree[i] += delta;\n    }\n  }\n  query(i) {\n    let sum = 0;\n    for (++i; i > 0; i -= i & -i) {\n      sum += this.tree[i];\n    }\n    return sum;\n  }\n  rangeQuery(l, r) {\n    return this.query(r) - (l > 0 ? this.query(l - 1) : 0);\n  }\n}",
+      "annotations": [
+        {
+          "lines": [
+            4
+          ],
+          "text": "Tree array is 1-indexed for bit manipulation magic."
+        },
+        {
+          "lines": [
+            7
+          ],
+          "text": "Update: Start at index+1. Loop until end of array."
+        },
+        {
+          "lines": [
+            8
+          ],
+          "text": "i += i & -i: Jumps to the next parent range coverage."
+        },
+        {
+          "lines": [
+            13
+          ],
+          "text": "Query: Start at index+1. Loop backwards to 0."
+        },
+        {
+          "lines": [
+            14
+          ],
+          "text": "i -= i & -i: Jumps to the previous non-overlapping sub-range."
+        },
+        {
+          "lines": [
+            19
+          ],
+          "text": "Range Sum [L, R] = PrefixSum(R) - PrefixSum(L-1)."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(log N) per operation",
+    "space": "O(N)",
+    "explanation_time": "Both the `update` and `query` operations involve a loop that 'jumps' through the tree array. The number of jumps is determined by the number of set bits in the index, which is at most O(log N).",
+    "explanation_space": "The Fenwick Tree requires a single array of size N+1 to store its state, resulting in O(N) space complexity. This is more space-efficient than a standard Segment Tree, which typically requires 4N space."
+  }
+}

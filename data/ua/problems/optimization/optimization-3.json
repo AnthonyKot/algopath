@@ -1,0 +1,121 @@
+{
+    "id": "optimization-3",
+    "title": "Максимальний Прямокутник",
+    "difficulty": "Hard",
+    "leetcode_url": "https://leetcode.com/problems/maximal-rectangle/",
+    "related": [
+        {
+            "id": "optimization-2",
+            "title": "Largest Rectangle in Histogram",
+            "category": "optimization"
+        },
+        {
+            "id": "dp-5",
+            "title": "Maximal Square",
+            "category": "dp"
+        }
+    ],
+    "tags": [
+        "dp",
+        "stack",
+        "histogram"
+    ],
+    "follow_up": {
+        "scenario": "Матриця надзвичайно розріджена (99.9% нулів).",
+        "trade_off": "Рішення O(N*M) марнує цикли на порожній простір.",
+        "strategy": "Використовуйте розріджене представлення (Список координат).",
+        "answering_guide": "Запитайте про формат вводу. Якщо вона розріджена, алгоритми для 'Щільної Матриці' неправильні. перейдіть до <strong>'Розрідженого Представлення'</strong> (Список Координат)."
+    },
+    "content": {
+        "problem_statement": "Дано `rows x cols` бінарну `matrix`, заповнену `0` та `1`, знайдіть найбільший прямокутник, що містить тільки `1`, і поверніть *його площу*.\n\n**Приклад 1:**\n```\nInput: matrix = [[\"1\",\"0\",\"1\",\"0\",\"0\"],[\"1\",\"0\",\"1\",\"1\",\"1\"],[\"1\",\"1\",\"1\",\"1\",\"1\"],[\"1\",\"0\",\"0\",\"1\",\"0\"]]\nOutput: 6\nExplanation: Найбільший прямокутник показано виділеними 1.\n```",
+        "explanation": {
+            "understanding_the_problem": "Нам потрібно знайти найбільший прямокутник з одиниць всередині сітки.",
+            "brute_force": "Ми могли б перевірити кожен можливий прямокутник. Прямокутник визначається його верхнім лівим і нижнім правим кутами. Це було б O(M² * N²) прямокутників, і для кожного нам довелося б перевірити, чи складається він лише з 1, що призводить до дуже повільного рішення.",
+            "optimized_approach": "Цю задачу можна хитро звести до задачі **'Найбільший Прямокутник у Гістограмі'**.\n\nМи можемо обробляти матрицю рядок за рядком. Для кожного рядка ми можемо уявити його як основу гістограми. Висота кожної смуги у стовпці `j` - це кількість послідовних 1 безпосередньо над нею в цьому стовпці, включаючи комірку в поточному рядку.\n\nРоблячи це, для кожного рядка ми генеруємо нову гістограму. Потім ми можемо запустити алгоритм 'Найбільший Прямокутник у Гістограмі' складністю O(N) на цій згенерованій гістограмі. Загальна максимальна площа, знайдена у всіх рядках, буде відповіддю.",
+            "algorithm_steps": "1.  Ініціалізуйте `maxArea = 0` та масив `heights` розміром N.\n2.  Ітеруйте через кожен `row` матриці:\n    a.  Оновіть `heights`: якщо `matrix[row][j] == '1'`, `heights[j]++`, інакше `0`.\n    b.  `maxArea = max(maxArea, largestRectangleArea(heights))`.\n3.  Поверніть `maxArea`."
+        },
+        "quizzes": [
+            {
+                "question": "До якої простішої задачі це зводиться?",
+                "options": [
+                    "Maximum Subarray Sum",
+                    "Largest Rectangle in Histogram",
+                    "Longest Common Subsequence",
+                    "Knapsack Problem"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Як ми будуємо гістограму для кожного рядка?",
+                "options": [
+                    "Рахуємо 1 в рядку",
+                    "Накопичуємо 1 зверху (скидаємо на 0)",
+                    "Рахуємо 0",
+                    "Випадково"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Що відбувається, якщо matrix[i][j] дорівнює '0'?",
+                "options": [
+                    "Висота стає 0",
+                    "Висота залишається такою ж",
+                    "Висота зменшується на 1",
+                    "Висота збільшується"
+                ],
+                "correct": 0
+            },
+            {
+                "question": "Яка загальна часова складність?",
+                "options": [
+                    "O(M*N)",
+                    "O(M²*N)",
+                    "O(M*N²)",
+                    "O(M+N)"
+                ],
+                "correct": 0
+            },
+            {
+                "question": "Яка просторова складність?",
+                "options": [
+                    "O(1)",
+                    "O(N) (ширина матриці)",
+                    "O(M*N)",
+                    "O(M)"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "complexity": {
+        "time": "O(M * N)",
+        "space": "O(N)",
+        "explanation_time": "Ми ітеруємо через M рядків, і для кожного рядка виконуємо операцію O(N) (оновлення масиву висот та запуск алгоритму гістограми). Це дає загальну часову складність O(M * N).",
+        "explanation_space": "Нам потрібно O(N) простору для зберігання масиву `heights` для кожного рядка."
+    },
+    "code": {
+        "javascript": {
+            "solution": "function maximalRectangle(matrix) {\n  if (!matrix.length) return 0;\n  const m = matrix.length, n = matrix[0].length;\n  const heights = new Array(n).fill(0);\n  let maxArea = 0;\n  \n  for (let i = 0; i < m; i++) {\n    for (let j = 0; j < n; j++) {\n      heights[j] = matrix[i][j] === '1' ? heights[j] + 1 : 0;\n    }\n    maxArea = Math.max(maxArea, largestRectangleArea([...heights]));\n  }\n  \n  return maxArea;\n}\n\nfunction largestRectangleArea(heights) {\n  const stack = [];\n  let maxArea = 0;\n  heights.push(0);\n  \n  for (let i = 0; i < heights.length; i++) {\n    while (stack.length && heights[i] < heights[stack[stack.length - 1]]) {\n      const h = heights[stack.pop()];\n      const w = stack.length ? i - stack[stack.length - 1] - 1 : i;\n      maxArea = Math.max(maxArea, h * w);\n    }\n    stack.push(i);\n  }\n  \n  return maxArea;\n}",
+            "annotations": [
+                {
+                    "lines": [
+                        7
+                    ],
+                    "text": "Сканування рядків: Розглядайте кожен рядок як основу гістограми."
+                },
+                {
+                    "lines": [
+                        9
+                    ],
+                    "text": "Побудова гістограми: Якщо '1', додайте до висоти. Якщо '0', скиньте висоту до 0."
+                },
+                {
+                    "lines": [
+                        11
+                    ],
+                    "text": "Вирішення підзадачі: Запустіть 'Найбільший Прямокутник у Гістограмі' на висотах поточного рядка."
+                }
+            ]
+        }
+    }
+}

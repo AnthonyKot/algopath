@@ -1,0 +1,123 @@
+{
+  "id": "math-1",
+  "title": "Modular Exponentiation",
+  "difficulty": "Medium",
+  "leetcode_url": "https://leetcode.com/problems/powx-n/",
+  "related": [
+    {
+      "id": "math-2",
+      "title": "Sieve of Eratosthenes",
+      "category": "math"
+    },
+    {
+      "id": "math-3",
+      "title": "Extended Euclidean Algorithm",
+      "category": "math"
+    }
+  ],
+  "tags": [
+    "modular",
+    "exponentiation",
+    "fast-power"
+  ],
+  "content": {
+    "problem_statement": "Calculate (a^b) mod m efficiently, where a, b, and m can be large numbers.",
+    "explanation": {
+      "understanding_the_problem": "We need to compute the remainder of a number `a` raised to a large power `b` when divided by `m`. A standard loop or `Math.pow` would be too slow if `b` is large, and would also lead to overflow issues with massive intermediate numbers.",
+      "brute_force": "The naive approach is to use a loop to multiply `a` by itself `b` times, taking the modulus at each step to prevent overflow. This has a time complexity of O(b), which is not feasible for large `b` (e.g., 10^18).",
+      "bottleneck": "The O(b) complexity is the bottleneck. We need a way to calculate powers much faster.",
+      "optimized_approach": "The solution is **Binary Exponentiation** (also known as Exponentiation by Squaring). This O(log b) algorithm is based on the principle that any exponent `b` can be written as a sum of powers of 2. For example, `a^13 = a^(8+4+1) = a^8 * a^4 * a^1`.\n\nWe can find the terms `a^1, a^2, a^4, a^8, ...` by repeatedly squaring `a`. Then, we only multiply the terms that correspond to the set bits in the binary representation of `b`.",
+      "algorithm_steps": "1.  Initialize `result = 1`.\n2.  Reduce `a = a % m`.\n3.  Loop while `b > 0`:\n    a.  If `b` is odd (i.e., the last bit is 1), it means the current power of `a` is part of our product. So, multiply `result = (result * a) % m`.\n    b.  In any case, we need the next power of `a`, so we square it: `a = (a * a) % m`.\n    c.  Right-shift `b` by one (`b = floor(b / 2)`), effectively moving to its next bit."
+    },
+    "quizzes": [
+      {
+        "question": "What technique gives O(log b) for a^b?",
+        "options": [
+          "Linear loop",
+          "Binary exponentiation",
+          "Recursion only",
+          "Matrix multiplication"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Why square the base each iteration?",
+        "options": [
+          "Randomization",
+          "Move to next power of 2",
+          "Reduce memory",
+          "Handle negatives"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "When do we multiply result by current base?",
+        "options": [
+          "Always",
+          "When b is odd (bit is 1)",
+          "When b is even",
+          "Never"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Why take mod at each step?",
+        "options": [
+          "Faster",
+          "Prevent overflow",
+          "Required by algorithm",
+          "Improves precision"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the space complexity?",
+        "options": [
+          "O(N)",
+          "O(log b)",
+          "O(1)",
+          "O(b)"
+        ],
+        "correct": 2
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function modPow(a, b, mod) {\n  let result = 1;\n  a = a % mod;\n  while (b > 0) {\n    if (b % 2 === 1) {\n      result = (result * a) % mod;\n    }\n    a = (a * a) % mod;\n    b = Math.floor(b / 2);\n  }\n  return result;\n}",
+      "annotations": [
+        {
+          "lines": [
+            2,
+            3
+          ],
+          "text": "Modulus Op: Reduce 'a' immediately. 'result' initialized to 1 (identity)."
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Bit Set: If current bit is 1 (b is odd), multiply current power of 'a' into result."
+        },
+        {
+          "lines": [
+            8
+          ],
+          "text": "Squaring: Move to next power of 2 (a^2, a^4, etc.) by squaring base."
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Shift: Move to next bit of exponent (divide by 2)."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(log b)",
+    "space": "O(1)",
+    "explanation_time": "The loop runs as many times as there are bits in the exponent `b`, which is approximately log₂(b). Each step inside the loop is a constant time operation.",
+    "explanation_space": "The algorithm uses only a few variables to store its state, requiring constant O(1) space."
+  }
+}

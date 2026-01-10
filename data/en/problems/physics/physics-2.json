@@ -1,0 +1,84 @@
+{
+  "id": "physics-2",
+  "title": "Expanding Particle Cloud (Critical Density Universe)",
+  "difficulty": "Medium",
+  "related": [
+    {
+      "id": "physics-1",
+      "title": "Relativistic Collision",
+      "category": "physics"
+    }
+  ],
+  "tags": [
+    "mechanics",
+    "gravity",
+    "cosmology",
+    "energy-conservation"
+  ],
+  "content": {
+    "problem_statement": "A spherical cloud of particles is uniformly distributed. Each particle has a **radial velocity** directed outward from the center with magnitude $v = Hr$, where $r$ is the distance from the center and $H$ is a constant.\n\nThe cloud has the **minimum density** that allows it to expand forever (not collapse back due to gravity).\n\n**Find:**\nHow does the speed $v$ of a particular particle depend on its distance $R$ from the center at a future time?\n\n**Given:**\n- Initial distance of particle: $r_0$\n- Initial velocity: $v_0 = Hr_0$\n- Velocity law: $v = Hr$ (Hubble-like expansion)\n- Critical density condition (minimum to escape)",
+    "explanation": {
+      "understanding_the_problem": "This is a classic problem in classical mechanics that parallels the dynamics of the **expansion of the Universe** — specifically the Newtonian derivation of the Friedmann equations for a 'flat' universe.\n\nThe condition 'minimum density to expand forever' means the cloud is at the boundary between expanding forever and collapsing back. This is the **critical density** condition where **Total Energy = 0**.\n\n**Key Insight (Shell Theorem):** A particle at distance $R$ is only affected by the mass $M$ enclosed within radius $R$. Since the expansion is radial and $v \\propto r$, layers don't cross, so $M$ remains constant for our particle.",
+      "brute_force": "Since Total Energy = 0 (critical density condition):\n\n$$E_{total} = K + U = 0$$\n$$\\frac{1}{2}mv^2 - \\frac{GMm}{R} = 0$$\n\nwhere:\n- $v$ is the speed at distance $R$\n- $G$ is the gravitational constant\n- $M$ is the enclosed mass (constant)\n- $R$ is the instantaneous distance from center",
+      "bottleneck": "We have two unknowns: $v$ and $M$. We need to eliminate $M$ using the initial conditions.",
+      "optimized_approach": "**Step 1: Solve for velocity at any distance R**\n\nFrom the energy equation:\n$$\\frac{1}{2}mv^2 = \\frac{GMm}{R}$$\n$$v^2 = \\frac{2GM}{R}$$\n$$v(R) = \\sqrt{\\frac{2GM}{R}}$$\n\n**Step 2: Apply initial conditions to find 2GM**\n\nAt $t = 0$: $R = r_0$ and $v = Hr_0$\n\nSubstitute:\n$$(Hr_0) = \\sqrt{\\frac{2GM}{r_0}}$$\n\nSquare both sides:\n$$H^2 r_0^2 = \\frac{2GM}{r_0}$$\n$$2GM = H^2 r_0^3$$\n\n**Step 3: Substitute back**\n\n$$v(R) = \\sqrt{\\frac{H^2 r_0^3}{R}} = Hr_0\\sqrt{\\frac{r_0}{R}}$$",
+      "algorithm_steps": "1. Write energy conservation: $\\frac{1}{2}mv^2 - \\frac{GMm}{R} = 0$\n2. Solve for $v$: $v = \\sqrt{2GM/R}$\n3. Apply initial condition: At $R = r_0$, $v = Hr_0$\n4. Find constant: $2GM = H^2 r_0^3$\n5. Substitute: $v(R) = Hr_0\\sqrt{r_0/R} = v_0\\sqrt{r_0/R}$",
+      "result_analysis": "**Final Result:**\n\n$$v(R) = v_0\\sqrt{\\frac{r_0}{R}} \\propto \\frac{1}{\\sqrt{R}}$$\n\n**The Critical Density:**\n\nThe 'minimum density' condition means Total Energy = 0. Using $v = Hr$ and $M = \\frac{4}{3}\\pi r^3 \\rho$:\n\n$$\\frac{1}{2}(Hr)^2 = \\frac{GM}{r} = \\frac{4\\pi G \\rho r^2}{3}$$\n\nSolving for the critical density:\n$$\\rho_{crit} = \\frac{3H^2}{8\\pi G}$$\n\n**How Density Evolves:**\n\nAs the cloud expands, the total mass $M$ stays constant, but the volume grows. Since radius scales as $R \\propto t^{2/3}$ (for critical density), the density drops as:\n\n$$\\rho(t) \\propto \\frac{1}{R^3} \\propto \\frac{1}{t^2}$$\n\n**Physical Interpretation:**\n\nAs the cloud expands ($R$ increases), the particle **slows down** — converting kinetic energy to gravitational potential energy. Because the cloud is at critical density, the particle's speed approaches (but never quite reaches) zero as $R \\to \\infty$. It's on an exact **parabolic escape trajectory**.\n\n**Connection to Cosmology:**\n\nThis is a **Newtonian model of our Universe**! The velocity law $v = Hr$ is exactly the **Hubble Law**, and the critical density corresponds to a **flat universe** ($\\Omega = 1$). With $H \\approx 70$ km/s/Mpc, we get $\\rho_{crit} \\approx 10^{-26}$ kg/m³ — about 6 hydrogen atoms per cubic meter!\n\n**What About Fluctuations?**\n\nIf some particles have slightly different initial velocities:\n- **Slower particles** → gravitationally attract neighbors → form **overdense clumps** (galaxies, clusters)\n- **Faster particles** → escape from neighbors → create **voids**\n\nThis is the origin of **cosmic structure formation** (the Zel'dovich Approximation). Random fluctuations in the early universe created the cosmic web of galaxies, filaments, and voids we observe today!\n\n**The Pancake Effect:**\n\nCollapse happens anisotropically — faster along one axis first, creating:\n1. **Sheets** ('pancakes') — collapse in 1D\n2. **Filaments** — sheets collapse in 2D\n3. **Clusters** — filaments collapse to nodes\n\nThis web-like structure matches observations of the large-scale universe."
+    },
+    "quizzes": [
+      {
+        "question": "What physical condition defines 'minimum density to dissolve'?",
+        "options": [
+          "Kinetic Energy = Potential Energy",
+          "Total Energy = 0 (critical density)",
+          "Momentum is conserved",
+          "Temperature is constant"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Why does the enclosed mass M remain constant for our particle?",
+        "options": [
+          "Mass is created during expansion",
+          "Layers don't cross because v ∝ r",
+          "Gravity doesn't act on moving particles",
+          "The cloud is infinitely large"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "How does v depend on R?",
+        "options": [
+          "v ∝ R",
+          "v ∝ 1/R",
+          "v ∝ 1/√R",
+          "v is constant"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "What happens as R → ∞?",
+        "options": [
+          "v → ∞",
+          "v → c (speed of light)",
+          "v → 0",
+          "v oscillates"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "What cosmological structure does this model explain?",
+        "options": [
+          "Black holes only",
+          "The cosmic web (galaxies, filaments, voids)",
+          "Planetary orbits",
+          "Atomic structure"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {}
+  }
+}

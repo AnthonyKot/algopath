@@ -1,0 +1,122 @@
+{
+  "id": "design-2",
+  "title": "Design Twitter",
+  "difficulty": "Hard",
+  "leetcode_url": "https://leetcode.com/problems/design-twitter/",
+  "related": [
+    {
+      "id": "design-4",
+      "title": "Design Hit Counter",
+      "category": "design"
+    },
+    {
+      "id": "design-1",
+      "title": "LRU Cache",
+      "category": "design"
+    }
+  ],
+  "tags": [
+    "design",
+    "heap",
+    "merge-k-lists"
+  ],
+  "follow_up": {
+    "scenario": "A celebrity like Justin Bieber tweets. Pushing to 100M followers' feeds takes too long (Fan-out on Write).",
+    "trade_off": "Push model gives fast reads but slow writes for celebrities. Pull model is safer for celebrities.",
+    "strategy": "Hybrid Approach: Use Push for normal users and Pull for celebrities. When loading feed, merge pushed tweets with fetched celebrity tweets.",
+    "answering_guide": "Start by contrasting Push vs. Pull models. The <strong>'Hybrid'</strong> approach is the gold standard answer. Explicitly mention the term <strong>'Fan-out on Write'</strong>."
+  },
+  "content": {
+    "problem_statement": "Design a simplified Twitter where users can post tweets, follow/unfollow others, and get a news feed of the 10 most recent tweets from their own posts and the posts of people they follow.\n\nImplement the `Twitter` class:\n*   `Twitter()` Initializes your twitter object.\n*   `void postTweet(int userId, int tweetId)` Composes a new tweet with ID `tweetId` by the user `userId`. Each call to this function will be made with a unique `tweetId`.\n*   `List<Integer> getNewsFeed(int userId)` Retrieves the `10` most recent tweet IDs in the user's news feed. Each item in the news feed must be posted by users who the user followed or by the user themself. Tweets must be ordered from most recent to least recent.\n*   `void follow(int followerId, int followeeId)` The user with ID `followerId` started following the user with ID `followeeId`.\n*   `void unfollow(int followerId, int followeeId)` The user with ID `followerId` started unfollowing the user with ID `followeeId`.\n\n**Example 1:**\n```\nInput\n[\"Twitter\", \"postTweet\", \"getNewsFeed\", \"follow\", \"postTweet\", \"getNewsFeed\", \"unfollow\", \"getNewsFeed\"]\n[[], [1, 5], [1], [1, 2], [2, 6], [1], [1, 2], [1]]\nOutput\n[null, null, [5], null, null, [6, 5], null, [5]]\n```",
+    "explanation": {
+      "understanding_the_problem": "We need to manage user relationships (who follows whom) and user content (tweets). The most complex operation is `getNewsFeed`, which requires fetching content from multiple users and finding the most recent items.",
+      "brute_force": "1.  Store follow relationships in a `Map<userId, Set<userId>>`.\n2.  Store tweets in a `Map<userId, List<Tweet>>`, where each tweet has a global timestamp.\n3.  For `getNewsFeed`, gather all tweets from the user and everyone they follow into a single list, sort this large list by timestamp, and take the top 10. ",
+      "bottleneck": "The `getNewsFeed` operation is very inefficient. If a user follows `k` people and they each have `T` tweets, sorting the combined list of `k*T` tweets is slow and not scalable.",
+      "optimized_approach": "The `getNewsFeed` problem is a classic **'Merge k-Sorted Lists'** problem, since each user's tweet list is already sorted by time. A **Max-Heap** is the ideal data structure for this.\n\nInstead of combining all tweets and sorting, we can maintain a max-heap of size `k+1` (one for each followed user's most recent tweet, plus the current user's). We extract the most recent tweet (the max element) from the heap, add it to our result, and then add the next tweet from the same user to the heap. We repeat this 10 times.",
+      "algorithm_steps": "1.  **Data Structures:**\n    - `follows: Map<userId, Set<userId>>`\n    - `tweets: Map<userId, List<[timestamp, tweetId]>>`\n    - `time: global integer` for timestamps.\n2.  **`postTweet(userId, tweetId)`:** Add `[time++, tweetId]` to the user's tweet list. O(1).\n3.  **`follow(follower, followee)`:** Add `followee` to `follower`'s set. O(1).\n4.  **`getNewsFeed(userId)` (Optimized):**\n    a.  Create a max-heap.\n    b.  For the user and each person they follow, add a pointer to their most recent tweet to the heap.\n    c.  Loop 10 times: extract the max (most recent) tweet from the heap, add it to the result list, and then add the next tweet from that same user back into the heap."
+    },
+    "quizzes": [
+      {
+        "question": "What is the core algorithmic problem in getNewsFeed?",
+        "options": [
+          "Graph traversal",
+          "Merge k Sorted Lists",
+          "Dynamic Programming",
+          "shortest path"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Which data structure optimizes merging tweets?",
+        "options": [
+          "Stack",
+          "Queue",
+          "Min-Heap",
+          "Max-Heap"
+        ],
+        "correct": 3
+      },
+      {
+        "question": "Why is 'Pull Model' (fetch on read) used here?",
+        "options": [
+          "Simpler for small scale",
+          "Faster reads",
+          "Uses more storage",
+          "Harder to implement"
+        ],
+        "correct": 0
+      },
+      {
+        "question": "How do we handle a user following thousands of people?",
+        "options": [
+          "Pull model fails (latency)",
+          "It just works",
+          "Use larger heap",
+          "Cache everything"
+        ],
+        "correct": 0
+      },
+      {
+        "question": "What is the time complexity of getNewsFeed (optimized)?",
+        "options": [
+          "O(T * k)",
+          "O(1)",
+          "O(k log k)",
+          "O(N²)"
+        ],
+        "correct": 2
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "class Twitter {\n  constructor() {\n    this.tweets = new Map();\n    this.following = new Map();\n    this.timestamp = 0;\n  }\n  \n  postTweet(userId, tweetId) {\n    if (!this.tweets.has(userId)) this.tweets.set(userId, []);\n    this.tweets.get(userId).push([this.timestamp++, tweetId]);\n  }\n  \n  getNewsFeed(userId) {\n    const feeds = [];\n    const userTweets = this.tweets.get(userId) || [];\n    feeds.push(...userTweets);\n    \n    const followees = this.following.get(userId) || new Set();\n    for (const followeeId of followees) {\n      const followeeTweets = this.tweets.get(followeeId) || [];\n      feeds.push(...followeeTweets);\n    }\n    \n    feeds.sort((a, b) => b[0] - a[0]);\n    return feeds.slice(0, 10).map(tweet => tweet[1]);\n  }\n  \n  follow(followerId, followeeId) {\n    if (followerId === followeeId) return;\n    if (!this.following.has(followerId)) {\n      this.following.set(followerId, new Set());\n    }\n    this.following.get(followerId).add(followeeId);\n  }\n  \n  unfollow(followerId, followeeId) {\n    if (this.following.has(followerId)) {\n      this.following.get(followerId).delete(followeeId);\n    }\n  }\n}",
+      "annotations": [
+        {
+          "lines": [
+            3
+          ],
+          "text": "Data Store: Map<UserId, List<Tweet>> for O(1) access to a user's tweets."
+        },
+        {
+          "lines": [
+            16
+          ],
+          "text": "Aggregation: Collect tweets from user and everyone they follow."
+        },
+        {
+          "lines": [
+            21
+          ],
+          "text": "Sort: Naive approach sorts all gathered tweets. Heap merge would be better here."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(T*k log(T*k)) for feed (naive), O(1) others",
+    "space": "O(Tweets + Follows)",
+    "explanation_time": "The provided code uses the naive sorting approach, where `k` is the number of followees and `T` is their average number of tweets. The complexity is dominated by sorting the collected feed. A heap-based approach would improve this significantly to O(k log k + 10 log k).",
+    "explanation_space": "We need to store all tweets and all follow relationships."
+  }
+}

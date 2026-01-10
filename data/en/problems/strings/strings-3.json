@@ -1,0 +1,122 @@
+{
+  "id": "strings-3",
+  "title": "Z-Algorithm for Pattern Finding",
+  "difficulty": "Medium",
+  "leetcode_url": "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/",
+  "related": [
+    {
+      "id": "strings-1",
+      "title": "KMP Pattern Matching",
+      "category": "strings"
+    },
+    {
+      "id": "strings-4",
+      "title": "Suffix Array Construction",
+      "category": "strings"
+    }
+  ],
+  "tags": [
+    "z-algorithm",
+    "strings",
+    "prefix-function"
+  ],
+  "content": {
+    "problem_statement": "Given two strings `text` and `pattern`, return **all** indices in `text` where `pattern` starts.\n\n**Example 1:**\n```\nInput: text = \"abxabcabcaby\", pattern = \"abcaby\"\nOutput: [6]\n```",
+    "explanation": {
+      "understanding_the_problem": "The Z-Algorithm is another linear-time pattern searching algorithm. It's based on creating a 'Z-array' from a combined string.",
+      "brute_force": "The core of the algorithm is the Z-array. For a string `S`, `Z[i]` is the length of the longest substring starting from `S[i]` which is also a prefix of `S`. A naive way to compute this array would be to iterate `i` from 1 to N-1 and, for each `i`, manually compare `S[i...]` with `S[0...]`, which would take O(N²) time.",
+      "bottleneck": "The O(N²) Z-array construction is the bottleneck. A clever linear-time construction is needed.",
+      "optimized_approach": "To find a `pattern` in `text`, we construct a new string `S = pattern + '$' + text`, where `$` is a special character not present in either string. Then, we compute the Z-array for `S` in linear time.\n\nThe key is that if `Z[i]` for some index `i` in the `text` part of `S` is equal to the length of the `pattern`, it means the substring of `S` starting at `i` is identical to the prefix of `S` (which is the `pattern`). Thus, we have found a match.\n\nThe Z-array itself can be computed in O(N+M) time by maintaining a 'Z-box' `[l, r]`, which is the interval with the rightmost endpoint that matches a prefix. When computing `Z[i]`, if `i` is inside this box, we can use previously computed Z-values to get a head start, avoiding redundant comparisons.",
+      "algorithm_steps": "1.  Create the concatenated string `S = pattern + '$' + text`.\n2.  Compute the Z-array for `S` using the optimized linear-time algorithm.\n3.  Iterate through the Z-array. If `Z[i]` equals the length of the pattern, then a match starts at index `i - pattern.length - 1` in the original text."
+    },
+    "quizzes": [
+      {
+        "question": "What does Z[i] represent?",
+        "options": [
+          "Distance to end",
+          "Longest prefix also substring at i",
+          "Character code",
+          "Match count"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "How do we use Z-algorithm for pattern matching?",
+        "options": [
+          "Direct comparison",
+          "Concatenate pattern+'$'+text",
+          "Sort strings",
+          "Hash values"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What is a 'Z-box'?",
+        "options": [
+          "Special character",
+          "Interval matching prefix used to optimize",
+          "Data structure",
+          "Output array"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the time complexity?",
+        "options": [
+          "O(N²)",
+          "O(N*M)",
+          "O(N+M)",
+          "O(N log N)"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "When is Z[i] = pattern length?",
+        "options": [
+          "Always",
+          "When pattern matches at position i",
+          "Never",
+          "At end of text"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function computeZ(s) {\n  const n = s.length;\n  const Z = new Array(n).fill(0);\n  Z[0] = 0;\n  let l = 0, r = 0;\n  for (let i = 1; i < n; i++) {\n    if (i <= r) {\n      Z[i] = Math.min(r - i + 1, Z[i - l]);\n    }\n    while (i + Z[i] < n && s[Z[i]] === s[i + Z[i]]) {\n      Z[i]++;\n    }\n    if (i + Z[i] - 1 > r) {\n      l = i;\n      r = i + Z[i] - 1;\n    }\n  }\n  return Z;\n}\n\nfunction zSearch(pattern, text, special = '$') {\n  const combined = pattern + special + text;\n  const Z = computeZ(combined);\n  const m = pattern.length;\n  const result = [];\n  for (let i = m + 1; i < combined.length; i++) {\n    if (Z[i] === m) {\n      result.push(i - m - 1);\n    }\n  }\n  return result;\n}",
+      "annotations": [
+        {
+          "lines": [
+            6
+          ],
+          "text": "Optimization: Inside Z-box [l,r], use pre-computed mirror value."
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Naive expansion: Extend match beyond known Z-box."
+        },
+        {
+          "lines": [
+            12
+          ],
+          "text": "Update Z-box: Expand [l, r] boundary to cover new match."
+        },
+        {
+          "lines": [
+            20
+          ],
+          "text": "Check Z-value: If length equals pattern length, exact match found."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(N + M)",
+    "space": "O(N + M)",
+    "explanation_time": "The Z-array construction algorithm cleverly reuses information to achieve a single pass over the combined string, giving a linear time complexity.",
+    "explanation_space": "We need to store the combined string and the Z-array, which both have a size of N + M + 1."
+  }
+}

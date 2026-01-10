@@ -1,0 +1,46 @@
+{
+    "id": "graphs-7",
+    "title": "Найдешевші Авіарейси з K Пересадками",
+    "difficulty": "Medium",
+    "leetcode_url": "https://leetcode.com/problems/cheapest-flights-within-k-stops/",
+    "related": [
+        {
+            "id": "graphs-2",
+            "title": "Network Delay Time",
+            "category": "graphs"
+        },
+        {
+            "id": "graphs-3",
+            "title": "Course Schedule II",
+            "category": "graphs"
+        }
+    ],
+    "tags": [
+        "bfs",
+        "dijkstra",
+        "bellman-ford"
+    ],
+    "content": {
+        "problem_statement": "Є `n` міст, з'єднаних певною кількістю авіарейсів. Вам надано масив `flights`, де `flights[i] = [fromi, toi, pricei]` вказує на те, що існує рейс з міста `fromi` до міста `toi` з вартістю `pricei`.\n\nВам також дано три цілих числа `src`, `dst`, і `k`. Поверніть **найдешевшу ціну** від `src` до `dst` з не більше ніж `k` пересадками. Якщо такого маршруту немає, поверніть `-1`.\n\n**Приклад 1:**\n```\nInput: n = 4, flights = [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], src = 0, dst = 3, k = 1\nOutput: 700\nExplanation:\nШлях 0 -> 1 -> 3 коштує 100 + 600 = 700.\nШлях 0 -> 1 -> 2 -> 3 коштує 100 + 100 + 200 = 400, але має 2 пересадки (перевищує k=1).\n```",
+        "explanation": {
+            "understanding_the_problem": "Нам потрібно знайти найкоротший шлях у зваженому графі, але з обмеженням на кількість ребер (пересадок). Пересадка — це проміжне місто, тому `k` пересадок означає, що ми можемо відвідати не більше `k+1` ребер.\n\nЦе не стандартний чистий алгоритм Дейкстри, тому що довший шлях (більше пересадок) може бути дешевшим, але ми обмежені пересадками. Дешевший шлях із занадто великою кількістю пересадок є недопустимим.",
+            "brute_force": "DFS може дослідити всі шляхи від `src` до `dst`. Ми можемо відстежувати поточну вартість і поточні пересадки.\n`DFS(city, cost, stops)`\nОднак без мемоізації це експоненціально.",
+            "bottleneck": "Стандартний Дейкстра є жадібним і може відкинути шлях з більшою кількістю пересадок, але дешевшою вартістю, якщо це не абсолютно найкоротший шлях, знайдений до цього моменту *до цього вузла*. Нам потрібно відстежувати `(cost, stops)` або релаксувати ребра по-іншому.",
+            "optimized_approach": "Дозволені підходи:\n1.  **Bellman-Ford:** Запустіть зовнішній цикл `k+1` разів. Це природним чином досліджує шляхи довжиною 1, потім 2, ..., до `k+1` ребер. Це дуже інтуїтивно зрозуміло для 'не більше k пересадок'.\n2.  **BFS / Модифікований Дейкстра:** Використовуйте чергу з пріоритетом `(cost, city, stops)`. Стандартний Дейкстра, але ми додаємо вузол у чергу лише тоді, коли знаходимо дешевший спосіб дістатися до нього *або* спосіб дістатися до нього з меншою кількістю пересадок.",
+            "algorithm_steps": "**Підхід Беллмана-Форда:**\n1.  Ініціалізуйте масив `prices` значенням Infinity, `prices[src] = 0`.\n2.  Цикл `k + 1` разів:\n    a. Створіть `tempPrices` - копію `prices`.\n    b. Ітеруйте через кожен рейс `[u, v, w]`.\n    c. Якщо `prices[u]` досяжне, `tempPrices[v] = min(tempPrices[v], prices[u] + w)`.\n    d. Оновіть `prices = tempPrices`.\n3.  Поверніть `prices[dst]`, якщо не Infinity, інакше -1."
+        },
+        "quizzes": []
+    },
+    "code": {
+        "javascript": {
+            "solution": "var findCheapestPrice = function(n, flights, src, dst, k) {\n    let prices = new Array(n).fill(Infinity);\n    prices[src] = 0;\n    \n    for (let i = 0; i < k + 1; i++) {\n        const tempPrices = [...prices];\n        for (const [u, v, w] of flights) {\n            if (prices[u] === Infinity) continue;\n            if (prices[u] + w < tempPrices[v]) {\n                tempPrices[v] = prices[u] + w;\n            }\n        }\n        prices = tempPrices;\n    }\n    \n    return prices[dst] === Infinity ? -1 : prices[dst];\n};",
+            "annotations": []
+        }
+    },
+    "complexity": {
+        "time": "O((K + 1) * E)",
+        "space": "O(N)",
+        "explanation_time": "Ми ітеруємо `K + 1` разів. У кожній ітерації ми проходимо через усі `E` рейсів (ребер).",
+        "explanation_space": "Ми виконуємо операції, використовуючи два масиви (`prices` і `tempPrices`) розміром N."
+    }
+}

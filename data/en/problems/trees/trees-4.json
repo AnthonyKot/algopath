@@ -1,0 +1,146 @@
+{
+  "id": "trees-4",
+  "title": "Range Add, Range Sum (Lazy Propagation)",
+  "difficulty": "Medium",
+  "related": [
+    {
+      "id": "trees-1",
+      "title": "Segment Tree",
+      "category": "trees"
+    },
+    {
+      "id": "trees-5",
+      "title": "Fenwick Tree",
+      "category": "trees"
+    }
+  ],
+  "tags": [
+    "segment-tree",
+    "lazy-propagation"
+  ],
+  "follow_up": {
+    "scenario": "Range updates on a high-frequency trading ledger (millions of rows).",
+    "trade_off": "Updating every leaf node is O(N), which is too slow for real-time streams.",
+    "strategy": "Lazy Propagation. Defer updates to children until absolutely necessary (during a query or subsequent update).",
+    "answering_guide": "The keyword is <strong>'Deferred Execution'</strong>. Explain that we trade slightly more complex logic for massive <strong>'Write Speed'</strong> gains by caching updates."
+  },
+  "content": {
+    "problem_statement": "You have an array of integers `nums`. You need to handle multiple queries of the following types efficiently:\n\n1.  **Range Add**: Add a value `val` to all elements `nums[i]` where `left <= i <= right`.\n2.  **Range Sum**: Calculate the sum of elements `nums[i]` where `left <= i <= right`.\n\nImplement the `LazySegmentTree` class:\n*   `LazySegmentTree(int[] nums)` Initializes with `nums`.\n*   `void rangeAdd(int left, int right, int val)` Adds `val` to the subarray `nums[left...right]`.\n*   `int rangeSum(int left, int right)` Returns the sum of the subarray `nums[left...right]`.\n\n**Example 1:**\n```\nInput\n[\"LazySegmentTree\", \"rangeAdd\", \"rangeSum\", \"rangeAdd\", \"rangeSum\"]\n[[[1, 1, 1, 1, 1]], [0, 4, 1], [0, 4], [2, 3, 10], [0, 4]]\nOutput\n[null, null, 10, null, 30]\nExplanation\n// nums starts as [1, 1, 1, 1, 1]\n// rangeAdd(0, 4, 1) -> nums becomes [2, 2, 2, 2, 2]\n// rangeSum(0, 4) -> 10\n// rangeAdd(2, 3, 10) -> nums becomes [2, 2, 12, 12, 2]\n// rangeSum(0, 4) -> 30\n```",
+    "explanation": {
+      "understanding_the_problem": "A standard segment tree can handle point updates and range queries in O(log N) time. However, if we try to use it for a range update, we would have to update every leaf in the range, which could take O(N log N) time. We need a way to make range updates efficient as well.",
+      "brute_force": "The bottleneck is applying updates to a large range. The key idea to solve this is **Lazy Propagation**. Instead of immediately applying an update to all affected children in the tree, we will be 'lazy'. We'll update a high-level node that covers a large part of the range and leave a 'note' (a lazy tag) on it. This note signifies that all its children need this update eventually.",
+      "bottleneck": "Without lazy propagation, a single range update that covers most of the array would be equivalent to performing N point updates, defeating the purpose of the segment tree's logarithmic performance.",
+      "optimized_approach": "We add a `lazy` array, parallel to our `tree` array. `lazy[node]` stores a pending update for that node's interval.\n\n- **During a `rangeAdd`:** When we find a node fully contained in the update range, we update its `sum` and add to its `lazy` tag. We don't go down to its children.\n- **During a `rangeSum` (or any traversal):** Before we access a node's children, we must first check if the node has a lazy tag. If it does, we 'push' the update down to its children, updating their `sum` and `lazy` values. Then, we clear the current node's lazy tag.\n\nThis `pushDown` operation ensures that updates are propagated correctly and only when needed, maintaining the O(log N) performance for all operations.",
+      "algorithm_steps": "1.  **Data Structures:** Augment the standard Segment Tree with a `lazy` array of the same size, initialized to zeros.\n\n2.  **`pushDown(node, ...)` function:** This is the core of the technique. It applies the `lazy[node]` value to its two children's `sum` and `lazy` fields, then resets `lazy[node]` to 0.\n\n3.  **`rangeAdd(l, r, val)` function:**\n    a.  Follows the standard segment tree traversal.\n    b.  Before recursing to children, it calls `pushDown` on the current node.\n    c.  If a node is fully contained in the update range, update its `sum` and `lazy` tag and return.\n    d.  On the way back up the recursion, update parent sums based on their children.\n\n4.  **`rangeSum(l, r)` function:**\n    a.  Follows the standard segment tree query logic.\n    b.  Crucially, before recursing to children, it calls `pushDown` on the current node to ensure its information is up-to-date."
+    },
+    "quizzes": [
+      {
+        "question": "What is 'lazy propagation'?",
+        "options": [
+          "Slow updates",
+          "Defer updates to children until needed",
+          "Skip nodes",
+          "Parallel processing"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "When do we 'push down' lazy values?",
+        "options": [
+          "Never",
+          "Before accessing children",
+          "After query",
+          "Only on update"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Why use lazy propagation for range updates?",
+        "options": [
+          "Simpler code",
+          "Avoid updating all N elements",
+          "Better caching",
+          "Less memory"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What does the lazy array store?",
+        "options": [
+          "Final values",
+          "Pending additions for children",
+          "Node indices",
+          "Hash codes"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the time complexity per operation?",
+        "options": [
+          "O(N)",
+          "O(1)",
+          "O(log N)",
+          "O(N log N)"
+        ],
+        "correct": 2
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "class LazySegmentTree {\n  constructor(arr) {\n    this.n = arr.length;\n    this.tree = new Array(4 * this.n).fill(0);\n    this.lazy = new Array(4 * this.n).fill(0);\n    this.build(1, 0, this.n - 1, arr);\n  }\n  build(node, l, r, arr) {\n    if (l === r) this.tree[node] = arr[l];\n    else {\n      const mid = Math.floor((l + r) / 2);\n      this.build(node*2, l, mid, arr);\n      this.build(node*2+1, mid+1, r, arr);\n      this.tree[node] = this.tree[node*2] + this.tree[node*2+1];\n    }\n  }\n  apply(node, l, r, val) {\n    this.tree[node] += val * (r - l + 1);\n    this.lazy[node] += val;\n  }\n  push(node, l, r) {\n    if (this.lazy[node] !== 0) {\n      const mid = Math.floor((l + r) / 2);\n      this.apply(node*2, l, mid, this.lazy[node]);\n      this.apply(node*2+1, mid+1, r, this.lazy[node]);\n      this.lazy[node] = 0;\n    }\n  }\n  rangeAdd(qL, qR, val, node=1, l=0, r=this.n-1) {\n    if (qL > r || qR < l) return;\n    if (qL <= l && r <= qR) {\n      this.apply(node, l, r, val);\n      return;\n    }\n    this.push(node, l, r);\n    const mid = Math.floor((l + r) / 2);\n    this.rangeAdd(qL, qR, val, node*2, l, mid);\n    this.rangeAdd(qL, qR, val, node*2+1, mid+1, r);\n    this.tree[node] = this.tree[node*2] + this.tree[node*2+1];\n  }\n  rangeSum(qL, qR, node=1, l=0, r=this.n-1) {\n    if (qL > r || qR < l) return 0;\n    if (qL <= l && r <= qR) return this.tree[node];\n    this.push(node, l, r);\n    const mid = Math.floor((l + r) / 2);\n    return this.rangeSum(qL, qR, node*2, l, mid) +\n           this.rangeSum(qL, qR, node*2+1, mid+1, r);\n  }\n}",
+      "annotations": [
+        {
+          "lines": [
+            5
+          ],
+          "text": "Lazy array: stores pending additions for children."
+        },
+        {
+          "lines": [
+            17,
+            18
+          ],
+          "text": "Apply: Update node sum AND add to its lazy tag."
+        },
+        {
+          "lines": [
+            21
+          ],
+          "text": "Push: Propagate lazy value to children only when needed."
+        },
+        {
+          "lines": [
+            23,
+            24
+          ],
+          "text": "Update children and reset current lazy tag to 0."
+        },
+        {
+          "lines": [
+            31
+          ],
+          "text": "Range Add: If fully covered, update node & lazy, then STOP. Don't recurse."
+        },
+        {
+          "lines": [
+            34
+          ],
+          "text": "Crucial: Push pending updates before recursing."
+        },
+        {
+          "lines": [
+            47
+          ],
+          "text": "Query: Push before checking children to ensure fresh data."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(log N) per operation",
+    "space": "O(N)",
+    "explanation_time": "Thanks to lazy propagation, range updates no longer need to touch every node in the range. Both `rangeAdd` and `rangeSum` operations only need to traverse a logarithmic number of nodes down the tree. This gives them an amortized time complexity of O(log N).",
+    "explanation_space": "We need an array for the tree itself (O(N)) and an additional array of the same size for the lazy tags (O(N)). This results in a total space complexity of O(N)."
+  }
+}

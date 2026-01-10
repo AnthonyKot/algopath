@@ -1,0 +1,84 @@
+{
+  "id": "physics-4",
+  "title": "The Brachistochrone Problem (1696)",
+  "difficulty": "Medium",
+  "related": [
+    {
+      "id": "physics-2",
+      "title": "Expanding Particle Cloud",
+      "category": "physics"
+    }
+  ],
+  "tags": [
+    "calculus-of-variations",
+    "optimization",
+    "cycloid",
+    "lagrangian-mechanics"
+  ],
+  "content": {
+    "problem_statement": "A bead slides frictionlessly down a wire from point $A$ to point $B$ (which is lower but not directly below $A$). Gravity pulls the bead downward.\n\n**What shape of wire** minimizes the travel time from $A$ to $B$?\n\n**Historical Context:** Johann Bernoulli posed this challenge in 1696 to the greatest mathematicians of Europe. Newton, Leibniz, and others all solved it — launching the field of **Calculus of Variations**.",
+    "explanation": {
+      "understanding_the_problem": "This is the founding problem of **Calculus of Variations** — the math of optimizing not just numbers, but entire *functions* (curves).\n\nIntuition might suggest:\n- **Straight line?** Shortest distance, but the bead starts slowly (low speed at top).\n- **Steep drop first?** Gains speed early, but path becomes longer.\n\nThe optimal curve balances these tradeoffs. The answer is neither a line nor a parabola — it's a **Cycloid**!",
+      "brute_force": "**Setting Up the Time Integral**\n\nUsing energy conservation, the speed at height $y$ below the start is:\n$$v = \\sqrt{2gy}$$\n\nThe time to traverse a small arc length $ds$ is:\n$$dt = \\frac{ds}{v} = \\frac{\\sqrt{1 + (dy/dx)^2}}{\\sqrt{2gy}}dx$$\n\nTotal time:\n$$T = \\int_0^{x_B} \\frac{\\sqrt{1 + y'^2}}{\\sqrt{2gy}} dx$$\n\nWe need to find the function $y(x)$ that minimizes this integral.",
+      "bottleneck": "This is not ordinary calculus — we're minimizing over all possible *curves*, not just finding the minimum of a function of one variable.",
+      "optimized_approach": "**The Euler-Lagrange Equation**\n\nFor functionals of the form $\\int F(y, y', x) dx$, the minimizing curve satisfies:\n$$\\frac{\\partial F}{\\partial y} - \\frac{d}{dx}\\frac{\\partial F}{\\partial y'} = 0$$\n\nSince our $F$ doesn't depend on $x$ explicitly, there's a shortcut (Beltrami identity):\n$$F - y'\\frac{\\partial F}{\\partial y'} = C$$\n\n**Solving the ODE**\n\nAfter substitution and simplification, this leads to:\n$$y(1 + y'^2) = 2R$$\n\nfor some constant $R$. This is the differential equation of a **Cycloid**!\n\n**Parametric Solution:**\n$$x = R(\\theta - \\sin\\theta), \\quad y = R(1 - \\cos\\theta)$$",
+      "algorithm_steps": "1. Write time as functional: $T[y] = \\int \\frac{\\sqrt{1+y'^2}}{\\sqrt{2gy}} dx$\n2. Identify the Lagrangian $F(y, y')$\n3. Apply Beltrami identity (since $F$ is independent of $x$)\n4. Solve the resulting ODE: $y(1 + y'^2) = const$\n5. Recognize solution as parametric cycloid equations",
+      "result_analysis": "**Final Answer — The Cycloid:**\n\n$$x(\\theta) = R(\\theta - \\sin\\theta)$$\n$$y(\\theta) = R(1 - \\cos\\theta)$$\n\nwhere $R$ is chosen so the curve passes through point $B$.\n\n**What is a Cycloid?**\n\nIt's the curve traced by a point on the rim of a rolling wheel! Imagine a circle rolling along a ceiling — the path of a point on its edge is exactly the brachistochrone.\n\n**Why is it Faster Than a Straight Line?**\n\nThe cycloid **drops steeply at first**, gaining speed quickly while the path is still short. The 'extra' distance is compensated by higher velocity.\n\n**The Tautochrone Property:**\n\nRemarkably, the cycloid is also **isochronous** — a ball released from *any* point on a cycloid takes the **same time** to reach the bottom! This was used in Huygens' pendulum clocks.\n\n**Applications:**\n\n- **Lagrangian Mechanics**: This problem birthed the principle of 'Least Action'\n- **Roller Coaster Design**: Optimizing thrill vs. safety\n- **Optics**: Fermat's principle (light takes the fastest path) uses the same math\n- **Machine Learning**: Gradient descent is a discrete version of this optimization"
+    },
+    "quizzes": [
+      {
+        "question": "What is the shape of the curve that minimizes travel time?",
+        "options": [
+          "Straight line",
+          "Parabola",
+          "Cycloid",
+          "Catenary"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "What is a cycloid?",
+        "options": [
+          "The graph of y = 1/x",
+          "The path traced by a point on a rolling wheel",
+          "A spiral curve",
+          "An ellipse"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Why isn't a straight line the fastest path?",
+        "options": [
+          "Gravity doesn't work on straight lines",
+          "The bead moves slowly at the top where speed is low",
+          "Friction is higher on straight lines",
+          "The mass of the bead changes"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What branch of mathematics was founded by this problem?",
+        "options": [
+          "Number Theory",
+          "Topology",
+          "Calculus of Variations",
+          "Abstract Algebra"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "What other remarkable property does the cycloid have?",
+        "options": [
+          "Infinite length",
+          "Tautochrone (same descent time from any point)",
+          "Zero curvature",
+          "Constant speed descent"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {}
+  }
+}

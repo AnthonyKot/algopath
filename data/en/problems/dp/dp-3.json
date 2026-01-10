@@ -1,0 +1,129 @@
+{
+  "id": "dp-3",
+  "title": "Coin Change (Min Coins)",
+  "difficulty": "Medium",
+  "leetcode_url": "https://leetcode.com/problems/coin-change/",
+  "related": [
+    {
+      "id": "dp-2",
+      "title": "Longest Increasing Subsequence",
+      "category": "dp"
+    }
+  ],
+  "tags": [
+    "dp",
+    "knapsack",
+    "greedy"
+  ],
+  "content": {
+    "problem_statement": "You are given an integer array `coins` representing coins of different denominations and an integer `amount` representing a total amount of money.\n\nReturn the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1.\n\nYou may assume that you have an infinite number of each kind of coin.\n\n**Example 1:**\n```\nInput: coins = [1,2,5], amount = 11\nOutput: 3\nExplanation: 11 = 5 + 5 + 1\n```",
+    "explanation": {
+      "understanding_the_problem": "We need to form a target `amount` using the fewest possible coins from a given set. We can use each coin denomination as many times as we want. This is a classic optimization problem that fits the Dynamic Programming pattern, specifically a variation known as the **Unbounded Knapsack** problem.",
+      "brute_force": "A recursive approach would be to try to solve for `amount` by taking one coin and then recursively solving for `amount - coin`. We would do this for every coin in our set and take the minimum result. For example, `minCoins(amount) = 1 + min(minCoins(amount - c1), minCoins(amount - c2), ...)`.",
+      "bottleneck": "The purely recursive solution is very slow because it recalculates the same subproblems repeatedly. For instance, to calculate the coins for amount 10, we might explore `10 -> 5 -> 2` and also `10 -> 8 -> 5 -> 2`. The solution for amount 5 and 2 would be computed multiple times.",
+      "optimized_approach": "We can use a bottom-up Dynamic Programming approach to solve this efficiently. We'll create a `dp` array where `dp[i]` stores the minimum number of coins needed to make an amount of `i`.\n\nWe build this array from `dp[0]` up to `dp[amount]`. To compute `dp[i]`, we consider each coin denomination. If we use a `coin`, the total number of coins will be `1 + dp[i - coin]`. We simply take the minimum value across all possible coins we can use.",
+      "algorithm_steps": "1.  **Initialization:**\n    a.  Create a `dp` array of size `amount + 1`.\n    b.  Initialize all values to a placeholder for infinity (e.g., `amount + 1`). This signifies that an amount is not yet reachable.\n    c.  Set the base case: `dp[0] = 0`. It takes 0 coins to make an amount of 0.\n\n2.  **Main Loop (Bottom-Up):**\n    a.  Iterate `i` from 1 to `amount`. For each `i`, we are solving for the minimum coins to make amount `i`.\n    b.  Inside, loop through each `coin` in our `coins` array.\n    c.  If `i >= coin`, it's possible to use this coin. We update our answer for `dp[i]` with the minimum of its current value and `1 + dp[i - coin]`.\n\n3.  **Result:**\n    a.  After the loops, if `dp[amount]` is still our infinity placeholder, it means the amount was unreachable. Return -1.\n    b.  Otherwise, `dp[amount]` holds the answer."
+    },
+    "quizzes": [
+      {
+        "question": "What DP pattern does Coin Change follow?",
+        "options": [
+          "0/1 Knapsack",
+          "Unbounded Knapsack",
+          "LCS",
+          "Matrix Chain"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Why is naive recursion slow for this problem?",
+        "options": [
+          "Stack overflow",
+          "Repeated subproblems",
+          "Too many coins",
+          "Large amounts"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What does dp[i] store?",
+        "options": [
+          "Number of ways",
+          "Min coins for amount i",
+          "Max coins",
+          "Coin values"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Why initialize dp with Infinity?",
+        "options": [
+          "Prevent overflow",
+          "Mark unreachable amounts",
+          "Faster comparison",
+          "Memory efficiency"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the time complexity?",
+        "options": [
+          "O(N)",
+          "O(N²)",
+          "O(Amount × Coins)",
+          "O(2^N)"
+        ],
+        "correct": 2
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function coinChange(coins, amount) {\n  const dp = new Array(amount + 1).fill(Infinity);\n  dp[0] = 0;\n  for (let coin of coins) {\n    for (let x = coin; x <= amount; x++) {\n      dp[x] = Math.min(dp[x], dp[x - coin] + 1);\n    }\n  }\n  return dp[amount] === Infinity ? -1 : dp[amount];\n}",
+      "annotations": [
+        {
+          "lines": [
+            2
+          ],
+          "text": "Create dp array of size amount+1, initialize with Infinity (unreachable)"
+        },
+        {
+          "lines": [
+            3
+          ],
+          "text": "Base case: 0 coins needed to make amount 0"
+        },
+        {
+          "lines": [
+            4
+          ],
+          "text": "Outer loop: iterate through each coin denomination"
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Inner loop: for each amount >= coin, check if using this coin improves the solution"
+        },
+        {
+          "lines": [
+            6
+          ],
+          "text": "Core recurrence: dp[x] = min(dp[x], 1 + dp[x-coin]) - use coin if it gives fewer coins"
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Return answer, or -1 if amount is still unreachable (Infinity)"
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(A * C)",
+    "space": "O(A)",
+    "explanation_time": "Let A be the target amount and C be the number of coin denominations. We have two nested loops. The outer loop iterates through the coins (C times in the provided code, though it can be swapped), and the inner loop iterates up to the amount (A times). This gives a total time complexity of O(A * C).",
+    "explanation_space": "We use a `dp` array of size `amount + 1` to store the intermediate solutions for all amounts from 0 to `amount`. This requires O(A) space."
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "id": "optimization-4",
+  "title": "Minimum Window Substring",
+  "difficulty": "Hard",
+  "leetcode_url": "https://leetcode.com/problems/minimum-window-substring/",
+  "related": [
+    {
+      "id": "optimization-1",
+      "title": "Sliding Window Maximum",
+      "category": "optimization"
+    },
+    {
+      "id": "strings-2",
+      "title": "Longest Substring Without Repeating Characters",
+      "category": "strings"
+    }
+  ],
+  "tags": [
+    "sliding-window",
+    "two-pointers",
+    "hash-map"
+  ],
+  "follow_up": {
+    "scenario": "Searching for DNA patterns (A, C, G, T) in a 100GB genome file.",
+    "trade_off": "Hash Map overhead is too high for just 4 characters.",
+    "strategy": "Use Integer arrays (size 128) instead of Maps. Even better: encode ACGT as 2 bits. Fits 32 chars in a single 64-bit integer, allowing bitwise sliding window ops.",
+    "answering_guide": "Show off <strong>'Data Packing'</strong> skills. 2-bit encoding allows <strong>'Bitwise Parallelism'</strong>. This is a very senior optimization for string problems."
+  },
+  "content": {
+    "problem_statement": "Given two strings `s` and `t` of lengths `m` and `n` respectively, return *the **minimum window substring** of `s` such that every character in `t` (including duplicates) is included in the window. If there is no such substring, return the empty string `\"\"`*.\n\nThe testcases will be generated such that the answer is **unique**.\n\n**Example 1:**\n```\nInput: s = \"ADOBECODEBANC\", t = \"ABC\"\nOutput: \"BANC\"\nExplanation: The minimum window substring \"BANC\" includes 'A', 'B', and 'C' from string t.\n```",
+    "explanation": {
+      "understanding_the_problem": "We need to find the shortest contiguous block in string `s` that covers all characters required by string `t`.",
+      "brute_force": "We could generate every possible substring of `s`, and for each one, check if it contains all the characters of `t`. This would be very inefficient, around O(N³).",
+      "bottleneck": "Checking every substring is the bottleneck. We need a way to efficiently check substrings without starting from scratch each time.",
+      "optimized_approach": "This is a classic **Sliding Window** problem that can be solved with two pointers (`left` and `right`). We expand the window by moving `right` and shrink it by moving `left`.\n\nWe use two hash maps: one to store the frequency of characters needed by `t`, and another to store the character frequencies in our current window. We also use a counter to track how many of the required character counts we have fully satisfied.",
+      "algorithm_steps": "1.  Create a `need` map to store the character frequencies of `t`.\n2.  Initialize `left = 0`, `right = 0`, and a `valid` counter to 0.\n3.  **Expand Window:** Loop `right` from 0 to the end of `s`.\n    a.  Add the character `s[right]` to our `window` map.\n    b.  If this character is in `need` and its count in `window` now matches its count in `need`, increment `valid`.\n4.  **Shrink Window:** Once `valid` equals the number of unique characters in `t`, our window is valid. Now we try to shrink it:\n    a.  While the window is valid, update our minimum length found so far.\n    b.  Move `left` to the right, removing `s[left]` from the window.\n    c.  If `s[left]` was a needed character and its count in `window` now falls below what's needed, decrement `valid`.\n5.  The inner shrinking loop stops when the window is no longer valid, and the outer loop continues expanding."
+    },
+    "quizzes": [
+      {
+        "question": "What techniques are combined here?",
+        "options": [
+          "Sliding Window + Hash Map",
+          "Dynamic Programming + Stack",
+          "Greedy + Heap",
+          "DFS + Backtracking"
+        ],
+        "correct": 0
+      },
+      {
+        "question": "When do we try to shrink the window (move left)?",
+        "options": [
+          "When the window is valid (contains all chars)",
+          "When we reach end of string",
+          "At every step",
+          "When window is empty"
+        ],
+        "correct": 0
+      },
+      {
+        "question": "What does the 'need' map store?",
+        "options": [
+          "Indices of chars",
+          "Frequency of chars in target T",
+          "Visited chars",
+          "Result substring"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What is the time complexity?",
+        "options": [
+          "O(N^2)",
+          "O(N log N)",
+          "O(|S| + |T|)",
+          "O(N^3)"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "What if the target T has duplicates (e.g., 'AA')?",
+        "options": [
+          "Ignore duplicates",
+          "The window must also contain duplicates",
+          "Duplicates are impossible",
+          "Use a Set instead of Map"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function minWindow(s, t) {\n  const need = new Map();\n  for (const char of t) {\n    need.set(char, (need.get(char) || 0) + 1);\n  }\n  \n  let left = 0, right = 0;\n  let valid = 0;\n  let start = 0, len = Infinity;\n  const window = new Map();\n  \n  while (right < s.length) {\n    const c = s[right];\n    right++;\n    \n    if (need.has(c)) {\n      window.set(c, (window.get(c) || 0) + 1);\n      if (window.get(c) === need.get(c)) {\n        valid++;\n      }\n    }\n    \n    while (valid === need.size) {\n      if (right - left < len) {\n        start = left;\n        len = right - left;\n      }\n      \n      const d = s[left];\n      left++;\n      \n      if (need.has(d)) {\n        if (window.get(d) === need.get(d)) {\n          valid--;\n        }\n        window.set(d, window.get(d) - 1);\n      }\n    }\n  }\n  \n  return len === Infinity ? '' : s.substr(start, len);\n}",
+      "annotations": [
+        {
+          "lines": [
+            2
+          ],
+          "text": "Map 'need': Count frequency of each char in target string t."
+        },
+        {
+          "lines": [
+            12
+          ],
+          "text": "Expand: Add char at 'right' to current window counts."
+        },
+        {
+          "lines": [
+            18
+          ],
+          "text": "Valid Check: If we have enough valid characters, try to shrink."
+        },
+        {
+          "lines": [
+            25
+          ],
+          "text": "Shrink: Remove char at 'left' to find smaller valid window."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(|s| + |t|)",
+    "space": "O(|s| + |t|)",
+    "explanation_time": "The `left` and `right` pointers each traverse the string `s` only once. The initial scan of `t` takes O(|t|) time. This gives a total linear time complexity.",
+    "explanation_space": "In the worst case, the `need` and `window` hash maps could store all unique characters from both strings."
+  }
+}

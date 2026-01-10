@@ -1,0 +1,128 @@
+{
+  "id": "strings-5",
+  "title": "Manacher's (Longest Palindrome)",
+  "difficulty": "Medium",
+  "leetcode_url": "https://leetcode.com/problems/longest-palindromic-substring/",
+  "related": [
+    {
+      "id": "strings-4",
+      "title": "Suffix Array Construction",
+      "category": "strings"
+    },
+    {
+      "id": "dp-1",
+      "title": "Edit Distance",
+      "category": "dp"
+    }
+  ],
+  "tags": [
+    "manacher",
+    "palindrome",
+    "strings"
+  ],
+  "content": {
+    "problem_statement": "Given a string `s`, return the **longest palindromic substring** in `s`.\n\n**Example 1:**\n```\nInput: s = \"babad\"\nOutput: \"bab\"\nExplanation: \"aba\" is also a valid answer.\n```",
+    "explanation": {
+      "understanding_the_problem": "We need to find the longest substring (contiguous part of the string) that reads the same forwards and backwards.",
+      "brute_force": "A common approach is 'Expand from Center'. We can iterate through every possible center of a palindrome. A center can be a single character (for odd-length palindromes) or the space between two characters (for even-length). From each center, we expand outwards as long as the characters match. This takes O(N²) time.",
+      "bottleneck": "The 'Expand from Center' approach is O(N²) because it re-scans the same characters many times. For example, when checking the palindrome 'abacaba', we will re-scan the 'aba' part multiple times.",
+      "optimized_approach": "Manacher's algorithm is a clever linear-time O(N) solution. It avoids redundant comparisons by exploiting the symmetric nature of palindromes. The algorithm maintains the center `C` and right boundary `R` of the palindrome found so far that reaches the farthest to the right.\n\nWhen we are at a new position `i`, if `i` is within the current rightmost palindrome `[L, R]`, we can use the information from its 'mirror' position on the other side of `C` to get an initial, guaranteed-minimum radius for the palindrome at `i`. We only need to perform character comparisons to try and expand *beyond* this initial radius.",
+      "algorithm_steps": "1.  **Preprocessing:** Transform the string to handle odd and even length palindromes uniformly. For example, `s = \"aba\"` becomes `t = \"#a#b#a#\"`.\n2.  **Initialization:** Create a `P` array of the same size as `t`, where `P[i]` will store the radius of the palindrome centered at `t[i]`. Initialize `C` (center) and `R` (right boundary) to 0.\n3.  **Main Loop:** Iterate `i` through the transformed string `t`.\n    a.  If `i < R`, use the mirror property to initialize `P[i]` to a minimum guaranteed value.\n    b.  Attempt to expand the palindrome centered at `i` by comparing characters.\n    c.  If the palindrome at `i` expands beyond `R`, update `C` and `R` to this new palindrome's boundaries.\n4.  **Result:** Find the maximum value in the `P` array. This corresponds to the radius of the longest palindromic substring. Convert this radius back to a length in the original string."
+    },
+    "quizzes": [
+      {
+        "question": "How does Manacher handle odd and even length palindromes?",
+        "options": [
+          "Separate loops",
+          "Transform string with #",
+          "Ignore even",
+          "Binary search"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the key optimization in Manacher's?",
+        "options": [
+          "Sorting",
+          "Using palindrome mirror property",
+          "Hashing",
+          "Divide and conquer"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What does P[i] store?",
+        "options": [
+          "Character code",
+          "Palindrome radius at i",
+          "String length",
+          "Index of mirror"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the time complexity of Manacher's?",
+        "options": [
+          "O(N²)",
+          "O(N log N)",
+          "O(N)",
+          "O(2^N)"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "What makes the inner while loop O(N) total?",
+        "options": [
+          "Fixed iterations",
+          "Right boundary R only moves forward",
+          "Early termination",
+          "Tail recursion"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function manacher(s) {\n  const t = '#' + s.split('').join('#') + '#';\n  const n = t.length;\n  const P = new Array(n).fill(0);\n  let C = 0, R = 0;\n  for (let i = 1; i < n - 1; i++) {\n    const mirror = 2*C - i;\n    if (i < R) {\n      P[i] = Math.min(R - i, P[mirror]);\n    }\n    while (i + 1 + P[i] < n && i - 1 - P[i] >= 0 &&\n           t[i + 1 + P[i]] === t[i - 1 - P[i]]) {\n      P[i]++;\n    }\n    if (i + P[i] > R) {\n      C = i;\n      R = i + P[i];\n    }\n  }\n  let maxLen = 0, centerIndex = 0;\n  for (let i = 1; i < n - 1; i++) {\n    if (P[i] > maxLen) {\n      maxLen = P[i];\n      centerIndex = i;\n    }\n  }\n  const start = Math.floor((centerIndex - 1 - maxLen) / 2);\n  return s.slice(start, start + maxLen);\n}",
+      "annotations": [
+        {
+          "lines": [
+            2
+          ],
+          "text": "Transform string: 'aba' -> '#a#b#a#' to handle even/odd lengths."
+        },
+        {
+          "lines": [
+            7
+          ],
+          "text": "Mirror property: Find index 'mirror' symmetric to 'i' around 'C'."
+        },
+        {
+          "lines": [
+            8
+          ],
+          "text": "Optimization: Use mirror's P value to skip known palindromic region."
+        },
+        {
+          "lines": [
+            10
+          ],
+          "text": "Expand: Check characters beyond the known radius."
+        },
+        {
+          "lines": [
+            13
+          ],
+          "text": "Update: New palindrome goes beyond R, so move center C."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(N)",
+    "space": "O(N)",
+    "explanation_time": "Although there is a `while` loop inside the main `for` loop, the right boundary `R` only ever moves forward through the string. The total number of character comparisons performed by the expansion `while` loop across the entire algorithm is amortized to O(N).",
+    "explanation_space": "We need to store the transformed string `t` and the palindrome radius array `P`, both of which are proportional to the length of the original string `s`."
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "id": "physics-5",
+  "title": "Shannon's Channel Capacity (1948)",
+  "difficulty": "Medium",
+  "related": [
+    {
+      "id": "physics-3",
+      "title": "Random Walk to Diffusion",
+      "category": "physics"
+    }
+  ],
+  "tags": [
+    "information-theory",
+    "communication",
+    "logarithms",
+    "signal-processing"
+  ],
+  "content": {
+    "problem_statement": "A communication channel has **bandwidth** $B$ (in Hz) and a **signal-to-noise ratio** $S/N$.\n\n**What is the maximum rate** (in bits per second) at which data can be transmitted with arbitrarily low error probability?\n\n**Given:**\n- Bandwidth: $B$ Hz\n- Signal power: $S$\n- Noise power: $N$\n\n**Historical Context:** Claude Shannon proved this result in 1948, founding the field of **Information Theory** and enabling all modern digital communication.",
+    "explanation": {
+      "understanding_the_problem": "This is the **fundamental law of digital communication**. Shannon proved that every noisy channel has a maximum data rate $C$ (the 'Channel Capacity') such that:\n\n- **Below $C$**: Error-free communication is possible (with clever coding)\n- **Above $C$**: Errors are unavoidable, no matter how smart the encoding\n\nThis is like a 'speed limit' set by physics itself.",
+      "brute_force": "**Intuition Building:**\n\n1. **More Bandwidth** → More 'lanes' to send data → Higher capacity\n2. **Higher Signal Power** → Easier to distinguish signal from noise → Higher capacity\n3. **More Noise** → Harder to distinguish signal → Lower capacity\n\nThe question is: how do these combine mathematically?",
+      "bottleneck": "The surprising part is the **logarithmic** relationship with $S/N$. Doubling signal power doesn't double capacity!",
+      "optimized_approach": "**Shannon's Derivation (Simplified)**\n\n1. In bandwidth $B$, you can send $2B$ independent samples per second (Nyquist).\n\n2. Each sample can encode information based on how many 'levels' you can distinguish above the noise.\n\n3. With signal power $S$ and noise power $N$, you can reliably distinguish about $\\sqrt{1 + S/N}$ levels.\n\n4. Information per sample = $\\log_2(\\text{levels}) = \\frac{1}{2}\\log_2(1 + S/N)$\n\n5. Total capacity:\n$$C = 2B \\times \\frac{1}{2}\\log_2(1 + S/N) = B\\log_2(1 + S/N)$$",
+      "algorithm_steps": "1. Identify bandwidth $B$ (Hz) — determines samples per second\n2. Identify signal-to-noise ratio $S/N$\n3. Calculate distinguishable levels: $\\approx\\sqrt{1 + S/N}$\n4. Information per sample: $\\frac{1}{2}\\log_2(1 + S/N)$ bits\n5. Multiply by $2B$ samples/sec: $C = B\\log_2(1 + S/N)$ bits/sec",
+      "result_analysis": "**Shannon-Hartley Theorem:**\n\n$$C = B \\log_2\\left(1 + \\frac{S}{N}\\right)$$\n\n**Units:** bits per second (bps)\n\n**Key Insights:**\n\n1. **Bandwidth matters linearly**: Double the bandwidth = double the capacity.\n2. **SNR matters logarithmically**: Doubling signal power adds only ~1 bit/sample.\n3. **Tradeoff**: You can trade bandwidth for power: narrow bandwidth + high power ≈ wide bandwidth + low power.\n\n**Why Logarithmic?**\n\nTo send $n$ bits, you need $2^n$ distinguishable levels. But noise 'blurs' levels together. The number of distinguishable levels scales as $\\sqrt{S/N}$, not $S/N$.\n\n**Real-World Examples:**\n\n- **WiFi 6** (one stream): 160 MHz bandwidth, ~30 dB SNR → **~1.6 Gbps**\n- **5G mmWave**: 400 MHz bandwidth, ~20 dB SNR → **~2.7 Gbps**\n- **Fiber Optic**: 4 THz bandwidth, ~25 dB SNR → **~33 Tbps**\n\n**Applications:**\n\n- **WiFi/5G**: Shannon's limit is why your WiFi has a speed limit!\n- **Fiber Optics**: Pushing channels to theoretical limits\n- **Space Communication**: NASA calculates optimal power for deep space probes\n- **Compression**: MP3/JPEG approach Shannon's source coding theorem"
+    },
+    "quizzes": [
+      {
+        "question": "What happens if you try to transmit faster than the channel capacity?",
+        "options": [
+          "The signal gets louder",
+          "Errors become unavoidable",
+          "The bandwidth increases",
+          "Nothing, it just works"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "If you double the bandwidth, what happens to capacity?",
+        "options": [
+          "Doubles",
+          "Quadruples",
+          "Stays the same",
+          "Halves"
+        ],
+        "correct": 0
+      },
+      {
+        "question": "If you double the signal power (with same noise), capacity increases by approximately:",
+        "options": [
+          "2x",
+          "1 bit per sample",
+          "No change",
+          "4x"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What field did Shannon found with this theorem?",
+        "options": [
+          "Quantum Mechanics",
+          "Information Theory",
+          "Thermodynamics",
+          "Number Theory"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Which technology uses Shannon's theorem to calculate maximum data rates?",
+        "options": [
+          "Only radio",
+          "Only fiber optics",
+          "All digital communication (WiFi, 5G, fiber, etc.)",
+          "Only satellite"
+        ],
+        "correct": 2
+      }
+    ]
+  },
+  "code": {
+    "javascript": {}
+  }
+}

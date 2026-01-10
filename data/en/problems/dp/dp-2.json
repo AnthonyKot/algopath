@@ -1,0 +1,129 @@
+{
+  "id": "dp-2",
+  "title": "Longest Increasing Subsequence",
+  "difficulty": "Medium",
+  "leetcode_url": "https://leetcode.com/problems/longest-increasing-subsequence/",
+  "related": [
+    {
+      "id": "dp-4",
+      "title": "Burst Balloons",
+      "category": "dp"
+    },
+    {
+      "id": "trees-1",
+      "title": "Range Sum Queries",
+      "category": "trees"
+    }
+  ],
+  "tags": [
+    "dp",
+    "binary-search",
+    "lis"
+  ],
+  "content": {
+    "problem_statement": "Given an integer array `nums`, return the length of the longest strictly increasing subsequence.\n\n**Example 1:**\n```\nInput: nums = [10,9,2,5,3,7,101,18]\nOutput: 4\nExplanation: The longest increasing subsequence is [2,3,7,101], therefore the length is 4.\n```\n\n**Example 2:**\n```\nInput: nums = [0,1,0,3,2,3]\nOutput: 4\n```",
+    "explanation": {
+      "understanding_the_problem": "We need to find the length of the longest subsequence where each element is strictly greater than the previous one. The elements do not need to be contiguous. For example, in `[10, 9, 2, 5, 3, 7, 101]`, the longest increasing subsequence is `[2, 3, 7, 101]`, so the answer is 4.",
+      "brute_force": "This is a classic Dynamic Programming problem. A common DP approach is to define an array, `dp`, where `dp[i]` represents the length of the longest increasing subsequence that **ends at index `i`**.\n\nTo calculate `dp[i]`, we look at all previous indices `j < i`. If `nums[j] < nums[i]`, it means we can potentially extend an increasing subsequence that ended at `j`. We would take the longest such subsequence (`dp[j]`) and add 1. We check this for all valid `j`'s and take the maximum.\n\nThe final answer is the maximum value in the entire `dp` array, since the LIS could end at any index.",
+      "bottleneck": "The DP approach described above requires two nested loops. The outer loop iterates from `i = 0 to N-1`, and the inner loop iterates from `j = 0 to i-1`. This results in an O(N²) time complexity, which is good but can be too slow for larger constraints.",
+      "optimized_approach": "A more advanced and efficient solution uses a clever combination of patience and binary search, achieving O(N log N) time. The core idea is to maintain an array (let's call it `tails`) which stores the smallest tail of all increasing subsequences with length `i+1` at `tails[i]`.\n\nFor example, if `tails` is `[2, 5, 7]`, it means we have found an LIS of length 1 ending in 2, an LIS of length 2 ending in 5, and an LIS of length 3 ending in 7. This `tails` array will always be sorted.\n\nWhen we process a new number `num`:\n- If `num` is greater than the last element of `tails`, we can extend the longest subsequence found so far. We append `num` to `tails`.\n- If `num` is not greater, it might be able to start a new, shorter subsequence with a more promising (smaller) tail. We find the position of the smallest element in `tails` that is greater than or equal to `num` and replace it. This search can be done with binary search.",
+      "algorithm_steps": "Here we describe the O(N²) DP approach, which is more intuitive to start with:\n\n1.  **Initialization:** Create a `dp` array of the same size as `nums`, and fill it with `1`s. This represents the base case where each element is itself an increasing subsequence of length 1.\n2.  **Main Loop:**\n    a.  Iterate `i` from 1 to `N-1` (for each element).\n    b.  Nest a loop with `j` from 0 to `i-1` (to check all previous elements).\n    c.  If `nums[j] < nums[i]`, it's possible to extend the subsequence ending at `j`. Update `dp[i]` to be `max(dp[i], dp[j] + 1)`.\n3.  **Result:** After the loops, the answer is the maximum value found in the `dp` array."
+    },
+    "quizzes": [
+      {
+        "question": "What does dp[i] represent in the LIS solution?",
+        "options": [
+          "Total subsequences",
+          "LIS ending at index i",
+          "LIS starting at i",
+          "Array length"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What is the bottleneck of O(N²) DP for LIS?",
+        "options": [
+          "Memory usage",
+          "Nested loops checking all pairs",
+          "Recursion depth",
+          "String operations"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "How can we optimize LIS to O(N log N)?",
+        "options": [
+          "Hash table",
+          "Binary search on tails array",
+          "Sorting first",
+          "Divide and conquer"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Why do we initialize dp[i] = 1?",
+        "options": [
+          "Array indexing",
+          "Each element is LIS of length 1",
+          "Prevent overflow",
+          "Match array size"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "How do we get the final answer?",
+        "options": [
+          "dp[0]",
+          "dp[n-1]",
+          "Max of all dp values",
+          "Sum of dp values"
+        ],
+        "correct": 2
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function lengthOfLIS(nums) {\n  const n = nums.length;\n  const dp = new Array(n).fill(1);\n  for (let i = 1; i < n; i++) {\n    for (let j = 0; j < i; j++) {\n      if (nums[j] < nums[i]) dp[i] = Math.max(dp[i], dp[j] + 1);\n    }\n  }\n  return Math.max(...dp);\n}",
+      "annotations": [
+        {
+          "lines": [
+            2,
+            3
+          ],
+          "text": "Initialize dp array: dp[i] = 1 means each element is an LIS of length 1 by itself"
+        },
+        {
+          "lines": [
+            4
+          ],
+          "text": "Outer loop: for each position i, find the longest increasing subsequence ending at i"
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Inner loop: check all previous elements j < i to find valid predecessors"
+        },
+        {
+          "lines": [
+            6
+          ],
+          "text": "Core recurrence: if nums[j] < nums[i], we can extend LIS ending at j. Take the maximum"
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Answer is the max of all dp values since LIS could end at any index"
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(N²)",
+    "space": "O(N)",
+    "explanation_time": "The provided code uses a straightforward DP approach. There are two nested loops. The outer loop runs N times, and the inner loop runs up to N times. This gives a time complexity of O(N²).",
+    "explanation_space": "We use an additional array `dp` of the same size as the input array `nums`. This requires O(N) space."
+  }
+}

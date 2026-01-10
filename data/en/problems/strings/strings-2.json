@@ -1,0 +1,128 @@
+{
+  "id": "strings-2",
+  "title": "Rabin-Karp Rolling Hash",
+  "difficulty": "Medium",
+  "leetcode_url": "https://leetcode.com/problems/repeated-dna-sequences/",
+  "related": [
+    {
+      "id": "strings-1",
+      "title": "KMP Pattern Matching",
+      "category": "strings"
+    },
+    {
+      "id": "strings-3",
+      "title": "Z-Algorithm",
+      "category": "strings"
+    }
+  ],
+  "tags": [
+    "hashing",
+    "strings",
+    "pattern-matching"
+  ],
+  "follow_up": {
+    "scenario": "Plagiarism detection in large codebases or documents.",
+    "trade_off": "Exact string matching is expensive for massive documents.",
+    "strategy": "Content-Defined Chunking (CDC) with Rolling Hash to fingerprint files. Compare fingerprints instead of full text.",
+    "answering_guide": "Focus on <strong>'Fingerprinting'</strong>. Rolling hash is the basis for 'rsync' and 'deduplication' systems. Mentioning <strong>'rsync'</strong> is a pro move."
+  },
+  "content": {
+    "problem_statement": "Given two strings `text` and `pattern`, return **all** indices in `text` where `pattern` starts.\n\n**Example 1:**\n```\nInput: text = \"abxabcabcaby\", pattern = \"abcaby\"\nOutput: [6]\n```",
+    "explanation": {
+      "understanding_the_problem": "This algorithm provides an alternative to KMP. Instead of comparing strings character by character, it compares hash values. The core idea is to compute a hash for the pattern and then efficiently compute hashes for all substrings of the text that have the same length as the pattern.",
+      "brute_force": "A naive hashing approach would be to calculate the hash of the pattern, then iterate through all N-M+1 substrings of the text, calculate the hash for each, and compare. However, calculating the hash for each substring from scratch would take O(M) time, leading to the same O(N*M) complexity as the naive string search.",
+      "bottleneck": "The bottleneck is re-calculating the hash for each sliding window from scratch.",
+      "optimized_approach": "The Rabin-Karp algorithm uses a **Rolling Hash**. A rolling hash function allows us to calculate the hash value of the next window in O(1) time, given the hash of the current window. When we slide the window one position to the right, we mathematically subtract the contribution of the character leaving the window and add the contribution of the character entering it.\n\nWhen the hash of the pattern matches the hash of the current text window, it's a *potential* match. We must then do a character-by-character comparison to confirm, as different strings can sometimes have the same hash (a 'collision').",
+      "algorithm_steps": "1.  Choose a prime modulus and a base for the polynomial rolling hash.\n2.  Calculate the hash of the `pattern` and the hash of the first window of the `text`.\n3.  Iterate from left to right across the text. If the hashes match, perform a direct string comparison to confirm.\n4.  'Roll' the hash of the text window to the next position in O(1) time by removing the leftmost character's contribution and adding the rightmost character's."
+    },
+    "quizzes": [
+      {
+        "question": "What is a 'rolling hash'?",
+        "options": [
+          "A sorted hash",
+          "Hash updated in O(1) per window slide",
+          "A circular buffer",
+          "Encrypted hash"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What happens when hashes match?",
+        "options": [
+          "Guaranteed match",
+          "Verify with string comparison",
+          "Skip to next",
+          "Return immediately"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Why might we get false positives?",
+        "options": [
+          "Bug in code",
+          "Hash collisions",
+          "Wrong base",
+          "Pattern too long"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the average time complexity?",
+        "options": [
+          "O(N²)",
+          "O(N*M)",
+          "O(N+M)",
+          "O(log N)"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "What's the worst case (many collisions)?",
+        "options": [
+          "O(N)",
+          "O(N+M)",
+          "O(N*M)",
+          "O(log N)"
+        ],
+        "correct": 2
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function rabinKarp(text, pattern, base=256, mod=10**9+7) {\n  const n = text.length, m = pattern.length;\n  if (m > n) return [];\n  let hashPattern = 0, hashText = 0;\n  let h = 1;\n  for (let i = 0; i < m; i++) {\n    hashPattern = (hashPattern * base + pattern.charCodeAt(i)) % mod;\n    hashText = (hashText * base + text.charCodeAt(i)) % mod;\n    if (i < m - 1) h = (h * base) % mod;\n  }\n  const result = [];\n  for (let i = 0; i <= n - m; i++) {\n    if (hashPattern === hashText) {\n      if (text.slice(i, i+m) === pattern) result.push(i);\n    }\n    if (i < n - m) {\n      hashText = ((hashText - text.charCodeAt(i) * h) * base + text.charCodeAt(i+m)) % mod;\n      if (hashText < 0) hashText += mod;\n    }\n  }\n  return result;\n}",
+      "annotations": [
+        {
+          "lines": [
+            8
+          ],
+          "text": "Initial window hash calculation."
+        },
+        {
+          "lines": [
+            13
+          ],
+          "text": "Hash match: Potential collision, verify with exact string comparison."
+        },
+        {
+          "lines": [
+            17
+          ],
+          "text": "Rolling hash: Remove leading char, add new trailing char in O(1)."
+        },
+        {
+          "lines": [
+            18
+          ],
+          "text": "Correction: Handle negative result from JS modulo operator."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(N + M) average",
+    "space": "O(M)",
+    "explanation_time": "On average, with a good hash function, collisions are rare. The algorithm runs in O(N+M) time. In the worst case (many hash collisions), the complexity can degrade to O(N*M) because of the repeated character-by-character checks.",
+    "explanation_space": "We only need to store the pattern and a few variables for the hashes, so the space is O(M)."
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "id": "design-4",
+  "title": "Design Hit Counter",
+  "difficulty": "Hard",
+  "leetcode_url": "https://leetcode.com/problems/design-hit-counter/",
+  "related": [
+    {
+      "id": "design-2",
+      "title": "Design Twitter",
+      "category": "design"
+    },
+    {
+      "id": "design-1",
+      "title": "LRU Cache",
+      "category": "design"
+    }
+  ],
+  "tags": [
+    "design",
+    "sliding-window",
+    "circular-buffer"
+  ],
+  "follow_up": {
+    "scenario": "You have multiple application servers. Hits are coming to all of them.",
+    "trade_off": "Local counters are fast but don't show global state. Central Redis is a bottleneck.",
+    "strategy": "Aggregate locally for 1 second, then push sum to a central Redis/Service. Precision is traded for scalability (eventual consistency).",
+    "answering_guide": "Highlight the trade-off between Consistency and Availability. <strong>'Local Aggregation'</strong> (buffering) is the winning strategy here."
+  },
+  "content": {
+    "problem_statement": "Design a hit counter that counts the number of hits received in the past `5` minutes (i.e., the past `300` seconds).\n\nYour system should accept a `timestamp` parameter (in seconds granularity), and you may assume that calls are being made to the system in chronological order (i.e., `timestamp` is monotonically increasing). Several hits may arrive roughly at the same time.\n\nImplement the `HitCounter` class:\n*   `HitCounter()` Initializes the object of the hit counter system.\n*   `void hit(int timestamp)` Records a hit that happened at `timestamp`.\n*   `int getHits(int timestamp)` Returns the number of hits in the past 5 minutes from `timestamp` (i.e., the past `300` seconds).\n\n**Example 1:**\n```\nInput\n[\"HitCounter\", \"hit\", \"hit\", \"hit\", \"getHits\", \"hit\", \"getHits\", \"getHits\"]\n[[], [1], [2], [3], [4], [300], [300], [301]]\nOutput\n[null, null, null, null, 3, null, 4, 3]\n```",
+    "explanation": {
+      "understanding_the_problem": "We need to count events within a rolling time window. The key constraints are the fixed size of the window (300 seconds) and the potential for a very high number of hits, making it infeasible to store every single hit.",
+      "brute_force": "A simple but unscalable solution is to store a list of timestamps for every hit. When `getHits` is called, we would iterate through the list, remove timestamps older than 300 seconds, and return the list's size. This would be slow and consume unbounded memory.",
+      "bottleneck": "Storing every hit timestamp leads to unbounded memory usage and slow `getHits` calls if the hit rate is high.",
+      "optimized_approach": "The **Bucketing** or **Circular Array** approach is ideal. Since the time window is fixed, we can use an array of 300 'buckets', where each bucket counts the hits for a specific second. We use the timestamp modulo 300 to map a time to a bucket index.\n\nTo handle the fact that bucket `i` could represent second `i`, `i+300`, `i+600`, etc., we need to store the timestamp along with the count. When we access a bucket, we check if its stored timestamp matches the current timestamp's second. If not, it's an old bucket that we can reset.",
+      "algorithm_steps": "1.  **Data Structures:**\n    - `hits[300]`: An array to store the hit counts.\n    - `timestamps[300]`: A parallel array to store the timestamp corresponding to each bucket.\n\n2.  **`hit(timestamp)`:**\n    a.  Calculate the bucket index: `idx = timestamp % 300`.\n    b.  If `timestamps[idx]` matches the current `timestamp`, just increment `hits[idx]`.\n    c.  If not, it's a stale bucket. Reset it: `timestamps[idx] = timestamp` and `hits[idx] = 1`.\n\n3.  **`getHits(timestamp)`:**\n    a.  Initialize `total = 0`.\n    b.  Iterate through all 300 buckets.\n    c.  For each bucket `i`, if `timestamp - timestamps[i] < 300`, add `hits[i]` to `total`.\n    d.  Return `total`."
+    },
+    "quizzes": [
+      {
+        "question": "What is the optimal data structure for this?",
+        "options": [
+          "LinkedList",
+          "Circular Buffer (Buckets)",
+          "Large Array",
+          "BST"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Why not store every timestamp?",
+        "options": [
+          "Too much memory/slow query",
+          "Not precise",
+          "Hard to implementing",
+          "Integer overflow"
+        ],
+        "correct": 0
+      },
+      {
+        "question": "What is the size of the array needed?",
+        "options": [
+          "Unlimited",
+          "60",
+          "300",
+          "86400"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "How do we handle concurrent hits?",
+        "options": [
+          "Locks/Atomic increment",
+          "Ignore race conditions",
+          "Use separate arrays",
+          "Delay writes"
+        ],
+        "correct": 0
+      },
+      {
+        "question": "How do we handle stale buckets?",
+        "options": [
+          "Delete them",
+          "Reset value when index is reused",
+          "Shift entire array",
+          "Use garbage collection"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "class HitCounter {\n  constructor() {\n    this.times = new Array(300).fill(0);\n    this.hits = new Array(300).fill(0);\n  }\n  \n  hit(timestamp) {\n    const idx = timestamp % 300;\n    if (this.times[idx] !== timestamp) {\n      this.times[idx] = timestamp;\n      this.hits[idx] = 1;\n    } else {\n      this.hits[idx]++;\n    }\n  }\n  \n  getHits(timestamp) {\n    let totalHits = 0;\n    for (let i = 0; i < 300; i++) {\n      if (timestamp - this.times[i] < 300) {\n        totalHits += this.hits[i];\n      }\n    }\n    return totalHits;\n  }\n}",
+      "annotations": [
+        {
+          "lines": [
+            2,
+            3
+          ],
+          "text": "Circular Buffer: Fixed size 300 for 5-minute window. Saves space vs storing all timestamps."
+        },
+        {
+          "lines": [
+            7,
+            8
+          ],
+          "text": "Index Mapping: Modulo 300 maps indefinite time to fixed buckets."
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Reset: If bucket's timestamp is old, it belongs to a previous cycle. Overwrite it."
+        },
+        {
+          "lines": [
+            18
+          ],
+          "text": "Sum: Aggregate hits only from buckets falling within the last 300s window."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(1)",
+    "space": "O(1)",
+    "explanation_time": "`hit` is O(1). `getHits` requires iterating over a fixed-size array of 300 elements, which is a constant amount of work, making it O(1) as well.",
+    "explanation_space": "We use two arrays of a fixed size (300), which is constant space, O(1)."
+  }
+}

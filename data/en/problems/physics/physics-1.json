@@ -1,0 +1,83 @@
+{
+  "id": "physics-1",
+  "title": "Relativistic Collision (Four-Momentum)",
+  "difficulty": "Medium",
+  "related": [
+    {
+      "id": "math-1",
+      "title": "Modular Exponentiation",
+      "category": "math"
+    }
+  ],
+  "tags": [
+    "relativity",
+    "four-momentum",
+    "invariant"
+  ],
+  "content": {
+    "problem_statement": "A particle of rest mass $m_0$ with kinetic energy $T$ strikes a **stationary particle** of the same rest mass. Find the **rest mass** $M$ and the **velocity** $V$ of the compound particle formed as a result of the collision.\n\n**Given:**\n- Rest mass of each particle: $m_0$\n- Kinetic energy of striking particle: $T$\n- Stationary target particle\n\n**Find:**\n- Rest mass $M$ of compound particle\n- Velocity $V$ of compound particle",
+    "explanation": {
+      "understanding_the_problem": "This is a classic relativistic collision problem. Unlike Newtonian mechanics where kinetic energy can be converted to other forms, in relativity we must use the **four-momentum invariant** $s = E^2/c^2 - p^2$.\n\nThe key insight is that this invariant quantity is the same in all reference frames. We can calculate it in the lab frame (where one particle is stationary) and set it equal to the rest frame of the compound particle.",
+      "brute_force": "The four-momentum for a single particle is $(E/c, \\vec{p})$. Its magnitude squared is:\n\n$$s = \\frac{E^2}{c^2} - p^2 = m_0^2 c^2$$\n\nThis is the **invariant mass** relation: $E^2 = (pc)^2 + (m_0 c^2)^2$\n\nFor a system of particles, the total four-momentum is conserved, and its invariant is related to the total rest mass $M$ of the system.",
+      "bottleneck": "The challenge is correctly handling the relativistic relations. We cannot simply add kinetic energies or momenta like in classical mechanics.",
+      "optimized_approach": "**Step 1: Initial State**\n\nStriking particle:\n- Total energy: $E_1 = T + m_0 c^2$\n- Momentum: From $E_1^2 = (p_1 c)^2 + (m_0 c^2)^2$, we get $p_1 = \\frac{1}{c}\\sqrt{E_1^2 - m_0^2 c^4}$\n\nStationary particle:\n- Total energy: $E_2 = m_0 c^2$\n- Momentum: $p_2 = 0$\n\n**Step 2: Total Four-Momentum Invariant**\n\n$$s = \\frac{(E_1 + E_2)^2}{c^2} - (p_1 + p_2)^2 = M^2 c^2$$\n\nSubstituting:\n$$M^2 c^4 = (T + 2m_0 c^2)^2 - (E_1^2 - m_0^2 c^4)$$\n\nSimplifying:\n$$M = 2m_0\\sqrt{1 + \\frac{T}{2m_0 c^2}}$$\n\n**Step 3: Velocity from Momentum Conservation**\n\nUsing $p_{total} = p_1 = \\gamma M V$:\n$$V = \\frac{p_1 c^2}{E_1 + E_2}$$",
+      "algorithm_steps": "1. Calculate total energy of striking particle: $E_1 = T + m_0 c^2$\n2. Calculate momentum: $p_1 = \\frac{1}{c}\\sqrt{T(T + 2m_0 c^2)}$\n3. Apply invariant: $M^2 c^4 = (E_1 + m_0 c^2)^2 - (p_1 c)^2$\n4. Solve for $M = 2m_0\\sqrt{1 + \\frac{T}{2m_0 c^2}}$\n5. Find velocity: $V = \\frac{p_1 c^2}{E_1 + m_0 c^2}$",
+      "result_analysis": "**Final Results:**\n\n$$M = 2m_0\\sqrt{1 + \\frac{T}{2m_0 c^2}}$$\n\n$$V = \\frac{c\\sqrt{T(T + 2m_0 c^2)}}{T + 2m_0 c^2}$$\n\n**Limiting Cases:**\n\n1. **Non-relativistic limit** ($T \\ll m_0 c^2$): $M \\approx 2m_0$ and $V \\approx \\sqrt{T/(2m_0)}$ — recovers classical result\n\n2. **Ultra-relativistic limit** ($T \\gg m_0 c^2$): $M \\approx \\sqrt{2m_0 T}/c$ and $V \\to c$\n\n**Physical Interpretation:**\n\nThe compound particle has **more rest mass** than the sum of the original rest masses ($M > 2m_0$ when $T > 0$). This 'extra' mass comes from the kinetic energy of the collision, which is converted to rest mass energy via $E = mc^2$.\n\n**Applications:**\n\n- **Particle Accelerators**: This is how new heavy particles are created at CERN. High-energy protons collide, and some kinetic energy converts to the mass of new particles (Higgs boson, etc.)\n- **Threshold Energy**: To create a particle of mass $M_{new}$, we need minimum kinetic energy $T_{min}$ — this formula helps calculate it\n- **Cosmic Ray Physics**: Understanding how high-energy cosmic rays create particle showers in the atmosphere"
+    },
+    "quizzes": [
+      {
+        "question": "What quantity is invariant in all reference frames?",
+        "options": [
+          "Kinetic energy",
+          "Momentum magnitude",
+          "E² - (pc)²",
+          "Total energy"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "For a stationary particle, what is its total relativistic energy?",
+        "options": [
+          "0",
+          "m₀c²",
+          "½m₀v²",
+          "pc"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Why can't we just add kinetic energies in relativity?",
+        "options": [
+          "Energy isn't conserved",
+          "Rest mass energy must be included",
+          "Momentum is more important",
+          "Time dilation prevents it"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What is the four-momentum of a particle?",
+        "options": [
+          "(m, v)",
+          "(E/c, p)",
+          "(t, x)",
+          "(γ, β)"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "If T = 0 (no kinetic energy), what is M?",
+        "options": [
+          "m₀",
+          "2m₀",
+          "√2 m₀",
+          "0"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {}
+  }
+}

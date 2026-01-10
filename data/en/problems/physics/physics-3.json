@@ -1,0 +1,84 @@
+{
+  "id": "physics-3",
+  "title": "Random Walk to Diffusion Equation (Einstein 1905)",
+  "difficulty": "Hard",
+  "related": [
+    {
+      "id": "physics-2",
+      "title": "Expanding Particle Cloud",
+      "category": "physics"
+    }
+  ],
+  "tags": [
+    "probability",
+    "taylor-series",
+    "diffusion",
+    "brownian-motion"
+  ],
+  "content": {
+    "problem_statement": "A particle performs a **random walk** on a 1D line. At each time step $\\Delta t$, it moves:\n- Right by $+\\Delta x$ with probability $\\frac{1}{2}$\n- Left by $-\\Delta x$ with probability $\\frac{1}{2}$\n\n**Derive** the equation governing the probability density $P(x,t)$ in the continuous limit ($\\Delta x, \\Delta t \\to 0$).\n\n**This is the Diffusion Equation** — the foundation of Brownian motion, stock price models, and AI image generation!",
+    "explanation": {
+      "understanding_the_problem": "This derivation (Einstein, 1905) connects **discrete probability** (coin flips) to **continuous differential equations** (the heat equation).\n\nThe key insight is that Taylor expansion reveals the hidden calculus structure inside a simple random walk.\n\n**Why This Matters:**\n- **Physics**: Explains Brownian motion (pollen jiggling in water) — proved atoms exist!\n- **Finance**: Replace 'position' with 'stock price' → Black-Scholes equation\n- **AI**: This is the math behind **Diffusion Models** (Stable Diffusion, Midjourney)",
+      "brute_force": "**Step 1: The Master Equation**\n\nIf a particle is at position $x$ at time $t + \\Delta t$, it must have come from either $(x - \\Delta x)$ or $(x + \\Delta x)$ at time $t$:\n\n$$P(x, t + \\Delta t) = \\frac{1}{2}P(x - \\Delta x, t) + \\frac{1}{2}P(x + \\Delta x, t)$$\n\nThis is the discrete 'Master Equation' for the random walk.",
+      "bottleneck": "The equation is discrete (finite steps). We need to extract the continuous differential equation hiding inside.",
+      "optimized_approach": "**Step 2: Taylor Expand the Left Side (Time)**\n\nExpand $P(x, t + \\Delta t)$ to first order in time:\n$$P(x, t + \\Delta t) \\approx P(x,t) + \\frac{\\partial P}{\\partial t}\\Delta t$$\n\n**Step 3: Taylor Expand the Right Side (Space)**\n\nExpand each spatial term to second order:\n$$P(x \\pm \\Delta x, t) \\approx P(x,t) \\pm \\frac{\\partial P}{\\partial x}\\Delta x + \\frac{1}{2}\\frac{\\partial^2 P}{\\partial x^2}(\\Delta x)^2$$\n\n**Step 4: Substitute into Master Equation**\n\nLeft side:\n$$P + \\frac{\\partial P}{\\partial t}\\Delta t$$\n\nRight side (add the two terms):\n$$\\frac{1}{2}\\left[P - \\frac{\\partial P}{\\partial x}\\Delta x + \\frac{1}{2}\\frac{\\partial^2 P}{\\partial x^2}(\\Delta x)^2\\right] + \\frac{1}{2}\\left[P + \\frac{\\partial P}{\\partial x}\\Delta x + \\frac{1}{2}\\frac{\\partial^2 P}{\\partial x^2}(\\Delta x)^2\\right]$$\n\n**Step 5: The Magic Cancellation**\n\nThe first-order spatial terms **cancel** (because the walk is symmetric):\n$$\\pm\\frac{\\partial P}{\\partial x}\\Delta x \\to 0$$\n\nWhat survives:\n$$P + \\frac{1}{2}\\frac{\\partial^2 P}{\\partial x^2}(\\Delta x)^2$$\n\n**Step 6: Combine and Simplify**\n\n$$P + \\frac{\\partial P}{\\partial t}\\Delta t = P + \\frac{1}{2}\\frac{\\partial^2 P}{\\partial x^2}(\\Delta x)^2$$\n\nCancel $P$ and divide by $\\Delta t$:\n$$\\frac{\\partial P}{\\partial t} = \\frac{(\\Delta x)^2}{2\\Delta t}\\frac{\\partial^2 P}{\\partial x^2}$$",
+      "algorithm_steps": "1. Write Master Equation: $P(x,t+\\Delta t) = \\frac{1}{2}P(x-\\Delta x,t) + \\frac{1}{2}P(x+\\Delta x,t)$\n2. Taylor expand LHS in time (1st order)\n3. Taylor expand RHS in space (2nd order)\n4. Substitute and observe: first-order $\\partial P/\\partial x$ terms cancel!\n5. Simplify: $\\frac{\\partial P}{\\partial t} = D\\frac{\\partial^2 P}{\\partial x^2}$\n6. Define diffusion coefficient: $D = \\frac{(\\Delta x)^2}{2\\Delta t}$",
+      "result_analysis": "**Final Result — The Diffusion Equation:**\n\n$$\\frac{\\partial P}{\\partial t} = D\\frac{\\partial^2 P}{\\partial x^2}$$\n\nwhere the **Diffusion Coefficient** is:\n$$D = \\frac{(\\Delta x)^2}{2\\Delta t}$$\n\n**Why First-Order Canceled:**\n\nThe $\\partial P/\\partial x$ terms canceled because the walk is **symmetric** (equal probability left and right). If we had biased probabilities, we'd get an additional **drift term** $v\\frac{\\partial P}{\\partial x}$ — this is the Fokker-Planck equation!\n\n**Physical Interpretation:**\n\n- The equation says probability **spreads out** over time (second derivative drives diffusion)\n- Peaked distributions flatten; edges blur\n- This is why ink drops spread in water, heat conducts through metal, and perfume fills a room\n\n**Einstein's 1905 Result:**\n\nEinstein showed that for a particle of radius $r$ in fluid of viscosity $\\eta$ at temperature $T$:\n$$D = \\frac{k_B T}{6\\pi\\eta r}$$\n\nBy measuring the spread of Brownian particles, Perrin verified this and calculated Avogadro's number — proving atoms exist!\n\n**Applications:**\n\n- **Brownian Motion**: Pollen grains jiggling in water\n- **Black-Scholes**: Replace $x$ with stock price → foundation of options pricing\n- **AI Diffusion Models**: Stable Diffusion, Midjourney, DALL-E 3 all use this equation! They add noise (forward diffusion) then learn to reverse it (denoising)\n- **Heat Conduction**: Same equation governs temperature flow"
+    },
+    "quizzes": [
+      {
+        "question": "Why does the first-order spatial derivative cancel?",
+        "options": [
+          "Taylor series doesn't have first-order terms",
+          "The walk is symmetric (equal probability left/right)",
+          "Space is continuous",
+          "Time is discrete"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What is the Diffusion Coefficient D in terms of step size and time?",
+        "options": [
+          "D = Δx/Δt",
+          "D = (Δx)²/(2Δt)",
+          "D = Δt/(Δx)²",
+          "D = 2ΔxΔt"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What physical phenomenon did this derivation explain?",
+        "options": [
+          "Planetary orbits",
+          "Brownian motion (pollen in water)",
+          "Electromagnetic waves",
+          "Nuclear decay"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What modern AI technology uses this equation?",
+        "options": [
+          "ChatGPT (transformers)",
+          "Stable Diffusion / Midjourney (diffusion models)",
+          "AlphaGo (reinforcement learning)",
+          "BERT (language models)"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What would happen if probabilities were biased (not 50/50)?",
+        "options": [
+          "Equation unchanged",
+          "Add a drift term (Fokker-Planck equation)",
+          "No diffusion occurs",
+          "Probability becomes negative"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {}
+  }
+}

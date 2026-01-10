@@ -1,0 +1,128 @@
+{
+  "id": "optimization-5",
+  "title": "Trapping Rain Water",
+  "difficulty": "Hard",
+  "leetcode_url": "https://leetcode.com/problems/trapping-rain-water/",
+  "related": [
+    {
+      "id": "optimization-2",
+      "title": "Largest Rectangle in Histogram",
+      "category": "optimization"
+    },
+    {
+      "id": "two-pointers-1",
+      "title": "Container With Most Water",
+      "category": "two-pointers"
+    }
+  ],
+  "tags": [
+    "two-pointers",
+    "optimization",
+    "greedy"
+  ],
+  "follow_up": {
+    "scenario": "Optimizing water calculation for a dynamic terrain (e.g., Minecraft, where blocks are added/removed).",
+    "trade_off": "Recomputing O(N) for every block change is too slow (O(K*N)).",
+    "strategy": "Use a Segment Tree. Each node stores max_height and water_volume. Updates take O(log N). Sub-problems merge by calculating water trapped between left_child_max and right_child_max.",
+    "answering_guide": "Recognize that 'Dynamic Updates' = <strong>'Segment Tree'</strong> (or Fenwick). Explain that pre-computation allows O(log N) updates vs O(N) rebuilds."
+  },
+  "content": {
+    "problem_statement": "Given `n` non-negative integers representing an elevation map where the width of each bar is `1`, compute how much water it can trap after raining.\n\n**Example 1:**\n```\nInput: height = [0,1,0,2,1,0,1,3,2,1,2,1]\nOutput: 6\nExplanation: The above elevation map (black section) is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped.\n```",
+    "explanation": {
+      "understanding_the_problem": "Imagine the given array as a 2D profile. After it rains, water will be trapped between taller bars. We need to calculate the total volume of this trapped water.",
+      "brute_force": "For any given bar `i`, the amount of water it can hold above it is determined by the height of the tallest bar to its left (`max_left`) and the tallest bar to its right (`max_right`). The water level above bar `i` will be `min(max_left, max_right)`. The trapped water is `min(max_left, max_right) - height[i]`. We could iterate through each bar, and for each one, scan its left and right sides to find the max heights. This would be O(N²) time.",
+      "bottleneck": "The O(N²) approach is slow because we repeatedly scan the left and right sides for every bar.",
+      "optimized_approach": "**1. DP Approach (O(N) time, O(N) space):**\nWe can precompute the `max_left` and `max_right` for every position. First, iterate from left to right to create a `max_lefts` array. Then, iterate from right to left for a `max_rights` array. Finally, in a third pass, calculate the trapped water at each bar with the formula.\n\n**2. Two Pointers (O(N) time, O(1) space):**\nThis is the most optimal solution. We maintain two pointers, `left` and `right`, at the ends of the array, and two variables, `left_max` and `right_max`.\nThe key insight is that the amount of water trapped at any point is limited by the shorter of the two max walls (`left_max` and `right_max`). If `height[left]` is less than `height[right]`, we know the `left_max` is the limiting factor for the `left` pointer. We can safely calculate the trapped water at `left` because we know `right_max` is at least as high as `height[right]`, which is higher than `height[left]`.",
+      "algorithm_steps": "1.  Initialize `left = 0`, `right = N-1`, `left_max = 0`, `right_max = 0`, and `water = 0`.\n2.  Loop while `left < right`:\n    a.  If `height[left] < height[right]`:\n        i.  If `height[left] >= left_max`, update `left_max` because this new bar is taller.\n        ii. Else, water is trapped. Add `left_max - height[left]` to `water`.\n        iii. Move `left++`.\n    b.  Else (if `height[right] <= height[left]`):\n        i.  Do the symmetric operation for the right side. Update `right_max` or add `right_max - height[right]` to `water`.\n        ii. Move `right--`."
+    },
+    "quizzes": [
+      {
+        "question": "What determines height of water at index i?",
+        "options": [
+          "min(max_left, max_right) - height[i]",
+          "max(max_left, max_right)",
+          "Average height",
+          "max_left + max_right"
+        ],
+        "correct": 0
+      },
+      {
+        "question": "What is the space complexity of the Two-Pointer approach?",
+        "options": [
+          "O(N)",
+          "O(1)",
+          "O(log N)",
+          "O(N^2)"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Why can we trust 'leftMax' when height[left] < height[right]?",
+        "options": [
+          "We can't",
+          "Because rightMax is guaranteed to be >= height[right] > height[left]",
+          "It's a heuristic",
+          "Magic"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What happens if height[left] >= leftMax?",
+        "options": [
+          "Update leftMax",
+          "Trap water",
+          "Move right pointer",
+          "Do nothing"
+        ],
+        "correct": 0
+      },
+      {
+        "question": "What happens if height[left] < leftMax?",
+        "options": [
+          "Update leftMax",
+          "Trap water",
+          "Move right pointer",
+          "Error"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function trap(height) {\n  if (height.length < 3) return 0;\n  \n  let left = 0, right = height.length - 1;\n  let leftMax = 0, rightMax = 0;\n  let water = 0;\n  \n  while (left < right) {\n    if (height[left] < height[right]) {\n      if (height[left] >= leftMax) {\n        leftMax = height[left];\n      } else {\n        water += leftMax - height[left];\n      }\n      left++;\n    } else {\n      if (height[right] >= rightMax) {\n        rightMax = height[right];\n      } else {\n        water += rightMax - height[right];\n      }\n      right--;\n    }\n  }\n  \n  return water;\n}",
+      "annotations": [
+        {
+          "lines": [
+            8
+          ],
+          "text": "Key Insight: The shorter wall determines water level. If left < right, we trust leftMax."
+        },
+        {
+          "lines": [
+            9
+          ],
+          "text": "Update Left Max: We found a taller wall, so no water trapped here."
+        },
+        {
+          "lines": [
+            11
+          ],
+          "text": "Trap Water: Current bar is shorter than leftMax, so it holds water."
+        },
+        {
+          "lines": [
+            15
+          ],
+          "text": "Symmetric: Same logic for the right side if right wall is shorter."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(N)",
+    "space": "O(1)",
+    "explanation_time": "The two pointers, `left` and `right`, traverse the array once, meeting in the middle. This results in a single pass and linear time complexity.",
+    "explanation_space": "We only use a few variables to keep track of pointers and maximums, giving us constant space complexity."
+  }
+}

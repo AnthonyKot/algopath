@@ -1,0 +1,116 @@
+{
+  "id": "math-5",
+  "title": "Fast Fourier Transform (FFT)",
+  "difficulty": "Medium",
+  "related": [
+    {
+      "id": "math-4",
+      "title": "Chinese Remainder Theorem",
+      "category": "math"
+    },
+    {
+      "id": "math-1",
+      "title": "Modular Exponentiation",
+      "category": "math"
+    }
+  ],
+  "tags": [
+    "fft",
+    "polynomial-multiplication",
+    "number-theory"
+  ],
+  "content": {
+    "problem_statement": "Multiply two polynomials of degree N efficiently.",
+    "explanation": {
+      "understanding_the_problem": "Multiplying two polynomials A(x) and B(x) of degree N using the standard 'long multiplication' method takes O(N²) time. FFT is a highly advanced algorithm that can accomplish this in O(N log N) time.",
+      "brute_force": "The O(N²) schoolbook method is the naive approach.",
+      "bottleneck": "The O(N²) complexity is too slow for problems involving large polynomial multiplication, such as finding all possible sums of two large sets of numbers (which can be modeled as polynomial multiplication).",
+      "optimized_approach": "The core idea of FFT is to change the representation of the polynomials. A polynomial can be represented by its coefficients or by its values at a set of points (point-value form). Multiplying two polynomials in point-value form is trivial: you just multiply their values at each point, which takes O(N) time.\n\n1. **Evaluation:** The FFT algorithm evaluates a polynomial at a specific set of `2N` points (the complex 'roots of unity') in O(N log N) time.\n2. **Pointwise Multiplication:** Multiply the values at each point. O(N).\n3. **Interpolation:** The Inverse FFT algorithm converts the resulting point-values back into the coefficient representation of the final polynomial, also in O(N log N) time.",
+      "algorithm_steps": "1.  Given two polynomials A(x) and B(x), convert them to point-value form by applying FFT. This is a recursive, divide-and-conquer algorithm.\n2.  Perform pointwise multiplication of the results.\n3.  Apply the Inverse FFT to the new point-value pairs to get the coefficients of the resulting polynomial C(x)."
+    },
+    "quizzes": [
+      {
+        "question": "What problem does FFT solve efficiently?",
+        "options": [
+          "Sorting",
+          "Polynomial multiplication",
+          "Graph traversal",
+          "String matching"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the key insight of FFT?",
+        "options": [
+          "Sort coefficients",
+          "Convert to point-value form",
+          "Use hashing",
+          "Binary search"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What are 'roots of unity'?",
+        "options": [
+          "Prime numbers",
+          "Complex numbers where z^n = 1",
+          "Square roots",
+          "Fibonacci numbers"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the time complexity of FFT?",
+        "options": [
+          "O(N²)",
+          "O(N)",
+          "O(N log N)",
+          "O(N³)"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "How does inverse FFT differ?",
+        "options": [
+          "Different algorithm",
+          "Negate angle and divide by N",
+          "Only for integers",
+          "Uses recursion"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function fft(a, invert = false) {\n  const n = a.length;\n  const rev = new Array(n).fill(0);\n  const bits = Math.log2(n);\n  for (let i = 0; i < n; i++) {\n    rev[i] = (rev[i >> 1] >> 1) | (i & 1) << (bits - 1);\n  }\n  for (let i = 0; i < n; i++) {\n    if (i < rev[i]) [a[i], a[rev[i]]] = [a[rev[i]], a[i]];\n  }\n  for (let len = 2; len <= n; len *= 2) {\n    const ang = 2 * Math.PI / len * (invert ? -1 : 1);\n    const wlen = [Math.cos(ang), Math.sin(ang)];\n    for (let i = 0; i < n; i += len) {\n      let u = [1, 0];\n      for (let j = 0; j < len/2; j++) {\n        const v = [a[i+j+len/2][0] * u[0] - a[i+j+len/2][1] * u[1],\n                 a[i+j+len/2][0] * u[1] + a[i+j+len/2][1] * u[0]];\n        [a[i+j], a[i+j+len/2]] = [[a[i+j][0] + v[0], a[i+j][1] + v[1]],\n                                         [a[i+j][0] - v[0], a[i+j][1] - v[1]]];\n        u = [u[0] * wlen[0] - u[1] * wlen[1],\n              u[0] * wlen[1] + u[1] * wlen[0]];\n      }\n    }\n  }\n  if (invert) {\n    for (let i = 0; i < n; i++) {\n      a[i] = [a[i][0] / n, a[i][1] / n];\n    }\n  }\n  return a;\n}",
+      "annotations": [
+        {
+          "lines": [
+            5
+          ],
+          "text": "Bit-Reversal Permutation: Reorder array so recursion can be done iteratively."
+        },
+        {
+          "lines": [
+            10
+          ],
+          "text": "Roots of Unity: Calculate complex angle for current level of recursion."
+        },
+        {
+          "lines": [
+            15,
+            16
+          ],
+          "text": "Butterfly: Update pairs in place using the 'twiddle factor' wlen."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(N log N)",
+    "space": "O(N)",
+    "explanation_time": "The FFT algorithm is a divide-and-conquer algorithm. The recurrence relation is T(N) = 2*T(N/2) + O(N), which solves to O(N log N).",
+    "explanation_space": "The algorithm requires space to hold the input arrays and various temporary values, proportional to the degree of the polynomials, resulting in O(N) space."
+  }
+}

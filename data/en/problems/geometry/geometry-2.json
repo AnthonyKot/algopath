@@ -1,0 +1,30 @@
+{
+  "id": "geometry-2",
+  "title": "Closest Pair of Points",
+  "difficulty": "Hard",
+  "leetcode_url": "https://en.wikipedia.org/wiki/Closest_pair_of_points_problem",
+  "tags": [
+    "geometry",
+    "divide-and-conquer"
+  ],
+  "content": {
+    "problem_statement": "Given an array of `points` where `points[i] = [xi, yi]`, find the pair of points with the **minimum Euclidean distance** between them.",
+    "explanation": {
+      "understanding_the_problem": "Find two points closest to each other. Naive O(N²) is too slow for large N.",
+      "brute_force": "Calculate distance between every pair of points and track minimum.",
+      "optimized_approach": "**Divide and Conquer (O(N log N)):**\n1. Sort by X-coordinate.\n2. Divide the set into two halves.\n3. Recursively find min distance in left (`dL`) and right (`dR`) halves.\n4. Let `d = min(dL, dR)`.\n5. **Merge Step:** The closest pair might span the dividing line. Check points within a strip of width `d` around the center line. Sort these by Y-coordinate and compare each point with the next 7 points (geometric proof guarantees this is sufficient).",
+      "algorithm_steps": "1. Pre-sort points by X and Y.\n2. `solve(points)`: If N <= 3, brute force.\n3. Split into Left and Right.\n4. `d = min(solve(Left), solve(Right))`.\n5. Create `strip` array of points within `d` of mid-line.\n6. Iterate `strip` checking neighbors within `d`. Update min distance."
+    }
+  },
+  "code": {
+    "javascript": {
+      "solution": "// Conceptual JS implementation\nfunction closestPair(points) {\n    points.sort((a,b) => a[0] - b[0]);\n    return recursiveClosest(points);\n}"
+    }
+  },
+  "complexity": {
+    "time": "O(N log N)",
+    "space": "O(N)",
+    "explanation_time": "T(N) = 2T(N/2) + O(N). By Master Theorem, this is O(N log N).",
+    "explanation_space": "Recursion stack and auxiliary arrays for split/merge."
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "id": "graphs-5",
+  "title": "Pacific Atlantic Water Flow",
+  "difficulty": "Medium",
+  "leetcode_url": "https://leetcode.com/problems/pacific-atlantic-water-flow/",
+  "related": [
+    {
+      "id": "graphs-4",
+      "title": "Min Cost to Connect Points",
+      "category": "graphs"
+    },
+    {
+      "id": "graphs-1",
+      "title": "Word Ladder",
+      "category": "graphs"
+    }
+  ],
+  "tags": [
+    "dfs",
+    "multi-source",
+    "bfs"
+  ],
+  "content": {
+    "problem_statement": "There is an `m x n` rectangular island that borders both the **Pacific Ocean** and **Atlantic Ocean**. The **Pacific Ocean** touches the island's left and top edges, and the **Atlantic Ocean** touches the island's right and bottom edges.\n\nThe island is partitioned into a grid of square cells. You are given an `m x n` integer matrix `heights` where `heights[r][c]` represents the height above sea level of the cell at coordinate `(r, c)`.\n\nThe island receives a lot of rain, and the rain water can flow to neighboring cells directly north, south, east, and west if the neighboring cell's height is **less than or equal to** the current cell's height. Water can flow from any cell adjacent to an ocean into the ocean.\n\nReturn a **2D list** of grid coordinates `result` where `result[i] = [ri, ci]` denotes that rain water can flow from cell `(ri, ci)` to **both** the Pacific and Atlantic oceans.\n\n**Example 1:**\n```\nInput: heights = [[1,2,2,3,5],[3,2,3,4,4],[2,4,5,3,1],[6,7,1,4,5],[5,1,1,2,4]]\nOutput: [[0,4],[1,3],[1,4],[2,2],[3,0],[3,1],[4,0]]\n```",
+    "explanation": {
+      "understanding_the_problem": "Imagine the matrix is a continent, where each number represents the altitude of that piece of land. The edges of the continent are surrounded by two oceans: the Pacific (top and left edges) and the Atlantic (bottom and right edges).\n\nRain falls on the continent, and water can flow from any cell to a neighboring cell (up, down, left, or right) as long as the neighbor's altitude is the **same or lower**.\n\nOur goal is to find every cell on the continent from which water can flow to **both** the Pacific and the Atlantic oceans.",
+      "brute_force": "The most intuitive way to solve this is to check each cell one by one. For every single cell `(r, c)` in the matrix, we could start a traversal (like DFS or BFS) and ask two questions:\n1. Can we reach the Pacific (top or left edge)?\n2. Can we reach the Atlantic (bottom or right edge)?\n\nIf the answer to both is 'yes,' we add the cell to our results.",
+      "bottleneck": "This approach is very slow. If the matrix has `M * N` cells, we would be performing a full traversal for each of them. This leads to a time complexity of roughly `O((MN)²)` because we're repeating the same path calculations over and over.",
+      "optimized_approach": "The crucial optimization comes from reversing our thinking. Instead of asking 'Where can water from this cell flow *to*?', we should ask:\n\n**'Which cells can be reached by water flowing *from* the oceans?'**\n\nIf we can find all the cells that can reach the Pacific, and all the cells that can reach the Atlantic, the answer is simply the intersection of those two sets.",
+      "algorithm_steps": "This insight leads to a much more efficient, two-pass algorithm:\n\n1.  **Create two 'reachable' grids:** We'll use two boolean matrices, `can_reach_pacific` and `can_reach_atlantic`, to keep track of the cells reachable by each ocean.\n2.  **Start from the Pacific:** Begin a traversal (either BFS or DFS) simultaneously from all cells touching the Pacific border. As we traverse *inward*, we can only move from a cell to a neighbor if the neighbor's altitude is **greater than or equal to** our current cell's altitude (since we are flowing 'uphill' from the ocean). Mark every cell we visit in the `can_reach_pacific` grid.\n3.  **Start from the Atlantic:** Do the exact same thing for the Atlantic border, marking visited cells in the `can_reach_atlantic` grid.\n4.  **Find the Intersection:** Iterate through the entire matrix one last time. Any cell `(r, c)` that is marked `true` in **both** `can_reach_pacific` and `can_reach_atlantic` is our answer."
+    },
+    "quizzes": [
+      {
+        "question": "What's the key insight to optimize this problem?",
+        "options": [
+          "Sort cells",
+          "Think from oceans inward",
+          "Use DP",
+          "Binary search"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What traversal technique is used here?",
+        "options": [
+          "Single-source BFS",
+          "Multi-source BFS",
+          "Dijkstra",
+          "DFS only"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "How do we find cells that reach both oceans?",
+        "options": [
+          "Union of sets",
+          "Intersection of sets",
+          "Difference of sets",
+          "XOR of sets"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "When flowing 'uphill' from ocean, we move to cells with height...?",
+        "options": [
+          "Lower",
+          "Equal or higher",
+          "Exactly equal",
+          "Random"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the time complexity of the optimized solution?",
+        "options": [
+          "O((MN)²)",
+          "O(MN)",
+          "O(M + N)",
+          "O(M log N)"
+        ],
+        "correct": 1
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function pacificAtlantic(heights) {\n  const m = heights.length, n = heights[0].length;\n  const pacific = new Set(), atlantic = new Set();\n  const dirs = [[0,1],[0,-1],[1,0],[-1,0]];\n  const bfs = (starts, reachable) => {\n    const q = [...starts];\n    for (const [r,c] of starts) reachable.add(`${r},${c}`);\n    while (q.length) {\n      const [r,c] = q.shift();\n      for (const [dr,dc] of dirs) {\n        const nr = r + dr, nc = c + dc;\n        if (nr >= 0 && nr < m && nc >= 0 && nc < n &&\n            !reachable.has(`${nr},${nc}`) &&\n            heights[nr][nc] >= heights[r][c]) {\n          reachable.add(`${nr},${nc}`);\n          q.push([nr,nc]);\n        }\n      }\n    }\n  };\n  const pacificStarts = [];\n  for (let c = 0; c < n; c++) pacificStarts.push([0,c]);\n  for (let r = 0; r < m; r++) pacificStarts.push([r,0]);\n  bfs(pacificStarts, pacific);\n  const atlanticStarts = [];\n  for (let c = 0; c < n; c++) atlanticStarts.push([m-1,c]);\n  for (let r = 0; r < m; r++) atlanticStarts.push([r,n-1]);\n  bfs(atlanticStarts, atlantic);\n  const result = [];\n  for (let r = 0; r < m; r++) {\n    for (let c = 0; c < n; c++) {\n      if (pacific.has(`${r},${c}`) && atlantic.has(`${r},${c}`)) {\n        result.push([r,c]);\n      }\n    }\n  }\n  return result;\n}",
+      "annotations": [
+        {
+          "lines": [
+            3
+          ],
+          "text": "Use Sets to track reachable cells (storing 'row,col' strings)."
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Helper BFS: starts from ocean borders and flows 'uphill'."
+        },
+        {
+          "lines": [
+            6,
+            7
+          ],
+          "text": "Add starting border cells queue and mark as reachable."
+        },
+        {
+          "lines": [
+            12,
+            13,
+            14
+          ],
+          "text": "Check bounds, not visited, and height condition (neighbor >= current)."
+        },
+        {
+          "lines": [
+            21,
+            22
+          ],
+          "text": "Initialize starts: Top row and Left col for Pacific."
+        },
+        {
+          "lines": [
+            25,
+            26
+          ],
+          "text": "Initialize starts: Bottom row and Right col for Atlantic."
+        },
+        {
+          "lines": [
+            31
+          ],
+          "text": "Intersection: If cell is in both sets, it can flow to both oceans."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(MN)",
+    "space": "O(MN)",
+    "explanation_time": "The time complexity is O(M * N) because we visit each cell a constant number of times. The first pass (Pacific) visits each reachable cell once, the second pass (Atlantic) does the same, and the final pass iterates through all M*N cells to find the intersection. This gives us a linear time complexity relative to the number of cells.",
+    "explanation_space": "The space complexity is O(M * N) because we use two additional boolean matrices/sets (`pacific` and `atlantic`) of the same size as the input grid to store the reachability information. The recursion stack (for DFS) or the queue (for BFS) can also take up to O(M*N) space in the worst-case scenario where all cells are reachable from an ocean."
+  }
+}

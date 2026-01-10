@@ -1,0 +1,116 @@
+{
+  "id": "math-2",
+  "title": "Sieve of Eratosthenes",
+  "difficulty": "Medium",
+  "leetcode_url": "https://leetcode.com/problems/count-primes/",
+  "related": [
+    {
+      "id": "math-1",
+      "title": "Modular Exponentiation",
+      "category": "math"
+    },
+    {
+      "id": "math-3",
+      "title": "Extended Euclidean Algorithm",
+      "category": "math"
+    }
+  ],
+  "tags": [
+    "sieve",
+    "primes",
+    "factorization"
+  ],
+  "content": {
+    "problem_statement": "Given an integer N, find all prime numbers up to N.",
+    "explanation": {
+      "understanding_the_problem": "We need an efficient way to generate a list of all primes up to a given limit N.",
+      "brute_force": "A simple method is to iterate through each number `i` from 2 to N and, for each `i`, check if it's prime. A primality test for `i` involves checking for divisors from 2 up to `sqrt(i)`. This approach has a time complexity of roughly O(N * sqrt(N)), which is too slow for large N.",
+      "bottleneck": "The naive approach performs redundant checks. For example, it will check that 12 is divisible by 2, 3, 4, and 6, when just finding it's divisible by 2 is enough to know it's not prime.",
+      "optimized_approach": "The **Sieve of Eratosthenes** is a highly efficient algorithm that works by iteratively marking as composite the multiples of each prime. Instead of checking for factors, it eliminates multiples.\n\nThe key idea is that if we find a number `p` that has not been marked as composite yet, it must be a prime. We can then mark all of its multiples (`2p, 3p, 4p, ...`) as not prime. We can further optimize this by starting to mark multiples from `p*p`, because any smaller multiple `k*p` (where `k < p`) would have already been marked by the prime factor `k`.",
+      "algorithm_steps": "1.  Create a boolean array `isPrime` of size `N+1`, and initialize all entries from 2 to N as `true`.\n2.  Iterate from `p = 2` up to `sqrt(N)`.\n3.  If `isPrime[p]` is `true`, then `p` is a prime number.\n4.  For this prime `p`, iterate through its multiples starting from `p*p` and mark them as not prime: `isPrime[j] = false` for `j = p*p, p*p+p, ...` up to N.\n5.  Finally, iterate through the `isPrime` array and collect all indices that are still marked as `true`."
+    },
+    "quizzes": [
+      {
+        "question": "What's the main idea of the Sieve?",
+        "options": [
+          "Check each number",
+          "Mark multiples of primes as composite",
+          "Factorize all numbers",
+          "Sort primes"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Why start marking multiples from p*p?",
+        "options": [
+          "Faster to compute",
+          "Smaller multiples already marked",
+          "Prevents overflow",
+          "Mathematical requirement"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the time complexity?",
+        "options": [
+          "O(N)",
+          "O(N log N)",
+          "O(N log log N)",
+          "O(N²)"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "What does isPrime[i] = true mean?",
+        "options": [
+          "i is composite",
+          "i is prime (not yet marked)",
+          "i is even",
+          "i is odd"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What's the space complexity?",
+        "options": [
+          "O(1)",
+          "O(log N)",
+          "O(N)",
+          "O(N²)"
+        ],
+        "correct": 2
+      }
+    ]
+  },
+  "code": {
+    "javascript": {
+      "solution": "function sieve(N) {\n  const isPrime = new Array(N + 1).fill(true);\n  isPrime[0] = isPrime[1] = false;\n  for (let p = 2; p * p <= N; p++) {\n    if (isPrime[p]) {\n      for (let multiple = p * p; multiple <= N; multiple += p) {\n        isPrime[multiple] = false;\n      }\n    }\n  }\n  const primes = [];\n  for (let i = 2; i <= N; i++) {\n    if (isPrime[i]) primes.push(i);\n  }\n  return primes;\n}",
+      "annotations": [
+        {
+          "lines": [
+            4
+          ],
+          "text": "Skip Composite: If isPrime[p] is false, we already processed its factors."
+        },
+        {
+          "lines": [
+            5
+          ],
+          "text": "Optimization: Start marking multiples from p*p. Smaller multiples (k*p where k < p) are already handled."
+        },
+        {
+          "lines": [
+            6
+          ],
+          "text": "Mark: Set multiple to false (composite)."
+        }
+      ]
+    }
+  },
+  "complexity": {
+    "time": "O(N log log N)",
+    "space": "O(N)",
+    "explanation_time": "The time complexity is a result of the harmonic series of prime reciprocals. For each prime p, we do N/p work. The sum over all primes gives O(N log log N), which is very close to linear.",
+    "explanation_space": "We need a boolean array of size N to store the primality information for each number."
+  }
+}

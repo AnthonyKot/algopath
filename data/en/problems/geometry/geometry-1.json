@@ -1,0 +1,31 @@
+{
+  "id": "geometry-1",
+  "title": "Convex Hull (Monotone Chain)",
+  "difficulty": "Hard",
+  "leetcode_url": "https://leetcode.com/problems/erect-the-fence/",
+  "tags": [
+    "geometry",
+    "math",
+    "convex-hull"
+  ],
+  "content": {
+    "problem_statement": "You are given an array `trees` where `trees[i] = [xi, yi]` represents the location of a tree in the garden. You are asked to fence the entire garden using the minimum length of rope as it is expensive. The garden is well fenced only if **all the trees are enclosed**.\n\nReturn the coordinates of trees that are exactly located on the fence perimeter.",
+    "explanation": {
+      "understanding_the_problem": "We need to find the smallest convex polygon that contains all given points. This is like wrapping a rubber band around a set of nails.",
+      "brute_force": "For every pair of points, check if all other points lie to one side of the line connecting them. If they do, this logic line is part of the hull. O(N³).",
+      "optimized_approach": "**Monotone Chain Algorithm (Andrew's Algorithm):**\n1. Sort the points by x-coordinate (and y-coordinate for ties).\n2. Build the **lower hull**: Iterate through points, adding them to a stack. If the new point makes a 'right turn' (clockwise) relative to the last two points, pop from stack until the turn is left (counter-clockwise).\n3. Build the **upper hull**: Similar process logic iterating from right to left.\n4. Concatenate lower and upper hulls.\n\nTime Complexity: O(N log N) dominated by sorting.",
+      "algorithm_steps": "1. Sort points by x, then y.\n2. Iterate through points to build Lower Hull stack. Maintain 'counter-clockwise' turn property using Cross Product.\n3. Iterate through points specifically to build Upper Hull stack.\n4. Remove duplicate start/end points and return unique points."
+    }
+  },
+  "code": {
+    "javascript": {
+      "solution": "function outerTrees(trees) {\n    trees.sort((a, b) => a[0] - b[0] || a[1] - b[1]);\n    \n    const crossProduct = (o, a, b) => \n        (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);\n        \n    const lower = [];\n    for (const p of trees) {\n        while (lower.length >= 2 && crossProduct(lower[lower.length-2], lower[lower.length-1], p) < 0) {\n            lower.pop();\n        }\n        lower.push(p);\n    }\n    \n    const upper = [];\n    for (let i = trees.length - 1; i >= 0; i--) {\n        const p = trees[i];\n        while (upper.length >= 2 && crossProduct(upper[upper.length-2], upper[upper.length-1], p) < 0) {\n            upper.pop();\n        }\n        upper.push(p);\n    }\n    \n    return [...new Set([...lower, ...upper])];\n}"
+    }
+  },
+  "complexity": {
+    "time": "O(N log N)",
+    "space": "O(N)",
+    "explanation_time": "Sorting takes O(N log N). The hull construction is linear O(N).",
+    "explanation_space": "We store the hull points in a stack/list, taking O(N) space."
+  }
+}

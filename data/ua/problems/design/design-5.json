@@ -1,0 +1,124 @@
+{
+    "id": "design-5",
+    "title": "Словник з Підтримкою Пошуку (Wildcards)",
+    "difficulty": "Hard",
+    "leetcode_url": "https://leetcode.com/problems/design-add-and-search-words-data-structure/",
+    "related": [
+        {
+            "id": "design-3",
+            "title": "Design Search Autocomplete System",
+            "category": "design"
+        },
+        {
+            "id": "strings-1",
+            "title": "KMP Pattern Matching",
+            "category": "strings"
+        }
+    ],
+    "tags": [
+        "design",
+        "trie",
+        "dfs",
+        "wildcard"
+    ],
+    "follow_up": {
+        "scenario": "Користувач шукає '.......' (усі крапки). Це запускає DFS по всьому Бору.",
+        "trade_off": "Сувора підтримка regex проти ризику відмови в обслуговуванні (DoS).",
+        "strategy": "Обмежте кількість дозволених крапок. Оптимізуйте DFS, відсікаючи гілки, які не можуть відповідати залишковій довжині. Зберігайте довжину слів у вузлах.",
+        "answering_guide": "Сформулюйте це як проблему безпеки/надійності (DoS). Запропонуйте <strong>'Валідацію вводу'</strong> (обмеження крапок) та <strong>'Відсікання (Pruning)'</strong> як технічні засоби пом'якшення."
+    },
+    "content": {
+        "problem_statement": "Спроектуйте структуру даних, яка підтримує додавання нових слів та пошук, чи є рядок відповідним будь-якому раніше доданому рядку.\n\nРеалізуйте клас `WordDictionary`:\n*   `WordDictionary()` Ініціалізує об'єкт.\n*   `void addWord(word)` Додає `word` (слово) до структури даних, його можна знайти пізніше.\n*   `bool search(word)` Повертає `true`, якщо в структурі даних є будь-який рядок, що відповідає `word`, або `false` в іншому випадку. `word` може містити крапки `.`, де `.` може відповідати будь-якій літері.\n\n**Приклад 1:**\n```\nInput\n[\"WordDictionary\",\"addWord\",\"addWord\",\"addWord\",\"search\",\"search\",\"search\",\"search\"]\n[[],[\"bad\"],[\"dad\"],[\"mad\"],[\"pad\"],[\"bad\"],[\".ad\"],[\"b..\"]]\nOutput\n[null,null,null,null,false,true,true,true]\n```",
+        "explanation": {
+            "understanding_the_problem": "Нам потрібно зберігати словник слів і виконувати пошук, який може включати символи підстановки (wildcards). Це ще одна проблема, яка ідеально підходить для **Бору (Trie/Prefix Tree)**.",
+            "brute_force": "Зберігання слів у простому списку або хеш-наборі зробило б `addWord` легким. Однак пошук слова з символом підстановки, наприклад 'b.d', вимагатиме ітерації через кожне слово в словнику та перевірки його на відповідність шаблону, що було б дуже повільно.",
+            "bottleneck": "Операція пошуку є вузьким місцем для простих структур даних, коли задіяні символи підстановки.",
+            "optimized_approach": "**Бор (Trie)** дозволяє нам шукати префікс за префіксом. Коли ми зустрічаємо звичайний символ, ми переходимо до відповідного дочірнього вузла. Коли ми зустрічаємо символ підстановки `.`, це означає, що ми можемо зіставити будь-який символ. Тому ми повинні дослідити *всіх* дітей поточного вузла і перевірити, чи веде будь-який з них до дійсного збігу.",
+            "algorithm_steps": "1.  **Структура Вузла Бору:** Кожен вузол має `children` (карта або масив) і булеве значення `isEndOfWord`.\n\n2.  **`addWord(word)`:** Це стандартна вставка в Бор. Пройдіть по Бору символ за символом, створюючи вузли за потреби. На кінцевому вузлі встановіть `isEndOfWord = true`.\n\n3.  **`search(word)`:** Це рекурсивний пошук у стилі DFS.\n    a.  Визначте `dfs(index, node)`, який шукає `word` починаючи з `index` у піддереві з коренем у `node`.\n    b.  **Базовий випадок:** Якщо `index` досягає кінця слова, збіг знайдено, якщо `node.isEndOfWord` є true.\n    c.  Отримайте поточний символ `c = word[index]`.\n    d.  **Якщо `c` це `.`:** Ітеруйте через всіх дітей поточного `node`. Для кожного `child`, якщо рекурсивний виклик `dfs(index + 1, child)` повертає true, то ми знайшли збіг, тому поверніть true.\n    e.  **Якщо `c` це звичайний символ:** Перевірте, чи має `node.children` цей `c`. Якщо ні, збігу немає. Якщо так, рекурсивно викличте для цього нащадка: `dfs(index + 1, node.children[c])`."
+        },
+        "quizzes": [
+            {
+                "question": "Яка структура даних найкраща для зберігання на основі префіксів?",
+                "options": [
+                    "Хеш-набір",
+                    "Бор (Trie)",
+                    "Масив",
+                    "Зв'язний список"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Як ми обробляємо символ підстановки '.'?",
+                "options": [
+                    "Ігноруємо його",
+                    "Перевіряємо всіх дітей поточного вузла",
+                    "Вгадуємо символ",
+                    "Стрибаємо до листа"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Яка складність пошуку в найгіршому випадку з символами підстановки?",
+                "options": [
+                    "O(M)",
+                    "O(26^M)",
+                    "O(1)",
+                    "O(log N)"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Який прапорець є вирішальним у кожному вузлі Бору?",
+                "options": [
+                    "isVisited",
+                    "isEndOfWord",
+                    "charValue",
+                    "hasChildren"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Чи обробляє 'addWord' символи підстановки?",
+                "options": [
+                    "Так",
+                    "Ні, тільки пошук",
+                    "В ідеалі так",
+                    "Залежить від реалізації"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "code": {
+        "javascript": {
+            "solution": "class WordDictionary {\n  constructor() {\n    this.root = {};\n  }\n  \n  addWord(word) {\n    let node = this.root;\n    for (const char of word) {\n      if (!node[char]) node[char] = {};\n      node = node[char];\n    }\n    node.isEnd = true;\n  }\n  \n  search(word) {\n    return this.dfs(word, 0, this.root);\n  }\n  \n  dfs(word, index, node) {\n    if (index === word.length) {\n      return !!node.isEnd;\n    }\n    \n    const char = word[index];\n    if (char === '.') {\n      for (const key in node) {\n        if (key !== 'isEnd' && this.dfs(word, index + 1, node[key])) {\n          return true;\n        }\n      }\n      return false;\n    } else {\n      if (!node[char]) return false;\n      return this.dfs(word, index + 1, node[char]);\n    }\n  }\n}",
+            "annotations": [
+                {
+                    "lines": [
+                        7
+                    ],
+                    "text": "Add: Стандартна вставка в Бор. Створіть шлях, якщо він відсутній."
+                },
+                {
+                    "lines": [
+                        22
+                    ],
+                    "text": "Wildcard: ' . ' відповідає будь-якому символу. Необхідно спробувати ВСІХ дітей поточного вузла рекурсивно."
+                },
+                {
+                    "lines": [
+                        29
+                    ],
+                    "text": "Standard Match: Продовжуйте рух вниз по конкретному шляху нащадка."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(M) для add, O(N*26^M) найгірший випадок для search",
+        "space": "O(Всього символів)",
+        "explanation_time": "`addWord` займає O(M), де M — довжина слова. `search` також займає O(M) для слів без символів підстановки. З символами підстановки пошук може розгалужуватися. У найгіршому випадку (пошук '....') нам, можливо, доведеться дослідити значну частину Бору.",
+        "explanation_space": "Простір пропорційний загальній кількості символів у всіх словах, збережених у Борі."
+    },
+    "diagram": "graph TD\n    root(( ))\n    \n    root --b--> n1(( ))\n    n1 --a--> n2(( ))\n    n2 --d--> n3((( )))\n    \n    root --d--> n4(( ))\n    n4 --a--> n5(( ))\n    n5 --d--> n6((( )))\n    \n    root --m--> n7(( ))\n    n7 --a--> n8(( ))\n    n8 --d--> n9((( )))\n    \n    classDef default fill:#fff,stroke:#333,stroke-width:2px;\n    classDef endNode fill:#bbf7d0,stroke:#22c55e,stroke-width:4px;\n    class n3,n6,n9 endNode;"
+}
