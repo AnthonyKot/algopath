@@ -19,6 +19,8 @@
     --nav-bg: var(--gradient-primary);
     --hero-bg: var(--gradient-primary);
     --footer-bg: #1a202c;
+    --brand-primary: #667eea;
+    --brand-secondary: #764ba2;
 }
 
 /* Dark theme colors */
@@ -41,6 +43,8 @@
     --nav-bg: var(--gradient-primary);
     --hero-bg: var(--gradient-primary);
     --footer-bg: #0d1117;
+    --brand-primary: #8093f1;
+    --brand-secondary: #b794f4;
 }
 
 /* Reset and base styles */
