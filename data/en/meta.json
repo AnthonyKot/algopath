@@ -241,6 +241,7 @@
     },
     "homepage": {
       "algorithmCategories": "Algorithm Categories",
+      "algorithmCategoriesSubtitle": "Master the fundamentals across all major algorithmic domains",
       "priority": "Priority",
       "viewProblems": "View Problems",
       "additionalResources": "Additional Resources",

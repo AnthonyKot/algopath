@@ -267,10 +267,15 @@ const LanguageSystem = {
         }
 
         // --- Algorithm Categories Update ---
-        // Update "Algorithm Categories" section title
+        // Update "Algorithm Categories" section title and subtitle
         const sectionTitle = document.querySelector('#algorithms h2');
         if (sectionTitle) {
             sectionTitle.textContent = this.t('homepage.algorithmCategories') || 'Algorithm Categories';
+        }
+
+        const sectionSubtitle = document.querySelector('#algorithms .section-subtitle');
+        if (sectionSubtitle) {
+            sectionSubtitle.textContent = this.t('homepage.algorithmCategoriesSubtitle') || 'Master the fundamentals across all major algorithmic domains';
         }
 
         // Update each category card
@@ -320,10 +325,13 @@ const LanguageSystem = {
 
             // Render Cards
             const grid = document.querySelector('.concepts-grid');
+            const iconColors = ['purple', 'orange', 'pink'];
             if (grid) {
-                grid.innerHTML = wisdomData.cards.map(card => `
+                grid.innerHTML = wisdomData.cards.map((card, index) => `
                     <div class="concept-item wisdom-card">
-                        <h3><i class="${card.icon}"></i>${card.title}</h3>
+                        <div class="wisdom-quote-icon ${iconColors[index % iconColors.length]}">
+                            <i class="fas fa-quote-right"></i>
+                        </div>
                         <blockquote class="wisdom-quote">"${card.quote}"</blockquote>
                         <div class="wisdom-footer">
                             <span class="wisdom-author">— ${card.author}</span>
@@ -390,10 +398,10 @@ const UI = {
                         <h2><i class="fas fa-code"></i>AlgoPath</h2>
                     </div>
                     <div class="nav-links">
-                        <a href="${isHomePage ? '#home' : 'index.html#home'}"><i class="fas fa-home"></i>${t('home')}</a>
-                        <a href="${isHomePage ? '#algorithms' : 'index.html#algorithms'}"><i class="fas fa-cubes"></i>${t('problems')}</a>
-                        <a href="${isHomePage ? '#concepts' : 'index.html#concepts'}"><i class="fas fa-lightbulb"></i>${t('concepts')}</a>
-                        <a href="${isHomePage ? '#resources' : 'index.html#resources'}"><i class="fas fa-book"></i>${t('resources')}</a>
+                        <a href="${isHomePage ? '#home' : 'index.html#home'}">${t('home')}</a>
+                        <a href="${isHomePage ? '#algorithms' : 'index.html#algorithms'}">${t('problems')}</a>
+                        <a href="${isHomePage ? '#concepts' : 'index.html#concepts'}">${t('concepts')}</a>
+                        <a href="${isHomePage ? '#resources' : 'index.html#resources'}">${t('resources')}</a>
                         
                         <div class="nav-search">
                             <input type="text" class="search-input" placeholder="${t('search')}" aria-label="Search problems">
@@ -633,6 +641,9 @@ const SearchSystem = {
     }
 };
 
+// Progress Tracker Module
+
+
 // Quiz System Module for progressive reveal
 const QuizSystem = {
     checkAnswer(problemId, quizIndex, correctAnswer) {
@@ -693,6 +704,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     ProblemRenderer.init();
     AnnotationTooltip.init();
     SearchSystem.init();
+    SearchSystem.init();
+
+    // Initialize Lucide icons
+    if (window.lucide) {
+        window.lucide.createIcons();
+    }
 
     // Apply translations to category hero on initial load
     const category = ProblemRenderer.detectCategory();

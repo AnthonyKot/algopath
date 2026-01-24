@@ -2,15 +2,15 @@
 <html lang="en">
 
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RNL155B3YG"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RNL155B3YG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
 
-  gtag('config', 'G-RNL155B3YG');
-</script>
+        gtag('config', 'G-RNL155B3YG');
+    </script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +19,13 @@
         content="Interactive guide for senior-level algorithm problems commonly asked at top tech companies like FAANG.">
     <link rel="stylesheet" href="styles.css">
     <link href="vendor/fontawesome/fontawesome-free-6.5.1-web/css/all.min.css" rel="stylesheet">
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -27,30 +34,23 @@
 
     <main>
         <!-- Hero Section -->
-        <section id="home" class="hero">
+        <!-- Hero / Dashboard Header -->
+        <section id="home" class="hero dashboard-header">
             <div class="container hero-container">
-                <h1>Master <span class="highlight">L4/L5 FAANG</span> Algorithms</h1>
-                <p class="hero-text">
-                    Interactive guide for senior-level algorithm problems. From dynamic programming mastery
-                    to system design patterns - everything you need for top tech interviews.
-                </p>
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">44</span>
-                        <span class="stat-label">Problems</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">9</span>
-                        <span class="stat-label">Categories</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">1700-2400</span>
-                        <span class="stat-label">CF Rating</span>
+                <div class="hero-content">
+                    <h1><span class="highlight">AlgoPath</span> Dashboard</h1>
+                    <p class="hero-text">
+                        Welcome to your professional algorithm training ground. Master
+                        <span class="text-accent">L4/L5 FAANG</span> patterns with deep focus.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#algorithms" class="btn btn-primary glow-effect">
+                            <i class="fas fa-play"></i> Resume Training
+                        </a>
+                        <!-- Progress section hidden as per user request -->
                     </div>
                 </div>
-                <a href="#algorithms" class="btn btn-primary">
-                    <i class="fas fa-play"></i>Start Learning
-                </a>
+
             </div>
         </section>
 
@@ -58,13 +58,14 @@
         <section id="algorithms" class="algorithms-section">
             <div class="container">
                 <h2>Algorithm Categories</h2>
+                <p class="section-subtitle">Master the fundamentals across all major algorithmic domains</p>
                 <div class="algorithms-grid">
                     <!-- Design (Critical) -->
                     <div class="algorithm-card" data-category="design">
-                        <div class="card-icon"><i class="fas fa-cogs"></i></div>
+                        <div class="card-icon"><i data-lucide="layers"></i></div>
                         <h3>System Design</h3>
-                        <p>Architect massive-scale systems. Master trade-offs (CAP), sharding, and resilient distributed
-                            patterns for 100M+ users.</p>
+                        <p>Architect massive-scale systems. Master trade-offs between consistency and availability
+                            (CAP), database sharding strategies, and resilient distributed patterns for 100M+ users.</p>
                         <div class="card-difficulty"
                             style="background-color: #e74c3c; border-color: #e74c3c; color: #fff;">Critical Priority
                         </div>
@@ -73,10 +74,10 @@
 
                     <!-- DP (Very High) -->
                     <div class="algorithm-card" data-category="dp">
-                        <div class="card-icon"><i class="fas fa-route"></i></div>
+                        <div class="card-icon"><i data-lucide="zap"></i></div>
                         <h3>Dynamic Programming</h3>
-                        <p>Solve complex optimization problems. Master multidimensional state transitions, bitmasking,
-                            and space-reduction techniques.</p>
+                        <p>Solve complex optimization problems. Master multi-dimensional state transitions, bitmasks,
+                            and memory reduction techniques to transform O(2^N) to O(N^3).</p>
                         <div class="card-difficulty"
                             style="background-color: #e67e22; border-color: #e67e22; color: #fff;">Very High Priority
                         </div>
@@ -85,10 +86,10 @@
 
                     <!-- Graphs (Very High) -->
                     <div class="algorithm-card" data-category="graphs">
-                        <div class="card-icon"><i class="fas fa-project-diagram"></i></div>
+                        <div class="card-icon"><i data-lucide="activity"></i></div>
                         <h3>Graph Algorithms</h3>
-                        <p>Model complex relationships. Implement advanced shortest paths (Dijkstra), Network Flow, and
-                            Disjoint Set Union (DSU).</p>
+                        <p>Model complex relationships. Implement advanced shortest paths (Dijkstra, Bellman-Ford),
+                            Network Flow, and Disjoint Set Union (DSU) for real-world connectivity.</p>
                         <div class="card-difficulty"
                             style="background-color: #e67e22; border-color: #e67e22; color: #fff;">Very High Priority
                         </div>
@@ -97,10 +98,10 @@
 
                     <!-- Trees (High) -->
                     <div class="algorithm-card" data-category="trees">
-                        <div class="card-icon"><i class="fas fa-sitemap"></i></div>
+                        <div class="card-icon"><i data-lucide="network"></i></div>
                         <h3>Advanced Trees</h3>
                         <p>Handle hierarchical data at scale. Master Segment Trees for range queries, Binary Lifting for
-                            LCA, and Tries.</p>
+                            LCA, and Trie structures for prefix matching.</p>
                         <div class="card-difficulty"
                             style="background-color: #f39c12; border-color: #f39c12; color: #fff;">High Priority</div>
                         <a href="trees.html" class="btn btn-outline">View Problems</a>
@@ -108,10 +109,10 @@
 
                     <!-- Optimization (Medium) -->
                     <div class="algorithm-card" data-category="optimization">
-                        <div class="card-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        <div class="card-icon"><i data-lucide="trending-up"></i></div>
                         <h3>Optimization</h3>
                         <p>Squeeze maximum efficiency. Master Sliding Window, Monotonic Queues, and 'Binary Search on
-                            Answer'.</p>
+                            Answer' to solve impossible constraints.</p>
                         <div class="card-difficulty"
                             style="background-color: #f1c40f; border-color: #f1c40f; color: #fff;">Medium Priority
                         </div>
@@ -120,10 +121,10 @@
 
                     <!-- Strings (Medium) -->
                     <div class="algorithm-card" data-category="strings">
-                        <div class="card-icon"><i class="fas fa-align-left"></i></div>
+                        <div class="card-icon"><i data-lucide="type"></i></div>
                         <h3>String Algorithms</h3>
-                        <p>Process massive text data. Master KMP for linear-time matching, Rolling Hash, and Tries for
-                            key lookups.</p>
+                        <p>Process massive text data. Master KMP for linear-time matching, Rolling Hash for efficient
+                            comparison, and Tries for diverse alphabet inputs.</p>
                         <div class="card-difficulty"
                             style="background-color: #f1c40f; border-color: #f1c40f; color: #fff;">Medium Priority
                         </div>
@@ -132,7 +133,7 @@
 
                     <!-- Math (Low) -->
                     <div class="algorithm-card" data-category="math">
-                        <div class="card-icon"><i class="fas fa-calculator"></i></div>
+                        <div class="card-icon"><i data-lucide="sigma"></i></div>
                         <h3>Number Theory</h3>
                         <p>Unlock efficient computation. Master Modular Arithmetic, Combinatorics, and Number Theory.
                         </p>
@@ -143,10 +144,10 @@
 
                     <!-- Geometry (Low) -->
                     <div class="algorithm-card" data-category="geometry">
-                        <div class="card-icon"><i class="fas fa-shapes"></i></div>
+                        <div class="card-icon"><i data-lucide="triangle"></i></div>
                         <h3>Computational Geometry</h3>
-                        <p>Solve spatial problems. Master Convex Hulls, sweeping line algorithms, and vector
-                            cross-products.</p>
+                        <p>Master spatial algorithms. From Convex Hulls to Sweep Line techniques, visualize and solve
+                            complex geometric problems efficiently.</p>
                         <div class="card-difficulty"
                             style="background-color: #95a5a6; border-color: #95a5a6; color: #fff;">Low Priority</div>
                         <a href="geometry.html" class="btn btn-outline">View Problems</a>
@@ -154,10 +155,11 @@
 
                     <!-- Mathematical Physics (Special) -->
                     <div class="algorithm-card" data-category="physics">
-                        <div class="card-icon"><i class="fas fa-atom"></i></div>
+                        <div class="card-icon"><i data-lucide="atom"></i></div>
                         <h3>Mathematical Physics</h3>
-                        <p>Bridge math and reality. Master relativity, coupled ODEs, thermodynamics, and electrodynamics
-                            with LaTeX formulas.</p>
+                        <p>Bridge the gap between abstract mathematics and physical reality. Master relativistic
+                            mechanics, coupled differential equations, and thermodynamic state functions through
+                            rigorous problem-solving.</p>
                         <div class="card-difficulty"
                             style="background-color: #9b59b6; border-color: #9b59b6; color: #fff;">Advanced Math</div>
                         <a href="physics.html" class="btn btn-outline">View Problems</a>

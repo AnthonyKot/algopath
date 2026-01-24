@@ -241,6 +241,7 @@
         },
         "homepage": {
             "algorithmCategories": "Категорії Алгоритмів",
+            "algorithmCategoriesSubtitle": "Опануйте основи всіх ключових алгоритмічних напрямків",
             "priority": "Пріоритет",
             "viewProblems": "Переглянути Задачі",
             "additionalResources": "Додаткові Ресурси",
