@@ -297,28 +297,42 @@
         }
       },
       "wisdom": {
-        "title": "Wisdom of the Elders",
+        "title": "Generation Wisdom",
         "cards": [
           {
-            "icon": "fas fa-network-wired",
-            "title": "Caching",
-            "quote": "There are only two hard things in Computer Science: cache invalidation and naming things.",
-            "author": "Phil Karlton",
-            "lesson": "Data freshness vs. speed."
+            "icon": "fas fa-sync-alt",
+            "title": "The Circle of Architecture",
+            "quote": "🧱 Monoliths create Stability\n🥱 Stability creates Boredom\n🕸 Boredom creates Microservices\n🔥 Microservices create Chaos\n🧱 Chaos creates Monoliths",
+            "author": "System Design Patterns",
+            "lesson": "History is a circle."
+          },
+          {
+            "icon": "fas fa-user-graduate",
+            "title": "The Career Evolution",
+            "quote": "👶 Juniors ask how to implement it\n👨‍💻 Seniors ask why we need it\n🧙‍♂️ Staff ask who will be paged\n💀 Managers ask when it will be done\n📉 \"Done\" creates Technical Debt",
+            "author": "Corporate Ladder",
+            "lesson": "Perspective changes everything."
+          },
+          {
+            "icon": "fas fa-band-aid",
+            "title": "The \"Temporary Fix\" Cycle",
+            "quote": "⚡️ Quick hacks create Velocity\n🚀 Velocity creates \"Success\"\n💩 \"Success\" creates Legacy Code\n🦕 Legacy Code creates Suffering\n⚡️ Suffering creates Quick hacks",
+            "author": "Tech Debt Collector",
+            "lesson": "Nothing is closer to eternal than a temporary solution."
           },
           {
             "icon": "fas fa-server",
-            "title": "CAP Theorem",
-            "quote": "Consistency, Availability, Partition Tolerance. Pick two.",
-            "author": "Eric Brewer",
-            "lesson": "When the network cable is cut, do you lie to the user or show an error?"
+            "title": "The Deployment Reality",
+            "quote": "✅ Tests create Confidence\n🚀 Confidence creates Deployments\n🔥 Deployments create Outages\n📜 Outages create Process\n😴 Process creates Weakness",
+            "author": "DevOps Truth",
+            "lesson": "Safety buffers breed complacency."
           },
           {
-            "icon": "fas fa-tachometer-alt",
-            "title": "Premature Optimization",
-            "quote": "Premature optimization is the root of all evil.",
-            "author": "Donald Knuth",
-            "lesson": "Don't build a distributed system when a single Postgres instance will do."
+            "icon": "fas fa-robot",
+            "title": "The \"Modern Stack\" Irony",
+            "quote": "⚡️ Simple scripts create Python\n📦 Python creates Heavy Libraries\n🐳 Heavy Libraries create Kubernetes\n😵‍💫 Kubernetes creates Complexity\n🤖 Complexity creates AI (to write the YAML)",
+            "author": "Cloud Native Foundation",
+            "lesson": "We solve problems by creating larger ones."
           }
         ]
       }

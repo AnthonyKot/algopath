@@ -403,22 +403,79 @@ const LanguageSystem = {
                 sectionTitle.textContent = wisdomData.title;
             }
 
-            // Render Cards
-            const grid = document.querySelector('.concepts-grid');
-            const iconColors = ['purple', 'orange', 'pink'];
+            // Render Cards as Carousel
+            const grid = document.querySelector('.concepts-grid, .wisdom-carousel');
             if (grid) {
+                // Change grid to carousel container
+                grid.className = 'wisdom-carousel';
+
+                const iconColors = ['purple', 'orange', 'pink', 'blue'];
                 grid.innerHTML = wisdomData.cards.map((card, index) => `
-                    <div class="concept-item wisdom-card">
+                    <div class="concept-item wisdom-card ${index === 0 ? 'active' : ''}">
                         <div class="wisdom-quote-icon ${iconColors[index % iconColors.length]}">
                             <i class="fas fa-quote-right"></i>
                         </div>
-                        <blockquote class="wisdom-quote">"${card.quote}"</blockquote>
+                        <blockquote class="wisdom-quote">${card.quote}</blockquote>
                         <div class="wisdom-footer">
                             <span class="wisdom-author">— ${card.author}</span>
                             <p class="wisdom-lesson"><strong>Lesson:</strong> ${card.lesson}</p>
                         </div>
                     </div>
                 `).join('');
+
+                // Start Auto-Rotation
+                if (window.wisdomInterval) clearInterval(window.wisdomInterval);
+
+                let activeIndex = 0;
+                const cards = grid.querySelectorAll('.wisdom-card');
+
+                const showSlide = (index) => {
+                    cards[activeIndex].classList.remove('active');
+                    activeIndex = (index + cards.length) % cards.length;
+                    cards[activeIndex].classList.add('active');
+                };
+
+                const nextSlide = () => showSlide(activeIndex + 1);
+                const prevSlide = () => showSlide(activeIndex - 1);
+
+                // Start timer
+                window.wisdomInterval = setInterval(nextSlide, 10000);
+
+                // Inject Controls
+                const controlsHtml = `
+                    <div class="wisdom-carousel-controls">
+                        <button class="carousel-btn prev-btn" aria-label="Previous Quote"><i class="fas fa-chevron-left"></i></button>
+                        <button class="carousel-btn next-btn" aria-label="Next Quote"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                `;
+                grid.insertAdjacentHTML('beforeend', controlsHtml);
+
+                // Bind Events
+                const stopRotation = () => {
+                    if (window.wisdomInterval) {
+                        clearInterval(window.wisdomInterval);
+                        window.wisdomInterval = null;
+                    }
+                };
+
+                const prevBtn = grid.querySelector('.prev-btn');
+                const nextBtn = grid.querySelector('.next-btn');
+
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Prevent grid click issues
+                        stopRotation();
+                        prevSlide();
+                    });
+                }
+
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        stopRotation();
+                        nextSlide();
+                    });
+                }
             }
         }
 

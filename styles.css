@@ -736,8 +736,8 @@ body {
 
 /* Resources Section */
 .resources-section {
-    padding: 80px 0;
-    background: var(--bg-secondary);
+    padding: 40px 0 80px 0;
+    background: var(--bg-primary);
     transition: background-color 0.3s ease;
 }
 
@@ -774,7 +774,7 @@ body {
 
 /* Footer */
 footer {
-    background: var(--footer-bg);
+    background: var(--bg-secondary);
     color: var(--text-inverse);
     padding: 2rem 0;
     text-align: center;
@@ -2410,4 +2410,114 @@ footer {
     }
 
 
+}
+
+/* Wisdom Carousel Styles */
+.wisdom-carousel {
+    display: grid;
+    place-items: center;
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    min-height: 280px;
+    /* Ensure space for tallest quote */
+}
+
+.wisdom-card {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transform: translateX(30px) scale(0.95);
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+}
+
+.wisdom-card.active {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    pointer-events: auto;
+    position: relative;
+    padding: 2rem 4rem;
+    /* Increased side padding for buttons */
+}
+
+.wisdom-quote {
+    white-space: pre-line;
+    /* Handle newlines in quotes */
+    font-size: 1.15rem;
+    line-height: 1.6;
+}
+
+/* Carousel Controls */
+.wisdom-carousel {
+    position: relative;
+    overflow: hidden;
+    /* Ensure slides stay contained */
+    min-height: 200px;
+    /* Prevent collapse */
+}
+
+.wisdom-carousel-controls {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    pointer-events: none;
+    /* Let clicks pass through area to cards */
+    z-index: 10;
+}
+
+.carousel-btn {
+    pointer-events: auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-light);
+    opacity: 0.7;
+}
+
+.carousel-btn:hover {
+    background: var(--brand-primary);
+    color: white;
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.carousel-btn i {
+    font-size: 1.2rem;
+}
+
+/* Ensure active card is visible */
+.wisdom-card {
+    display: none;
+    animation: fadeIn 0.5s ease;
+}
+
+.wisdom-card.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
