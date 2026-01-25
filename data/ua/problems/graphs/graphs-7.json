@@ -1,7 +1,7 @@
 {
     "id": "graphs-7",
     "title": "Найдешевші Авіарейси з K Пересадками",
-    "difficulty": "Medium",
+    "difficulty": "Середній",
     "leetcode_url": "https://leetcode.com/problems/cheapest-flights-within-k-stops/",
     "related": [
         {

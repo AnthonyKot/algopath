@@ -1,7 +1,7 @@
 {
     "id": "math-2",
     "title": "Решето Ератосфена",
-    "difficulty": "Medium",
+    "difficulty": "Середній",
     "leetcode_url": "https://leetcode.com/problems/count-primes/",
     "related": [
         {

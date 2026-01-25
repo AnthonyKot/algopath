@@ -1,7 +1,7 @@
 {
     "id": "trees-3",
     "title": "Діаметр Дерева",
-    "difficulty": "Medium",
+    "difficulty": "Середній",
     "leetcode_url": "https://leetcode.com/problems/tree-diameter/",
     "related": [
         {

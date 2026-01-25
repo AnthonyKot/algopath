@@ -47,8 +47,8 @@ const LanguageSystem = {
     currentLang: 'en',
     meta: null,
     availableLanguages: {
-        'en': { name: 'English', flag: '🇬🇧' },
-        'ua': { name: 'Українська', flag: '🇺🇦' }
+        'en': { name: 'English', flag: '\uD83C\uDDEC\uD83C\uDDE7' }, // GB flag
+        'ua': { name: 'Українська', flag: '\uD83C\uDDFA\uD83C\uDDE6' } // UA flag
     },
 
     init() {
@@ -184,6 +184,13 @@ const LanguageSystem = {
         if (statItems.length >= 3) {
             // Problems count label
             const problemsLabel = statItems[0].querySelector('.stat-label');
+            const problemsNumber = statItems[0].querySelector('.stat-number');
+
+            if (problemsNumber && categoryMeta.problemIds) {
+                // Ensure dynamic count based on actual data
+                problemsNumber.textContent = categoryMeta.problemIds.length;
+            }
+
             if (problemsLabel) {
                 problemsLabel.textContent = this.t('labels.problems') || 'Problems';
             }
@@ -200,14 +207,26 @@ const LanguageSystem = {
                 priorityLabel.textContent = labelText;
             }
 
-            // CF Rating / Metric
+            // Monthly Frequency / Metric
             const metricNumber = statItems[2].querySelector('.stat-number');
             const metricLabel = statItems[2].querySelector('.stat-label');
             if (metricNumber && categoryMeta.stats?.metric) {
-                metricNumber.textContent = categoryMeta.stats.metric;
-            }
-            if (metricLabel && categoryMeta.stats?.metricLabel) {
-                metricLabel.textContent = categoryMeta.stats.metricLabel;
+                let val = categoryMeta.stats.metric;
+                // Handle numeric values and strings with commas like "1,314"
+                const rawVal = val.replace(/,/g, '');
+                if (!isNaN(rawVal) && rawVal.trim() !== '') {
+                    const numeric = parseInt(rawVal);
+                    const divider = categoryMeta.stats.metricDivider || 6;
+                    metricNumber.textContent = Math.round(numeric / divider).toLocaleString();
+                    if (metricLabel) {
+                        metricLabel.textContent = this.t('labels.monthlyFrequency') || 'Asked this month';
+                    }
+                } else {
+                    metricNumber.textContent = val;
+                    if (metricLabel && categoryMeta.stats?.metricLabel) {
+                        metricLabel.textContent = categoryMeta.stats.metricLabel;
+                    }
+                }
             }
         }
 
@@ -306,6 +325,67 @@ const LanguageSystem = {
                     priority.style.borderColor = categoryMeta.stats.priorityColor;
                 }
             }
+
+            // --- Detailed Stats Injection ---
+            let statsHtml = '';
+            if (categoryMeta.stats) {
+                const stats = categoryMeta.stats;
+                const labels = this.meta.ui?.labels || {};
+
+                if (stats.metric) {
+                    let displayValue = stats.metric;
+                    const rawVal = String(stats.metric).replace(/,/g, '');
+                    if (!isNaN(rawVal) && rawVal.trim() !== '') {
+                        const numeric = parseInt(rawVal);
+                        const divider = stats.metricDivider || 6;
+                        displayValue = Math.round(numeric / divider).toLocaleString();
+                    }
+
+                    statsHtml += `
+                        <div class="card-stat">
+                            <span class="stat-value">${displayValue}</span>
+                            <span class="stat-label">${stats.metricLabel || labels.frequency || 'Frequency'}</span>
+                        </div>`;
+                }
+
+                if (stats.trend) {
+                    let trendClass = 'trend-stable';
+                    let trendIcon = 'fa-chart-line';
+                    const trendLower = stats.trend.toLowerCase();
+
+                    if (trendLower.includes('grow') || trendLower.includes('зрост')) {
+                        trendClass = 'trend-up';
+                        trendIcon = 'fa-arrow-trend-up';
+                    } else if (trendLower.includes('decreas') || trendLower.includes('зменш')) {
+                        trendClass = 'trend-down';
+                        trendIcon = 'fa-arrow-trend-down';
+                    }
+
+                    statsHtml += `
+                        <div class="card-stat">
+                            <span class="stat-value ${trendClass}"><i class="fas ${trendIcon} fa-xs"></i> ${stats.trend}</span>
+                            <span class="stat-label">${labels.trend || 'Trend'}</span>
+                        </div>`;
+                }
+
+                if (stats.successRate) {
+                    statsHtml += `
+                        <div class="card-stat">
+                            <span class="stat-value">${stats.successRate}</span>
+                            <span class="stat-label">${labels.successRate || 'Success Rate'}</span>
+                        </div>`;
+                }
+            }
+
+            let statsContainer = card.querySelector('.card-stats-row');
+            if (!statsContainer) {
+                statsContainer = document.createElement('div');
+                statsContainer.className = 'card-stats-row';
+                const viewBtn = card.querySelector('.btn-outline');
+                if (viewBtn) card.insertBefore(statsContainer, viewBtn);
+                else card.appendChild(statsContainer);
+            }
+            statsContainer.innerHTML = statsHtml;
 
             // Update "View Problems" button
             const viewBtn = card.querySelector('.btn-outline');
@@ -661,7 +741,7 @@ const QuizSystem = {
 
         if (selectedValue === correctAnswer) {
             // Correct answer - unlock the section
-            feedback.textContent = `✅ ${LanguageSystem.t('quiz.correct') || 'Correct!'}`;
+            feedback.textContent = `\u2705 ${LanguageSystem.t('quiz.correct') || 'Correct!'}`;
             feedback.className = 'quiz-feedback success';
             quizGate.classList.add('answered');
 
@@ -684,11 +764,15 @@ const QuizSystem = {
                     Prism.highlightAll();
                 }
                 ProblemRenderer.applyAnnotations();
+                // Re-render Math
+                ProblemRenderer.renderMath();
             }, 100);
         } else {
             // Wrong answer
-            feedback.textContent = '❌ Try again!';
+            feedback.textContent = '\u274C Try again!';
             feedback.className = 'quiz-feedback error';
+            // Re-render Math in case the feedback message (unlikely) or something else needs it
+            ProblemRenderer.renderMath();
         }
     }
 };
@@ -877,17 +961,24 @@ const ProblemRenderer = {
                 }
 
                 // Match bullet/numbered lists: "- item", "* item", "1. item", "a. item"
-                const listMatch = line.match(/^\s*([-*]|\d+\.|[a-z]\.)\s+(.+)$/);
+                const unorderedMatch = line.match(/^\s*([-*])\s+(.+)$/);
+                const orderedMatch = line.match(/^\s*(\d+\.|[a-z]\.)\s+(.+)$/);
 
-                if (listMatch) {
+                if (unorderedMatch || orderedMatch) {
+                    const listType = unorderedMatch ? 'ul' : 'ol';
                     if (!inList) {
-                        result.push('<ul>');
-                        inList = true;
+                        result.push(`<${listType}>`);
+                        inList = listType;
+                    } else if (inList !== listType) {
+                        result.push(`</${inList}>`);
+                        result.push(`<${listType}>`);
+                        inList = listType;
                     }
-                    result.push(`<li>${processInline(listMatch[2])}</li>`);
+                    const content = unorderedMatch ? unorderedMatch[2] : orderedMatch[2];
+                    result.push(`<li>${processInline(content)}</li>`);
                 } else {
                     if (inList) {
-                        result.push('</ul>');
+                        result.push(`</${inList}>`);
                         inList = false;
                     }
                     if (line.trim() === '') {
@@ -908,7 +999,7 @@ const ProblemRenderer = {
                 }
             }
 
-            if (inList) result.push('</ul>');
+            if (inList) result.push(`</${inList}>`);
             return result.join('');
         };
 
@@ -936,7 +1027,7 @@ const ProblemRenderer = {
                         </div>
                         <div class="header-right-group">
                             ${guideTooltip}
-                            <span class="collapse-chevron">▼</span>
+                            <span class="collapse-chevron">\u25BC</span>
                         </div>
                     </div>
                     <div class="senior-content">
@@ -954,7 +1045,7 @@ const ProblemRenderer = {
             const checkBtn = LanguageSystem.t('problem.checkAnswer') || 'Check Answer';
             return `
                 <div class="quiz-gate" data-quiz-index="${index}" data-problem-id="${problemId}">
-                    <div class="quiz-question">🤔 ${quiz.question}</div>
+                    <div class="quiz-question">\uD83E\uDD14 ${quiz.question}</div>
                     <div class="quiz-options">
                         ${quiz.options.map((opt, i) => `
                             <label class="quiz-option">
@@ -1052,7 +1143,7 @@ const ProblemRenderer = {
                     </h3>
                     <div class="header-right">
                         <div class="card-difficulty ${difficultyClass}">${problem.difficulty}</div>
-                        <span class="collapse-chevron">▼</span>
+                        <span class="collapse-chevron">\u25BC</span>
                     </div>
                 </div>
                 <div class="card-body">
@@ -1153,9 +1244,9 @@ const ProblemRenderer = {
 
     getDifficultyClass(difficulty) {
         switch (difficulty.toLowerCase()) {
-            case 'easy': return 'difficulty-easy';
-            case 'medium': return 'difficulty-medium';
-            case 'hard': return 'difficulty-hard';
+            case 'easy': case 'легкий': return 'difficulty-easy';
+            case 'medium': case 'середній': return 'difficulty-medium';
+            case 'hard': case 'важкий': return 'difficulty-hard';
             default: return 'difficulty-medium';
         }
     },
@@ -1264,8 +1355,23 @@ const ProblemRenderer = {
         // Start initialization
         initMermaid();
 
+        // Re-render Math
+        this.renderMath();
+
         // Dispatch event for any page-specific post-processing (e.g., KaTeX rendering)
         document.dispatchEvent(new Event('problemsLoaded'));
+    },
+
+    renderMath() {
+        if (typeof renderMathInElement !== 'undefined') {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    { left: '$$', right: '$$', display: true },
+                    { left: '$', right: '$', display: false }
+                ],
+                throwOnError: false
+            });
+        }
     },
 
     applySyntaxHighlighting() {
@@ -1343,7 +1449,8 @@ const ProblemRenderer = {
             'geometry.html': 'geometry',
             'design.html': 'design',
             'optimization.html': 'optimization',
-            'physics.html': 'physics'
+            'physics.html': 'physics',
+            'specialized.html': 'specialized'
         };
         return categoryMap[filename] || null;
     },

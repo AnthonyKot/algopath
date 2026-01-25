@@ -1,7 +1,7 @@
 {
     "id": "graphs-1",
     "title": "Драбина Слів (Найкоротший Шлях)",
-    "difficulty": "Medium",
+    "difficulty": "Середній",
     "tags": [
         "bfs",
         "shortest-path",

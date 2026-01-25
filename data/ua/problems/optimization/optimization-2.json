@@ -1,7 +1,7 @@
 {
     "id": "optimization-2",
     "title": "Найбільший Прямокутник у Гістограмі",
-    "difficulty": "Hard",
+    "difficulty": "Важкий",
     "leetcode_url": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
     "related": [
         {

@@ -1,7 +1,7 @@
 {
     "id": "design-5",
     "title": "Словник з Підтримкою Пошуку (Wildcards)",
-    "difficulty": "Hard",
+    "difficulty": "Середня",
     "leetcode_url": "https://leetcode.com/problems/design-add-and-search-words-data-structure/",
     "related": [
         {

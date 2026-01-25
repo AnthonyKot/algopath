@@ -1,7 +1,7 @@
 {
     "id": "dp-2",
     "title": "Найдовша Зростаюча Підпослідовність (LIS)",
-    "difficulty": "Medium",
+    "difficulty": "Середній",
     "leetcode_url": "https://leetcode.com/problems/longest-increasing-subsequence/",
     "related": [
         {

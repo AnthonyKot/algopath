@@ -1,7 +1,7 @@
 {
     "id": "strings-2",
     "title": "Рабін-Карп і Хеш, що Ковзає",
-    "difficulty": "Medium",
+    "difficulty": "Середній",
     "leetcode_url": "https://leetcode.com/problems/repeated-dna-sequences/",
     "related": [
         {

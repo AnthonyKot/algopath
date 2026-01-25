@@ -1,7 +1,7 @@
 {
     "id": "optimization-5",
     "title": "Захоплення Дощової Води",
-    "difficulty": "Hard",
+    "difficulty": "Важкий",
     "leetcode_url": "https://leetcode.com/problems/trapping-rain-water/",
     "related": [
         {

@@ -1,7 +1,7 @@
 {
     "id": "optimization-3",
     "title": "Максимальний Прямокутник",
-    "difficulty": "Hard",
+    "difficulty": "Важкий",
     "leetcode_url": "https://leetcode.com/problems/maximal-rectangle/",
     "related": [
         {

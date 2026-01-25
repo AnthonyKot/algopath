@@ -1,7 +1,7 @@
 {
     "id": "graphs-2",
     "title": "Розклад Курсів II (Топологічне Сортування)",
-    "difficulty": "Medium",
+    "difficulty": "Середній",
     "leetcode_url": "https://leetcode.com/problems/course-schedule-ii/",
     "related": [
         {

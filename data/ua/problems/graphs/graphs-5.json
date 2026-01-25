@@ -1,7 +1,7 @@
 {
     "id": "graphs-5",
     "title": "Тихоокеанський та Атлантичний Водний Потік",
-    "difficulty": "Medium",
+    "difficulty": "Середній",
     "leetcode_url": "https://leetcode.com/problems/pacific-atlantic-water-flow/",
     "related": [
         {

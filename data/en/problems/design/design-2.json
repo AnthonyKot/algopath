@@ -1,7 +1,7 @@
 {
   "id": "design-2",
   "title": "Design Twitter",
-  "difficulty": "Hard",
+  "difficulty": "Medium",
   "leetcode_url": "https://leetcode.com/problems/design-twitter/",
   "related": [
     {

@@ -1,7 +1,7 @@
 {
     "id": "optimization-4",
     "title": "Мінімальне Вікно Підрядка",
-    "difficulty": "Hard",
+    "difficulty": "Важкий",
     "leetcode_url": "https://leetcode.com/problems/minimum-window-substring/",
     "related": [
         {

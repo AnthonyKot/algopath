@@ -1,7 +1,7 @@
 {
     "id": "graphs-6",
     "title": "Критичні З'єднання в Мережі",
-    "difficulty": "Hard",
+    "difficulty": "Важкий",
     "leetcode_url": "https://leetcode.com/problems/critical-connections-in-a-network/",
     "related": [
         {

@@ -1,7 +1,7 @@
 {
     "id": "dp-3",
     "title": "Решта Монетами (Мін. Монет)",
-    "difficulty": "Medium",
+    "difficulty": "Середній",
     "leetcode_url": "https://leetcode.com/problems/coin-change/",
     "related": [
         {

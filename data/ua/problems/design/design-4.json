@@ -1,7 +1,7 @@
 {
     "id": "design-4",
     "title": "Лічильник Хітів",
-    "difficulty": "Hard",
+    "difficulty": "Середня",
     "leetcode_url": "https://leetcode.com/problems/design-hit-counter/",
     "related": [
         {

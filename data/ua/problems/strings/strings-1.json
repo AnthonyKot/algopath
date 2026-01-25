@@ -1,7 +1,7 @@
 {
     "id": "strings-1",
     "title": "Співставлення Шаблонів KMP",
-    "difficulty": "Medium",
+    "difficulty": "Середній",
     "leetcode_url": "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/",
     "related": [
         {

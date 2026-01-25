@@ -845,6 +845,16 @@ footer {
     transition: background 0.3s ease;
 }
 
+.difficulty-medium {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); /* Amber/Orange */
+    color: white;
+}
+
+.difficulty-easy {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%); /* Emerald/Green */
+    color: white;
+}
+
 .explanation-section pre,
 .problem-definition pre {
     white-space: pre-wrap !important;
@@ -1128,15 +1138,14 @@ footer {
 /* List styling - clean and aligned with text */
 .explanation-section ul,
 .explanation-section ol {
-    margin: 0.75rem 0;
+    margin: 1rem 0;
     padding-left: 1.5rem;
     color: var(--text-secondary);
-    line-height: 1.8;
+    line-height: 1.6;
 }
 
 .explanation-section ul {
     list-style: none;
-    padding-left: 1.25rem;
 }
 
 .explanation-section ol {
@@ -1146,22 +1155,29 @@ footer {
 .explanation-section ul li,
 .explanation-section ol li {
     position: relative;
-    margin-bottom: 0.5rem;
-    padding-left: 0.5rem;
+    margin-bottom: 0.75rem;
     color: var(--text-secondary);
-}
-
-.explanation-section ul li:last-child,
-.explanation-section ol li:last-child {
-    margin-bottom: 0;
 }
 
 .explanation-section ul li::before {
     content: '•';
     position: absolute;
-    left: -1rem;
-    color: #667eea;
-    font-weight: bold;
+    left: -1.25rem;
+    color: var(--brand-primary);
+    font-weight: 900;
+    font-size: 1.2rem;
+    line-height: 1;
+    top: 0.1rem;
+}
+
+.explanation-section strong {
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+[data-theme="dark"] .explanation-section strong {
+    color: #fff;
+    text-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
 }
 
 /* Nested lists */
@@ -1227,6 +1243,13 @@ footer {
     align-items: center;
     gap: 1rem;
     flex-shrink: 0;
+}
+
+.problem-card.detailed-walkthrough .card-difficulty {
+    position: static;
+    /* Reset absolute positioning */
+    margin: 0;
+    box-shadow: none;
 }
 
 .problem-card.detailed-walkthrough .collapse-chevron {
@@ -1386,9 +1409,72 @@ footer {
     color: white;
 }
 
-/* ============================================
-   Global Search
-   ============================================ */
+/* Card Detailed Stats */
+.card-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin: 1rem 0 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--border-color);
+}
+
+.card-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.stat-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.2rem;
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value.trend-up {
+    color: var(--success);
+}
+
+.stat-value.trend-down {
+    color: var(--critical);
+}
+
+.stat-value.trend-stable {
+    color: var(--text-tertiary);
+}
+
+.stat-value i {
+    margin-right: 0.2rem;
+}
+
+.stat-value.trend-up i {
+    color: var(--success);
+}
+
+.stat-value.trend-down i {
+    color: var(--critical);
+}
+
+.stat-value.trend-stable i {
+    color: var(--text-tertiary);
+}
+
+/* Update "View Problems" button to be full width in this layout */
+.algorithm-card .btn-outline {
+    width: 100%;
+    justify-content: center;
+}
+
+/* Global Search */
 .nav-search {
     position: relative;
     margin-left: auto;

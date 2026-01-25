@@ -1,7 +1,7 @@
 {
     "id": "trees-2",
     "title": "Запити Відстані (LCA з Двійковим Підйомом)",
-    "difficulty": "Medium",
+    "difficulty": "Середній",
     "related": [
         {
             "id": "trees-1",

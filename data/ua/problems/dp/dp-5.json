@@ -1,7 +1,7 @@
 {
     "id": "dp-5",
     "title": "Співставлення Регулярних Виразів",
-    "difficulty": "Medium",
+    "difficulty": "Середній",
     "tags": [
         "dp",
         "regex",

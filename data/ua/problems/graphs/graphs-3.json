@@ -1,7 +1,7 @@
 {
     "id": "graphs-3",
     "title": "Час Затримки Мережі (Дейкстра)",
-    "difficulty": "Medium",
+    "difficulty": "Середній",
     "leetcode_url": "https://leetcode.com/problems/network-delay-time/",
     "related": [
         {

@@ -15,9 +15,11 @@
             ],
             "stats": {
                 "priority": "Дуже Високий",
-                "priorityColor": "#e67e22",
-                "metric": "1700-2200",
-                "metricLabel": "CF Рейтинг"
+                "priorityColor": "#e74c3c",
+                "metric": "3,419",
+                "metricLabel": "Частота",
+                "trend": "Зростає",
+                "successRate": "51.9%"
             },
             "seo": {
                 "title": "Динамічне Програмування - Посібник з Алгоритмів FAANG L4/L5",
@@ -42,8 +44,10 @@
             "stats": {
                 "priority": "Дуже Високий",
                 "priorityColor": "#e67e22",
-                "metric": "1700-2200",
-                "metricLabel": "CF Рейтинг"
+                "metric": "643",
+                "metricLabel": "Частота",
+                "trend": "Зростає",
+                "successRate": "54.3%"
             },
             "seo": {
                 "title": "Алгоритми на Графах - Посібник з Алгоритмів FAANG L4/L5",
@@ -65,9 +69,11 @@
             ],
             "stats": {
                 "priority": "Високий",
-                "priorityColor": "#e67e22",
-                "metric": "1700-2300",
-                "metricLabel": "CF Рейтинг"
+                "priorityColor": "#f39c12",
+                "metric": "1,060",
+                "metricLabel": "Частота",
+                "trend": "Стабільно",
+                "successRate": "58.6%"
             },
             "seo": {
                 "title": "Продвинуті Дерева - Посібник з Алгоритмів FAANG L4/L5",
@@ -90,58 +96,41 @@
             "stats": {
                 "priority": "Середній",
                 "priorityColor": "#f1c40f",
-                "metric": "1700-2400",
-                "metricLabel": "CF Рейтинг"
+                "metric": "5,159",
+                "metricLabel": "Частота",
+                "trend": "Зростає",
+                "successRate": "52.2%",
+                "metricDivider": 9
             },
             "seo": {
                 "title": "Рядкові Алгоритми - Посібник з Алгоритмів FAANG L4/L5",
                 "description": "Продвинуті рядкові алгоритми: KMP, Rabin-Karp, суфіксні масиви, Z-функція."
             }
         },
-        "math": {
-            "id": "math",
-            "name": "Теорія Чисел та Комбінаторика",
-            "shortName": "Теорія Чисел",
-            "description": "Відкрийте ефективні обчислення. Опануйте Модулярну Арифметику для криптографії, Комбінаторику для підрахунку та Теорію Чисел для факторизації.",
-            "sectionTitle": "Ключові Математичні Задачі",
+        "specialized": {
+            "id": "specialized",
+            "name": "Спеціалізовані Алгоритми",
+            "shortName": "Спеціалізовані",
+            "description": "Опануйте складні математичні концепції. Від FFT та криптографії до рівнянь дифузії, що лежать в основі сучасного ШІ.",
+            "sectionTitle": "Ключові Спеціалізовані Задачі",
             "problemIds": [
                 "math-1",
-                "math-2",
                 "math-3",
-                "math-4",
-                "math-5"
-            ],
-            "stats": {
-                "priority": "Низький",
-                "priorityColor": "#95a5a6",
-                "metric": "1700-2400",
-                "metricLabel": "CF Рейтинг"
-            },
-            "seo": {
-                "title": "Теорія Чисел - Посібник з Алгоритмів FAANG L4/L5",
-                "description": "Продвинута теорія чисел: модулярна арифметика, FFT, бінарне піднесення до степеня."
-            }
-        },
-        "geometry": {
-            "id": "geometry",
-            "name": "Обчислювальна Геометрія",
-            "shortName": "Геометрія",
-            "description": "Опануйте просторові алгоритми. Від Опуклих Оболонок до техніки Замітаючої Прямої — візуалізуйте та вирішуйте складні геометричні задачі.",
-            "sectionTitle": "Основні Задачі Геометрії",
-            "problemIds": [
+                "math-5",
                 "geometry-1",
-                "geometry-2"
+                "physics-3"
             ],
             "stats": {
                 "priority": "Спеціалізований",
                 "priorityColor": "#9b59b6",
-                "priorityLabel": "Фокус Співбесіди",
-                "metric": "1800+",
-                "metricLabel": "Складність"
+                "metric": "963",
+                "metricLabel": "Частота",
+                "trend": "Зростає",
+                "successRate": "62.5%"
             },
             "seo": {
-                "title": "Алгоритми Геометрії - Посібник з Алгоритмів FAANG L4/L5",
-                "description": "Обчислювальна геометрія: опукла оболонка, найближча пара, алгоритми замітаючої прямої."
+                "title": "Спеціалізовані Алгоритми - Посібник з Алгоритмів FAANG L4/L5",
+                "description": "Продвинуті спеціалізовані алгоритми: FFT, Опукла оболонка, Модульна арифметика та Дифузія."
             }
         },
         "design": {
@@ -160,8 +149,10 @@
             "stats": {
                 "priority": "Критичний",
                 "priorityColor": "#e74c3c",
-                "metric": "Senior (L5+)",
-                "metricLabel": "Цільовий Рівень"
+                "metric": "1,314",
+                "metricLabel": "Частота",
+                "trend": "Зростає",
+                "successRate": "54.6%"
             },
             "seo": {
                 "title": "Системний Дизайн - Посібник з Алгоритмів FAANG L4/L5",
@@ -184,41 +175,14 @@
             "stats": {
                 "priority": "Середній",
                 "priorityColor": "#f1c40f",
-                "metric": "1600-2400",
-                "metricLabel": "CF Рейтинг"
+                "metric": "2,561",
+                "metricLabel": "Частота",
+                "trend": "Зменшується",
+                "successRate": "47.0%"
             },
             "seo": {
                 "title": "Техніки Оптимізації - Посібник з Алгоритмів FAANG L4/L5",
                 "description": "Техніки оптимізації: два вказівники, бінарний пошук, розділяй і володарюй."
-            }
-        },
-        "physics": {
-            "id": "physics",
-            "name": "Математична Фізика",
-            "shortName": "Фізика",
-            "description": "Подолайте розрив між абстрактною математикою та фізичною реальністю. Опануйте релятивістську механіку, зв'язані диференціальні рівняння та термодинамічні функції стану.",
-            "sectionTitle": "Ключові Задачі Фізики",
-            "problemIds": [
-                "physics-1",
-                "physics-2",
-                "physics-3",
-                "physics-4",
-                "physics-5"
-            ],
-            "icon": "fas fa-atom",
-            "stats": {
-                "priority": "Продвинутий",
-                "priorityColor": "#9b59b6",
-                "priorityLabel": "Рівень Математики",
-                "metric": "Класичні",
-                "metricLabel": "Джерело Задач"
-            },
-            "seo": {
-                "title": "Математична Фізика - Посібник з Алгоритмів FAANG L4/L5",
-                "description": "Складні задачі математичної фізики з детальними поясненнями та LaTeX формулами."
-            },
-            "features": {
-                "katex": true
             }
         }
     },
@@ -227,8 +191,10 @@
         "error": "Не вдалося завантажити задачі.",
         "labels": {
             "problems": "Задачі",
-            "interviewPriority": "Пріоритет Співбесіди",
-            "cfRating": "CF Рейтинг"
+            "frequency": "Частота",
+            "trend": "Тренд",
+            "successRate": "Успішність",
+            "monthlyFrequency": "Запитано разів за місяць"
         },
         "nav": {
             "home": "Головна",
@@ -243,7 +209,7 @@
             "algorithmCategories": "Категорії Алгоритмів",
             "algorithmCategoriesSubtitle": "Опануйте основи всіх ключових алгоритмічних напрямків",
             "priority": "Пріоритет",
-            "viewProblems": "Переглянути Задачі",
+            "viewProblems": "\u041F\u0435\u0440\u0435\u0433\u043B\u044F\u043D\u0443\u0442\u0438 \u0417\u0430\u0434\u0430\u0447\u0456",
             "additionalResources": "Додаткові Ресурси",
             "resourcesList": [
                 {
@@ -274,7 +240,7 @@
                 "statLabels": {
                     "problems": "Задач",
                     "categories": "Категорій",
-                    "metric": "CF Рейтинг"
+                    "metric": "Запитано разів за місяць"
                 }
             },
             "wisdom": {
@@ -320,7 +286,7 @@
             "seniorCorner": "Куточок Senior Інженера",
             "interviewTip": "Порада для Співбесіди",
             "checkAnswer": "Перевірити Відповідь",
-            "correct": "✅ Правильно!",
+            "correct": "\u2705 \u041F\u0440\u0430\u0432\u0438\u043B\u044C\u043D\u043E!",
             "incorrect": "Неправильно. Спробуйте ще.",
             "naiveTitle": "Наївний Підхід та Його Обмеження",
             "bottleneckTitle": "Обмеження",
@@ -328,7 +294,7 @@
             "optimizedTitle": "Оптимізований Алгоритм",
             "codeTitle": "Реалізація Коду",
             "complexityTitle": "Аналіз Складності",
-            "tryAgain": "❌ Спробуй ще раз!",
+            "tryAgain": "\u274C \u0421\u043F\u0440\u043E\u0431\u0443\u0439 \u0449\u0435 \u0440\u0430\u0437!",
             "selectAnswer": "Будь ласка, оберіть відповідь!"
         },
         "quiz": {

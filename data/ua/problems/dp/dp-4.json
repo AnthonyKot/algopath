@@ -1,7 +1,7 @@
 {
     "id": "dp-4",
     "title": "Вибух Кульок",
-    "difficulty": "Medium",
+    "difficulty": "Середній",
     "leetcode_url": "https://leetcode.com/problems/burst-balloons/",
     "tags": [
         "dp",

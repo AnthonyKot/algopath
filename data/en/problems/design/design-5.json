@@ -1,7 +1,7 @@
 {
   "id": "design-5",
   "title": "Design Add and Search Words Data Structure",
-  "difficulty": "Hard",
+  "difficulty": "Medium",
   "leetcode_url": "https://leetcode.com/problems/design-add-and-search-words-data-structure/",
   "related": [
     {

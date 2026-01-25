@@ -1,7 +1,7 @@
 {
     "id": "design-1",
     "title": "LRU Кеш",
-    "difficulty": "Hard",
+    "difficulty": "Середня",
     "leetcode_url": "https://leetcode.com/problems/lru-cache/",
     "related": [
         {

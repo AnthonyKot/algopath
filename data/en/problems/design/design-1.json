@@ -1,7 +1,7 @@
 {
   "id": "design-1",
   "title": "LRU Cache",
-  "difficulty": "Hard",
+  "difficulty": "Medium",
   "leetcode_url": "https://leetcode.com/problems/lru-cache/",
   "related": [
     {

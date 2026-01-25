@@ -1,7 +1,7 @@
 {
     "id": "strings-5",
     "title": "Алгоритм Манакера (Найдовший Паліндром)",
-    "difficulty": "Medium",
+    "difficulty": "Середній",
     "leetcode_url": "https://leetcode.com/problems/longest-palindromic-substring/",
     "related": [
         {

@@ -1,7 +1,7 @@
 {
     "id": "graphs-4",
     "title": "Мінімальна Вартість З'єднання Точок (Алгоритм Прима)",
-    "difficulty": "Medium",
+    "difficulty": "Середній",
     "leetcode_url": "https://leetcode.com/problems/min-cost-to-connect-all-points/",
     "related": [
         {

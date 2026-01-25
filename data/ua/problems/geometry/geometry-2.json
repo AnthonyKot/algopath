@@ -1,7 +1,7 @@
 {
     "id": "geometry-2",
     "title": "Найближча Пара Точок",
-    "difficulty": "Hard",
+    "difficulty": "Важкий",
     "leetcode_url": "https://en.wikipedia.org/wiki/Closest_pair_of_points_problem",
     "tags": [
         "geometry",

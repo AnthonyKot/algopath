@@ -1,7 +1,7 @@
 {
     "id": "trees-1",
     "title": "Запити Суми Діапазону (Дерево Відрізків)",
-    "difficulty": "Medium",
+    "difficulty": "Середній",
     "leetcode_url": "https://leetcode.com/problems/range-sum-query-mutable/",
     "related": [
         {

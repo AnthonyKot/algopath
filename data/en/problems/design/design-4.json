@@ -1,7 +1,7 @@
 {
   "id": "design-4",
   "title": "Design Hit Counter",
-  "difficulty": "Hard",
+  "difficulty": "Medium",
   "leetcode_url": "https://leetcode.com/problems/design-hit-counter/",
   "related": [
     {
