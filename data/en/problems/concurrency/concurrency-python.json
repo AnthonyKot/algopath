@@ -1,0 +1,100 @@
+{
+    "id": "concurrency-python",
+    "title": "Async Web Crawler",
+    "difficulty": "Hard",
+    "leetcode_url": "https://docs.python.org/3/library/asyncio.html",
+    "related": [
+        {
+            "id": "concurrency-js",
+            "title": "Custom Worker Pool",
+            "category": "concurrency"
+        }
+    ],
+    "tags": [
+        "python",
+        "asyncio",
+        "crawling",
+        "GIL"
+    ],
+    "follow_up": {
+        "scenario": "You need to parse massive HTML files (CPU bound) after downloading.",
+        "trade_off": "asyncio is single-threaded. CPU work blocks the loop.",
+        "strategy": "Use `ProcessPoolExecutor` (Multiprocessing) for the parsing step. Download with `aiohttp` (IO bound), parse with `multiprocessing` (CPU bound).",
+        "answering_guide": "Address the **GIL (Global Interpreter Lock)**. Threading = good for IO, bad for CPU. AsyncIO = best for high-concurrency IO. Multiprocessing = only way to bypass GIL for CPU."
+    },
+    "content": {
+        "problem_statement": "Design a concurrent Web Crawler in Python that fetches a list of URLs.\n\n**Requirements:**\n1.  Fetch `N` URLs concurrently.\n2.  Adhere to a `limit` of max concurrent requests (semaphore).\n3.  Handle network errors gracefully.\n4.  Explain why `asyncio` is preferred over `threading` here.",
+        "explanation": {
+            "understanding_the_problem": "We have an IO-bound task (waiting for HTTP response). We want to fire multiple requests 'at once' and wait for them in parallel.",
+            "brute_force": "Sequential loop: `requests.get()`. Takes Sum(Latencies).\nUsing `Threads`: `ThreadPoolExecutor`. Works, but threads are heavy OS resources. Python's GIL means only one thread executes Python bytecode at a time, but it releases lock on IO.",
+            "bottleneck": "OS context switching and memory overhead of threads if N=10,000.",
+            "optimized_approach": "**AsyncIO (Cooperative Multitasking)**. A single thread manages thousands of sockets. When a request waits for data, the event loop runs another task. We use `aiohttp` + `asyncio.gather`. To limit concurrency, we use `asyncio.Semaphore`.",
+            "algorithm_steps": "1.  Create `async` function `fetch(session, url)`.\n2.  Use `async with aiohttp.ClientSession`.\n3.  Create a semaphore `sem = asyncio.Semaphore(10)`.\n4.  Wrap fetch with semaphore to control concurrency.\n5.  `tasks = [fetch(...) for url in urls]`.\n6.  `await asyncio.gather(*tasks)`."
+        },
+        "quizzes": [
+            {
+                "question": "Does asyncio use multiple CPU cores?",
+                "options": [
+                    "Yes",
+                    "No, it's single-threaded",
+                    "Sometimes",
+                    "Only with JIT"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "What is the GIL?",
+                "options": [
+                    "Global IO Lock",
+                    "Global Interpreter Lock",
+                    "General Interrupt Logic",
+                    "Graphic Interface Loop"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "What prevents 'await' from blocking the whole program?",
+                "options": [
+                    "Magic",
+                    "It yields control back to the Event Loop",
+                    "It spawns a new thread",
+                    "It ignores the code"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "code": {
+        "python": {
+            "solution": "import asyncio\nimport aiohttp\n\nasync def fetch(session, url, sem):\n    async with sem:\n        try:\n            print(f\"Fetching {url}\")\n            async with session.get(url) as response:\n                data = await response.text()\n                print(f\"Done {url}: {len(data)} bytes\")\n                return len(data)\n        except Exception as e:\n            print(f\"Error {url}: {e}\")\n            return 0\n\nasync def main():\n    urls = [\n        \"http://example.com\",\n        \"http://python.org\",\n        \"http://google.com\"\n    ] * 5\n    \n    # Limit to 3 concurrent requests\n    sem = asyncio.Semaphore(3)\n    \n    async with aiohttp.ClientSession() as session:\n        tasks = [fetch(session, url, sem) for url in urls]\n        results = await asyncio.gather(*tasks)\n        \n    print(f\"Total bytes: {sum(results)}\")\n\n# asyncio.run(main())",
+            "annotations": [
+                {
+                    "lines": [
+                        4,
+                        5
+                    ],
+                    "text": "async with sem: automatically acquires/releases the semaphore, limiting concurrency."
+                },
+                {
+                    "lines": [
+                        7,
+                        8
+                    ],
+                    "text": "await session.get(): suspends this coroutine, allowing Event Loop to run others while waiting for network."
+                },
+                {
+                    "lines": [
+                        23
+                    ],
+                    "text": "asyncio.gather schedules all tasks to run 'simultaneously' on the loop."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(N) requests",
+        "space": "O(N) task objects",
+        "explanation_time": "Total time ~= Max(Latencies) if concurrency is infinite, or N/limit * AvgLatency if constrained.",
+        "explanation_space": "Efficient lightweight coroutines."
+    }
+}

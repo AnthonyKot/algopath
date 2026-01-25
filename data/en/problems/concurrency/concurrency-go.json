@@ -1,0 +1,99 @@
+{
+    "id": "concurrency-go",
+    "title": "Distributed Task Scheduler",
+    "difficulty": "Hard",
+    "leetcode_url": "https://gobyexample.com/worker-pools",
+    "related": [
+        {
+            "id": "concurrency-js",
+            "title": "Custom Worker Pool",
+            "category": "concurrency"
+        }
+    ],
+    "tags": [
+        "go",
+        "channels",
+        "goroutines",
+        "select"
+    ],
+    "follow_up": {
+        "scenario": "Tasks need to be rate-limited (e.g., max 10 req/s to external API).",
+        "trade_off": "Worker pool limits concurrency (workers), but not frequency (rate).",
+        "strategy": "Inject `time.Ticker` channel into the worker loop. Read from ticker before processing task.",
+        "answering_guide": "This is Go's bread and butter. Mention **'Do not communicate by sharing memory; share memory by communicating'**. Use `Context` for cancellation."
+    },
+    "content": {
+        "problem_statement": "Implement a concurrent Task Scheduler in Go using the **Worker Pool** pattern. \n\n**Requirements:**\n1.  Accept tasks from a `jobs` channel.\n2.  Process tasks using a fixed number of goroutines (workers).\n3.  Send results to a `results` channel.\n4.  Ensure graceful shutdown: wait for all jobs to finish before closing channels.",
+        "explanation": {
+            "understanding_the_problem": "We want multiple workers (Goroutines) pulling from a single source of truth (Channel). This automatically handles load balancing: a free worker grabs the next item from the channel.",
+            "brute_force": "Spawning `go func()` for every task. In Go, this is actually cheap (unlike threads), but still dangerous at scale (millions of tasks = memory exhaustion). A worker pool throttles concurrency.",
+            "bottleneck": "If consumers (workers) are slower than producers, the channel fills up and blocks producers. Buffer size matters.",
+            "optimized_approach": "1.  Create `jobs` channel (buffered).\n2.  Create `results` channel (buffered).\n3.  Start `N` worker goroutines. Each doing `range jobs`.\n4.  Push tasks to `jobs` channel.\n5.  Close `jobs` channel to signal 'no more work'.\n6.  Worker loops terminate when channel is closed.",
+            "algorithm_steps": "1.  Function `worker(id, jobs, results)`: `for j := range jobs { process(j); results <- result }`.\n2.  In `main`: make channels.\n3.  Loop `1` to `N`: `go worker(...)`.\n4.  Loop tasks: `jobs <- task`.\n5.  `close(jobs)`.\n6.  Collect results from `results` channel."
+        },
+        "quizzes": [
+            {
+                "question": "What happens when you read from a closed channel?",
+                "options": [
+                    "Panic",
+                    "Returns zero value immediately",
+                    "Blocks forever",
+                    "Throws error"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "What happens when you write to a closed channel?",
+                "options": [
+                    "Panic",
+                    "Ignored",
+                    "Blocks",
+                    "Returns false"
+                ],
+                "correct": 0
+            },
+            {
+                "question": "Why use Buffered Channels?",
+                "options": [
+                    "Required for strings",
+                    "Reduce blocking between producer/consumer",
+                    "Guarantee order",
+                    "Faster creation"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "code": {
+        "go": {
+            "solution": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc worker(id int, jobs <-chan int, results chan<- int) {\n\tfor j := range jobs {\n\t\tfmt.Println(\"worker\", id, \"processing job\", j)\n\t\ttime.Sleep(time.Second) // Simulate expensive work\n\t\tresults <- j * 2\n\t}\n}\n\nfunc main() {\n\tconst numJobs = 5\n\tconst numWorkers = 3\n\n\tjobs := make(chan int, numJobs)\n\tresults := make(chan int, numJobs)\n\n\t// 1. Start workers\n\tfor w := 1; w <= numWorkers; w++ {\n\t\tgo worker(w, jobs, results)\n\t}\n\n\t// 2. Send jobs\n\tfor j := 1; j <= numJobs; j++ {\n\t\tjobs <- j\n\t}\n\tclose(jobs) // Signal no more jobs\n\n\t// 3. Collect results\n\tfor a := 1; a <= numJobs; a++ {\n\t\t<-results\n\t}\n}",
+            "annotations": [
+                {
+                    "lines": [
+                        8,
+                        12
+                    ],
+                    "text": "Correct syntax: jobs <-chan int (Read Only), results chan<- int (Write Only)."
+                },
+                {
+                    "lines": [
+                        9
+                    ],
+                    "text": "'range jobs' loops until the channel is closed AND empty. Best way to ensure graceful shutdown."
+                },
+                {
+                    "lines": [
+                        29
+                    ],
+                    "text": "close(jobs) is crucial. Without it, workers would wait forever and deadlock."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(J) total work",
+        "space": "O(N) workers",
+        "explanation_time": "Throughput increases with N workers, but limited by CPU cores.",
+        "explanation_space": "Minimal overhead for goroutines (2KB each)."
+    }
+}

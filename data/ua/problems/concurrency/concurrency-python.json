@@ -1,0 +1,100 @@
+{
+    "id": "concurrency-python",
+    "title": "Асинхронний Веб-Кроулер",
+    "difficulty": "Важкий",
+    "leetcode_url": "https://docs.python.org/3/library/asyncio.html",
+    "related": [
+        {
+            "id": "concurrency-js",
+            "title": "Власний Пул Воркерів",
+            "category": "concurrency"
+        }
+    ],
+    "tags": [
+        "python",
+        "asyncio",
+        "кроулінг",
+        "GIL"
+    ],
+    "follow_up": {
+        "scenario": "Вам потрібно парсити масивні HTML файли (CPU bound) після завантаження.",
+        "trade_off": "asyncio однопотоковий. Обчислювальна робота блокує цикл.",
+        "strategy": "Використовуйте `ProcessPoolExecutor` (Multiprocessing) для етапу парсингу. Завантажуйте з `aiohttp` (IO bound), парсіть з `multiprocessing` (CPU bound).",
+        "answering_guide": "Адресуйте **GIL (Global Interpreter Lock)**. Threading = добре для IO, погано для CPU. AsyncIO = найкраще для високонавантаженого IO. Multiprocessing = єдиний спосіб обійти GIL для CPU."
+    },
+    "content": {
+        "problem_statement": "Розробіть конкурентний Веб-Кроулер на Python, який отримує список URL-адрес.\n\n**Вимоги:**\n1.  Отримувати `N` URL-адрес одночасно.\n2.  Дотримуватися `limit` максимальних конкурентних запитів (семафор).\n3.  Обробляти мережеві помилки коректно.\n4.  Пояснити, чому `asyncio` краще за `threading` у цьому випадку.",
+        "explanation": {
+            "understanding_the_problem": "У нас задача, зав'язана на IO (очікування HTTP відповіді). Ми хочемо відправити декілька запитів 'водночас' і чекати на них паралельно.",
+            "brute_force": "Послідовний цикл: `requests.get()`. Займає Суму(Латенстностей).\nВикористання `Threads`: `ThreadPoolExecutor`. Працює, але потоки є важкими ресурсами ОС. Python GIL означає, що лише один потік виконує байт-код Python одночасно, але він відпускає блокування на IO.",
+            "bottleneck": "Перемикання контексту ОС та накладні витрати пам'яті потоків, якщо N=10,000.",
+            "optimized_approach": "**AsyncIO (Кооперативна Багатозадачність)**. Один потік керує тисячами сокетів. Коли запит чекає на дані, цикл подій запускає іншу задачу. Ми використовуємо `aiohttp` + `asyncio.gather`. Щоб обмежити конкурентність, ми використовуємо `asyncio.Semaphore`.",
+            "algorithm_steps": "1.  Створіть `async` функцію `fetch(session, url)`.\n2.  Використовуйте `async with aiohttp.ClientSession`.\n3.  Створіть семафор `sem = asyncio.Semaphore(10)`.\n4.  Огорніть fetch семафором для контролю конкурентності.\n5.  `tasks = [fetch(...) for url in urls]`.\n6.  `await asyncio.gather(*tasks)`."
+        },
+        "quizzes": [
+            {
+                "question": "Чи використовує asyncio декілька ядер CPU?",
+                "options": [
+                    "Так",
+                    "Ні, він однопотоковий",
+                    "Іноді",
+                    "Тільки з JIT"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Що таке GIL?",
+                "options": [
+                    "Глобальне Блокування Вводу-Виводу (Global IO Lock)",
+                    "Глобальне Блокування Інтерпретатора (Global Interpreter Lock)",
+                    "Загальна Логіка Переривань (General Interrupt Logic)",
+                    "Цикл Графічного Інтерфейсу (Graphic Interface Loop)"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Що запобігає блокуванню всієї програми через 'await'?",
+                "options": [
+                    "Магія",
+                    "Він передає управління назад у Цикл Подій",
+                    "Він породжує новий потік",
+                    "Він ігнорує код"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "code": {
+        "python": {
+            "solution": "import asyncio\nimport aiohttp\n\nasync def fetch(session, url, sem):\n    async with sem:\n        try:\n            print(f\"Fetching {url}\")\n            async with session.get(url) as response:\n                data = await response.text()\n                print(f\"Done {url}: {len(data)} bytes\")\n                return len(data)\n        except Exception as e:\n            print(f\"Error {url}: {e}\")\n            return 0\n\nasync def main():\n    urls = [\n        \"http://example.com\",\n        \"http://python.org\",\n        \"http://google.com\"\n    ] * 5\n    \n    # Limit to 3 concurrent requests\n    sem = asyncio.Semaphore(3)\n    \n    async with aiohttp.ClientSession() as session:\n        tasks = [fetch(session, url, sem) for url in urls]\n        results = await asyncio.gather(*tasks)\n        \n    print(f\"Total bytes: {sum(results)}\")\n\n# asyncio.run(main())",
+            "annotations": [
+                {
+                    "lines": [
+                        4,
+                        5
+                    ],
+                    "text": "async with sem: автоматично захоплює/відпускає семафор, обмежуючи конкурентність."
+                },
+                {
+                    "lines": [
+                        7,
+                        8
+                    ],
+                    "text": "await session.get(): призупиняє цю корутину, дозволяючи Циклу Подій виконувати інші під час очікування мережі."
+                },
+                {
+                    "lines": [
+                        23
+                    ],
+                    "text": "asyncio.gather планує виконання всіх задач 'одночасно' в циклі."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(N) запитів",
+        "space": "O(N) об'єктів задач",
+        "explanation_time": "Загальний час ~= Max(Затримок), якщо конкурентність нескінченна, або N/limit * СередняЗатримка, якщо обмежена.",
+        "explanation_space": "Ефективні легкі корутини."
+    }
+}

@@ -1,0 +1,107 @@
+{
+    "id": "concurrency-java",
+    "title": "Обмежена Блокуюча Черга",
+    "difficulty": "Важкий",
+    "leetcode_url": "https://leetcode.com/problems/design-bounded-blocking-queue/",
+    "related": [
+        {
+            "id": "concurrency-rust",
+            "title": "Конкурентне KV Сховище",
+            "category": "concurrency"
+        }
+    ],
+    "tags": [
+        "java",
+        "багатопотоковість",
+        "синхронізація",
+        "монітори"
+    ],
+    "follow_up": {
+        "scenario": "Висока конкуренція з багатьма виробниками/споживачами.",
+        "trade_off": "Використання одного блокування створює вузьке місце. `synchronized` є важким.",
+        "strategy": "Використовуйте `ReentrantLock` з двома змінними Condition (`notFull`, `notEmpty`). Для екстремальної продуктивності використовуйте паттерн **Disruptor** (Кільцевий Буфер) або `atomic` змінні.",
+        "answering_guide": "Почніть з `synchronized` (патерн монітора). Потім покращте до `ReentrantLock` + `Condition` для рівня L5. Згадайте про помилкові пробудження (spurious wakeups) і цикл `while`."
+    },
+    "content": {
+        "problem_statement": "Реалізуйте потокобезпечну Обмежену Блокуючу Чергу з наступними методами:\n\n1.  `BoundedBlockingQueue(int capacity)`: Ініціалізує чергу з максимальною ємністю.\n2.  `void enqueue(int element)`: Додає елемент до черги. Якщо черга переповнена, викликаючий потік блокується, доки не з'явиться місце.\n3.  `int dequeue()`: Видаляє та повертає елемент з черги. Якщо черга порожня, викликаючий потік блокується, доки не з'явиться елемент.\n3.  `int size()`: Повертає поточний розмір черги.\n\nРеалізація повинна бути потокобезпечною та обробляти декілька конкурентних виробників та споживачів.",
+        "explanation": {
+            "understanding_the_problem": "Це класична задача Виробник-Споживач. Нам потрібно керувати доступом до спільного буфера так, щоб виробники чекали, коли він повний, а споживачі — коли порожній. Ми повинні забезпечити видимість пам'яті та атомарність.",
+            "brute_force": "Використання `while(full) {}` (активне очікування) марнує цикли CPU. Нам потрібен механізм, де потоки 'сплять' і 'прокидаються' лише при зміні стану.",
+            "bottleneck": "Одне блокування для операцій додавання та видалення зменшує паралелізм. Споживачі не обов'язково повинні блокувати виробників, якщо вони працюють з різними кінцями черги (хоча для простого обмеженого буфера одне блокування є стандартним).",
+            "optimized_approach": "Використовуйте патерн **Монітор**.\n-   **Топ 1**: `synchronized`, `wait()`, `notifyAll()`.\n-   **Топ 2 (Краще)**: `ReentrantLock` з двома об'єктами `Condition`: `notEmpty` та `notFull`.\n    -   Коли `enqueue`: заблокувати, поки повна -> `notFull.await()`, додати елемент, `notEmpty.signal()`, розблокувати.\n    -   Коли `dequeue`: заблокувати, поки порожня -> `notEmpty.await()`, видалити елемент, `notFull.signal()`, розблокувати.",
+            "algorithm_steps": "1.  Ініціалізуйте `Queue` (LinkedList), `capacity`, `ReentrantLock` та дві conditions.\n2.  `enqueue(val)`:\n    a.  Захопити Lock.\n    b.  Поки queue.size == capacity: `notFull.await()`.\n    c.  queue.add(val).\n    d.  `notEmpty.signal()` (розбудити очікуючого споживача).\n    e.  Відпустити Lock.\n3.  `dequeue()`:\n    a.  Захопити Lock.\n    b.  Поки queue.size == 0: `notEmpty.await()`.\n    c.  val = queue.remove().\n    d.  `notFull.signal()` (розбудити очікуючого виробника).\n    e.  Відпустити Lock."
+        },
+        "quizzes": [
+            {
+                "question": "Чому використовувати цикл 'while' замість 'if' для очікування?",
+                "options": [
+                    "Вимога синтаксису",
+                    "Для обробки помилкових пробуджень (Spurious Wakeups)",
+                    "Це швидше",
+                    "Щоб уникнути взаємоблокувань"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Яка перевага ReentrantLock перед synchronized?",
+                "options": [
+                    "Він завжди швидший",
+                    "Декілька змінних Condition",
+                    "Немає накладних витрат пам'яті",
+                    "Автоматичне розблокування"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Що станеться, якщо використати notify() замість notifyAll()?",
+                "options": [
+                    "Завжди працює нормально",
+                    "Ризик взаємоблокування (розбудити не той тип потоку)",
+                    "Викидає виняток",
+                    "Погіршення продуктивності"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "code": {
+        "java": {
+            "solution": "import java.util.LinkedList;\nimport java.util.Queue;\nimport java.util.concurrent.locks.Condition;\nimport java.util.concurrent.locks.Lock;\nimport java.util.concurrent.locks.ReentrantLock;\n\nclass BoundedBlockingQueue {\n    private Queue<Integer> queue;\n    private int capacity;\n    private Lock lock = new ReentrantLock();\n    private Condition notFull = lock.newCondition();\n    private Condition notEmpty = lock.newCondition();\n\n    public BoundedBlockingQueue(int capacity) {\n        this.capacity = capacity;\n        this.queue = new LinkedList<>();\n    }\n\n    public void enqueue(int element) throws InterruptedException {\n        lock.lock();\n        try {\n            while (queue.size() == capacity) {\n                notFull.await();\n            }\n            queue.add(element);\n            notEmpty.signal();\n        } finally {\n            lock.unlock();\n        }\n    }\n\n    public int dequeue() throws InterruptedException {\n        lock.lock();\n        try {\n            while (queue.size() == 0) {\n                notEmpty.await();\n            }\n            int item = queue.remove();\n            notFull.signal();\n            return item;\n        } finally {\n            lock.unlock();\n        }\n    }\n\n    public int size() {\n        lock.lock();\n        try {\n            return queue.size();\n        } finally {\n            lock.unlock();\n        }\n    }\n}",
+            "annotations": [
+                {
+                    "lines": [
+                        9,
+                        10
+                    ],
+                    "text": "Дві Conditions дозволяють точне сигналізування. Виробники будять лише споживачів, споживачі — лише виробників."
+                },
+                {
+                    "lines": [
+                        18,
+                        19,
+                        20
+                    ],
+                    "text": "Потрібно використовувати цикл 'while' для захисту від помилкових пробуджень (пробудження без виконання умови)."
+                },
+                {
+                    "lines": [
+                        22
+                    ],
+                    "text": "signal() будить один очікуючий потік. Оскільки у нас є конкретні умови, це ефективно."
+                },
+                {
+                    "lines": [
+                        24
+                    ],
+                    "text": "Завжди розблоковуйте в блоці 'finally', щоб запобігти взаємоблокуванням у випадку помилки."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(1) на операцію",
+        "space": "O(N) для зберігання",
+        "explanation_time": "Операції включають маніпуляції з чергою за константний час та захоплення блокування.",
+        "explanation_space": "Простір відповідає ємності черги."
+    }
+}

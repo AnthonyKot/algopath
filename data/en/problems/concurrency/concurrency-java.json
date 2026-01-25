@@ -1,0 +1,106 @@
+{
+    "id": "concurrency-java",
+    "title": "Bounded Blocking Queue",
+    "difficulty": "Hard",
+    "leetcode_url": "https://leetcode.com/problems/design-bounded-blocking-queue/",
+    "related": [
+        {
+            "id": "concurrency-rust",
+            "title": "Concurrent KV Store",
+            "category": "concurrency"
+        }
+    ],
+    "tags": [
+        "java",
+        "multithreading",
+        "synchronization",
+        "monitors"
+    ],
+    "follow_up": {
+        "scenario": "High contention with many producers/consumers.",
+        "trade_off": "Using a single lock causes a bottleneck. `synchronized` is heavy.",
+        "strategy": "Use `ReentrantLock` with two Condition variables (`notFull`, `notEmpty`). For extreme performance, use **Disruptor** (Ring Buffer) pattern or `atomic` variables.",
+        "answering_guide": "Start with `synchronized` (monitor pattern). Then upgrade to `ReentrantLock` + `Condition` for L5. Mention spurious wakeups (`while` loop)."
+    },
+    "content": {
+        "problem_statement": "Implement a thread-safe Bounded Blocking Queue with the following methods:\n\n1.  `BoundedBlockingQueue(int capacity)`: Initializes the queue with a maximum capacity.\n2.  `void enqueue(int element)`: Adds an element to the queue. If the queue is full, the calling thread is blocked until space becomes available.\n3.  `int dequeue()`: Removes and returns an element from the queue. If the queue is empty, the calling thread is blocked until an element becomes available.\n3.  `int size()`: Returns the current size of the queue.\n\nThe implementation must be thread-safe and handle multiple concurrent producers and consumers.",
+        "explanation": {
+            "understanding_the_problem": "This is the classic Producer-Consumer problem. We need to manage access to a shared buffer such that producers wait when full, and consumers wait when empty. We must ensure memory visibility and atomicity.",
+            "brute_force": "Using `while(full) {}` (busy waiting) burns CPU cycles unnecessarily. We need a mechanism where threads 'sleep' and are 'woken up' only when state changes.",
+            "bottleneck": "A single lock for both enqueue and dequeue operations reduces parallelism. Consumers shouldn't necessarily block producers if they are operating on different ends of the queue (though for a simple bounded buffer, a single lock is standard).",
+            "optimized_approach": "Use a **Monitor** pattern.\n-   **Top 1**: `synchronized`, `wait()`, `notifyAll()`.\n-   **Top 2 (Better)**: `ReentrantLock` with two `Condition` objects: `notEmpty` and `notFull`.\n    -   When `enqueue`: lock, while full -> `notFull.await()`, add item, `notEmpty.signal()`, unlock.\n    -   When `dequeue`: lock, while empty -> `notEmpty.await()`, remove item, `notFull.signal()`, unlock.",
+            "algorithm_steps": "1.  Initialize a `Queue` (LinkedList), `capacity`, `ReentrantLock`, and two conditions.\n2.  `enqueue(val)`:\n    a.  Acquire Lock.\n    b.  While queue.size == capacity: `notFull.await()`.\n    c.  queue.add(val).\n    d.  `notEmpty.signal()` (wake up a waiting consumer).\n    e.  Release Lock.\n3.  `dequeue()`:\n    a.  Acquire Lock.\n    b.  While queue.size == 0: `notEmpty.await()`.\n    c.  val = queue.remove().\n    d.  `notFull.signal()` (wake up a waiting producer).\n    e.  Release Lock."
+        },
+        "quizzes": [
+            {
+                "question": "Why use 'while' loop instead of 'if' for waiting?",
+                "options": [
+                    "Syntax requirement",
+                    "To handle Spurious Wakeups",
+                    "It's faster",
+                    "To avoid deadlocks"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "What is the advantage of ReentrantLock over synchronized?",
+                "options": [
+                    "It's strictly faster",
+                    "Multiple Condition variables",
+                    "No memory overhead",
+                    "Automatic unlocking"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "What happens if we use notify() instead of notifyAll()?",
+                "options": [
+                    "Always works fine",
+                    "Risk of deadlock (waking wrong thread type)",
+                    "Throws exception",
+                    "Performance degradation"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "code": {
+        "java": {
+            "solution": "import java.util.LinkedList;\nimport java.util.Queue;\nimport java.util.concurrent.locks.Condition;\nimport java.util.concurrent.locks.Lock;\nimport java.util.concurrent.locks.ReentrantLock;\n\nclass BoundedBlockingQueue {\n    private Queue<Integer> queue;\n    private int capacity;\n    private Lock lock = new ReentrantLock();\n    private Condition notFull = lock.newCondition();\n    private Condition notEmpty = lock.newCondition();\n\n    public BoundedBlockingQueue(int capacity) {\n        this.capacity = capacity;\n        this.queue = new LinkedList<>();\n    }\n\n    public void enqueue(int element) throws InterruptedException {\n        lock.lock();\n        try {\n            while (queue.size() == capacity) {\n                notFull.await();\n            }\n            queue.add(element);\n            notEmpty.signal();\n        } finally {\n            lock.unlock();\n        }\n    }\n\n    public int dequeue() throws InterruptedException {\n        lock.lock();\n        try {\n            while (queue.size() == 0) {\n                notEmpty.await();\n            }\n            int item = queue.remove();\n            notFull.signal();\n            return item;\n        } finally {\n            lock.unlock();\n        }\n    }\n\n    public int size() {\n        lock.lock();\n        try {\n            return queue.size();\n        } finally {\n            lock.unlock();\n        }\n    }\n}",
+            "annotations": [
+                {
+                    "lines": [
+                        9,
+                        10
+                    ],
+                    "text": "Two Conditions allow fine-grained signaling. Producers only wake consumers, consumers only wake producers."
+                },
+                {
+                    "lines": [
+                        18,
+                        20
+                    ],
+                    "text": "Must use 'while' loop to guard against spurious wakeups (waking up without condition being true)."
+                },
+                {
+                    "lines": [
+                        22
+                    ],
+                    "text": "signal() wakes one waiting thread. Since we have specific conditions, this is efficient."
+                },
+                {
+                    "lines": [
+                        24
+                    ],
+                    "text": "Always unlock in 'finally' block to prevent deadlocks if exception occurs."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(1) per operation",
+        "space": "O(N) for storage",
+        "explanation_time": "Operations involve constant time queue manipulations and lock acquisitions.",
+        "explanation_space": "Space matches the capacity of the queue."
+    }
+}

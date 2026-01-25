@@ -1,0 +1,113 @@
+{
+    "id": "concurrency-js",
+    "title": "Custom Worker Pool",
+    "difficulty": "Hard",
+    "leetcode_url": "https://nodejs.org/api/worker_threads.html",
+    "related": [
+        {
+            "id": "concurrency-go",
+            "title": "Distributed Task Scheduler",
+            "category": "concurrency"
+        },
+        {
+            "id": "concurrency-python",
+            "title": "Async Web Crawler",
+            "category": "concurrency"
+        }
+    ],
+    "tags": [
+        "nodejs",
+        "worker-threads",
+        "concurrency",
+        "event-loop"
+    ],
+    "follow_up": {
+        "scenario": "Tasks have different priorities (High/Low).",
+        "trade_off": "Priority Queues introduce starvation risk for low-priority tasks.",
+        "strategy": "Implement a **Multi-Level Feedback Queue** or simple Priority Queue. Ensure 'aging' prevents starvation.",
+        "answering_guide": "Mention **'Event Loop Blocking'** as the primary evil. Explain that `worker_threads` share memory (unlike `child_process`), making them more lightweight but ensuring thread-safety is manual (buffers)."
+    },
+    "content": {
+        "problem_statement": "Node.js is single-threaded (Event Loop). CPU-intensive tasks (like crypto, image processing, or matrix math) will **block** the main thread, making the server unresponsive to new requests.\n\nDesign a generic `WorkerPool` class using the `worker_threads` module to offload these tasks.\n\n**Requirements:**\n1.  Initialize with a fixed pool size (e.g., number of CPU cores).\n2.  `run(taskData)`: Returns a Promise that resolves when a worker completes the task.\n3.  **Queueing**: If all workers are busy, the task should be queued and executed as soon as a worker becomes free.\n4.  **Resource Management**: Workers should be reused, not recreated for every task.\n\n**Example Usage:**\n```javascript\nconst pool = new WorkerPool(4); // 4 threads\n\npool.run({ type: 'encrypt', data: 'secret' })\n  .then(result => console.log(result))\n  .catch(err => console.error(err));\n```",
+        "explanation": {
+            "understanding_the_problem": "In Node.js, the Event Loop handles I/O efficiently, but a `while(true)` or `fibonacci(45)` on the main thread stops everything. We need 'real' threads for CPU work. `worker_threads` gives us this. Creating a worker is expensive, so a **Pool** pattern is essential to reuse threads.",
+            "brute_force": "Spawning a new `Worker` for every incoming request. \n**Why it fails**: Thread creation overhead is high (memory + startup time). If 1000 requests come in, spawning 1000 threads will crash the server (OOM). We need to throttle concurrency.",
+            "bottleneck": "The number of concurrent threads supported by the OS/hardware. Attempting to run more threads than cores results in excessive context switching.",
+            "optimized_approach": "1.  **Pool Initialization**: Create `N` workers at startup. Keep them idle.\n2.  **Task Queue**: Use a FIFO queue (array) to store tasks (`{ taskData, resolve, reject }`) when no workers are free.\n3.  **Scheduling**: As soon as a worker finishes (via `message` event), check the queue. If it has items, assign the next item to this worker immediately. If empty, mark the worker as 'free'.",
+            "algorithm_steps": "1.  **Constructor**: creating `numThreads` workers. Store them in a `workers` array. Also maintain a `freeWorkers` list (or flags) and a `tasks` queue.\n2.  **`run(data)`**: return a `new Promise`. \n    a. If a worker is free, pop it, assign the task (send `postMessage`), and map the worker ID to the promise's `resolve`/`reject` callbacks.\n    b. If no worker is free, push the `{ data, resolve, reject }` object to the `tasks` queue.\n3.  **Worker Communication**: Listen for `'message'`, `'error'`, and `'exit'` on workers.\n4.  **Completion**: When a worker sends a result:\n    a. Resolve the promise associated with the current task.\n    b. Check the `tasks` queue. \n    c. If queue has tasks, pull one and run it on this worker.\n    d. If queue is empty, push this worker back to `freeWorkers`."
+        },
+        "quizzes": [
+            {
+                "question": "Why use worker_threads over child_process?",
+                "options": [
+                    "They are faster to start",
+                    "They share memory space",
+                    "They are single-threaded",
+                    "They have no overhead"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "What happens if we block the Event Loop?",
+                "options": [
+                    "Nothing, it's fine",
+                    "New I/O requests hang",
+                    "Threads are created automatically",
+                    "Memory cleans up"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Why do we need a Queue in the Pool?",
+                "options": [
+                    "To store results",
+                    "To handle backpressure when all threads are busy",
+                    "To sort tasks by size",
+                    "To log errors"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "code": {
+        "javascript": {
+            "solution": "const { Worker } = require('worker_threads');\nconst path = require('path');\n\nclass WorkerPool {\n  constructor(numThreads) {\n    this.numThreads = numThreads;\n    this.workers = [];\n    this.freeWorkers = [];\n    this.tasks = [];\n\n    for (let i = 0; i < numThreads; i++) {\n      this.addNewWorker();\n    }\n  }\n\n  addNewWorker() {\n    const worker = new Worker(path.resolve(__dirname, 'task_processor.js'));\n    \n    worker.on('message', (result) => {\n      // 1. Resolve the *current* task for this worker\n      if (worker.currentTask) {\n        worker.currentTask.resolve(result);\n        worker.currentTask = null;\n      }\n      // 2. Check for more work\n      this.processNextTask(worker);\n    });\n\n    worker.on('error', (err) => {\n      if (worker.currentTask) worker.currentTask.reject(err);\n      // Replace dead worker\n      this.replaceWorker(worker);\n    });\n\n    this.workers.push(worker);\n    this.freeWorkers.push(worker);\n  }\n\n  run(taskData) {\n    return new Promise((resolve, reject) => {\n      if (this.freeWorkers.length > 0) {\n        const worker = this.freeWorkers.pop();\n        this.executeTask(worker, { taskData, resolve, reject });\n      } else {\n        this.tasks.push({ taskData, resolve, reject });\n      }\n    });\n  }\n\n  executeTask(worker, task) {\n    worker.currentTask = task;\n    worker.postMessage(task.taskData);\n  }\n\n  processNextTask(worker) {\n    if (this.tasks.length > 0) {\n      const nextTask = this.tasks.shift();\n      this.executeTask(worker, nextTask);\n    } else {\n      this.freeWorkers.push(worker);\n    }\n  }\n\n  replaceWorker(deadWorker) {\n    const idx = this.workers.indexOf(deadWorker);\n    if (idx !== -1) this.workers.splice(idx, 1);\n    deadWorker.terminate();\n    this.addNewWorker();\n  }\n}",
+            "annotations": [
+                {
+                    "lines": [
+                        2,
+                        10
+                    ],
+                    "text": "Each worker runs a script ('task_processor.js') in a separate thread context."
+                },
+                {
+                    "lines": [
+                        6,
+                        7
+                    ],
+                    "text": "State management: 'freeWorkers' tracks idle threads, 'tasks' handles overflow."
+                },
+                {
+                    "lines": [
+                        46,
+                        50
+                    ],
+                    "text": "run(): Returns a Promise immediately. Either executes now (if free) or queues for later."
+                },
+                {
+                    "lines": [
+                        62,
+                        66
+                    ],
+                    "text": "Scheduler: When a worker finishes, it immediately grabs the next task from the queue. No idle time if work exists."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(1) scheduling",
+        "space": "O(N) pool size",
+        "explanation_time": "Submitting a task is O(1) (push to queue or pop worker). Execution depends on the task itself.",
+        "explanation_space": "We store N worker instances and a queue of pending tasks."
+    }
+}

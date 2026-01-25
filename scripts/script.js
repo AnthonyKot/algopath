@@ -460,7 +460,16 @@ const UI = {
             prismScript.id = 'prism-js';
             prismScript.src = 'vendor/prism/prism.min.js';
             prismScript.onload = () => {
-                setTimeout(() => ProblemRenderer.applySyntaxHighlighting(), 100);
+                // Load additional languages
+                const languages = ['java', 'rust', 'go', 'python'];
+                languages.forEach(lang => {
+                    const langScript = document.createElement('script');
+                    langScript.src = `vendor/prism/components/prism-${lang}.min.js`;
+                    document.head.appendChild(langScript);
+                });
+
+                // Give a bit more time for langs to load
+                setTimeout(() => ProblemRenderer.applySyntaxHighlighting(), 300);
             };
             document.head.appendChild(prismScript);
         }
@@ -756,6 +765,15 @@ const QuizSystem = {
             const nextQuiz = document.querySelector(`.quiz-gate[data-problem-id="${problemId}"][data-quiz-index="${quizIndex + 1}"]`);
             if (nextQuiz) {
                 nextQuiz.classList.add('active');
+            } else {
+                // No more quizzes: Reveal ALL remaining sections (Code, Complexity, etc.)
+                document.querySelectorAll(`.gated-section[data-problem-id="${problemId}"]`).forEach(sec => {
+                    const idx = parseInt(sec.getAttribute('data-section-index'));
+                    if (idx > quizIndex) {
+                        sec.classList.remove('locked');
+                        sec.classList.add('revealed');
+                    }
+                });
             }
 
             // Re-apply syntax highlighting for revealed code
@@ -899,21 +917,58 @@ const ProblemRenderer = {
     normalizeProblem(problem) {
         // If already in old format, return as-is
         if (problem.problem_statement && !problem.content) {
-            return problem;
+            return { ...problem, language: 'javascript' };
         }
 
         // Extract from new nested structure
         const content = problem.content || {};
-        const codeData = problem.code?.[this.currentCodeLanguage] || {};
+        let codeData = {};
+        let detectedLang = this.currentCodeLanguage;
+
+        // Try to find code for current language, or fallback to first available
+        // Try to find code for current language, or fallback to first available
+        if (problem.code) {
+            // Check if problem.code is in the old format (string)
+            if (typeof problem.code === 'string') {
+                codeData = { solution: problem.code };
+                detectedLang = 'javascript';
+            }
+            else if (problem.code[this.currentCodeLanguage]) {
+                codeData = problem.code[this.currentCodeLanguage];
+            } else if (typeof problem.code === 'object' && !problem.code.solution) {
+                // If it's an object of languages (and not the old flattened structure)
+                const availableLangs = Object.keys(problem.code);
+                if (availableLangs.length > 0) {
+                    detectedLang = availableLangs[0];
+                    codeData = problem.code[detectedLang];
+                }
+            } else {
+                console.warn('Code structure unrecognized:', problem.code);
+            }
+        }
+
+        let normalizedCode = codeData.solution || problem.code;
+
+        // Final safety check: ensure strictly string or null
+        if (typeof normalizedCode !== 'string') {
+            // If it was the whole object, and we failed to extract solution, try to use it if it's a string (legacy)
+            // But if it's an object, we must output null to avoid renderer crash
+            if (typeof problem.code === 'string') {
+                normalizedCode = problem.code;
+            } else {
+                normalizedCode = null;
+            }
+        }
 
         return {
             ...problem,
+            language: detectedLang,
             // Flatten content for backward compatibility
             problem_statement: content.problem_statement || problem.problem_statement,
             explanation: content.explanation || problem.explanation,
             quizzes: content.quizzes || problem.quizzes || [],
             // Flatten code for backward compatibility
-            code: codeData.solution || problem.code,
+            code: normalizedCode,
             annotations: codeData.annotations || problem.annotations || []
         };
     },
@@ -921,9 +976,10 @@ const ProblemRenderer = {
     // Renders the new, detailed walkthrough format with quiz-gated progressive reveal
     renderDetailedProblemCard(problem) {
         const difficultyClass = this.getDifficultyClass(problem.difficulty);
-        const tagsHtml = problem.tags.join(', ');
+        const tagsHtml = (problem.tags || []).join(', ');
         const explanation = problem.explanation;
         const quizzes = problem.quizzes || [];
+        const langClass = `language-${problem.language || 'javascript'}`;
 
         // Helper to format markdown-style explanation text to HTML
         const formatMarkdown = (text) => {
@@ -1043,18 +1099,34 @@ const ProblemRenderer = {
         const renderQuiz = (quiz, index, problemId) => {
             if (!quiz) return '';
             const checkBtn = LanguageSystem.t('problem.checkAnswer') || 'Check Answer';
+
+            // Randomize options
+            const optionsWithData = quiz.options.map((opt, i) => ({
+                text: opt,
+                isCorrect: i === quiz.correct
+            }));
+
+            // Fisher-Yates shuffle
+            for (let i = optionsWithData.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [optionsWithData[i], optionsWithData[j]] = [optionsWithData[j], optionsWithData[i]];
+            }
+
+            // Find new correct index
+            const newCorrectIndex = optionsWithData.findIndex(o => o.isCorrect);
+
             return `
                 <div class="quiz-gate" data-quiz-index="${index}" data-problem-id="${problemId}">
                     <div class="quiz-question">\uD83E\uDD14 ${quiz.question}</div>
                     <div class="quiz-options">
-                        ${quiz.options.map((opt, i) => `
+                        ${optionsWithData.map((opt, i) => `
                             <label class="quiz-option">
                                 <input type="radio" name="quiz-${problemId}-${index}" value="${i}">
-                                <span class="quiz-option-text">${opt}</span>
+                                <span class="quiz-option-text">${opt.text}</span>
                             </label>
                         `).join('')}
                     </div>
-                    <button class="quiz-check-btn" onclick="QuizSystem.checkAnswer('${problemId}', ${index}, ${quiz.correct})">
+                    <button class="quiz-check-btn" onclick="QuizSystem.checkAnswer('${problemId}', ${index}, ${newCorrectIndex})">
                         ${checkBtn}
                     </button>
                     <div class="quiz-feedback"></div>
@@ -1098,7 +1170,7 @@ const ProblemRenderer = {
                 id: 'code',
                 title: `${sections.length + 2}. ${LanguageSystem.t('problem.codeTitle') || 'Code Implementation'}`,
                 content: `<div class="code-snippet">
-                            <pre><code class="language-javascript" data-annotations="${this.escapeHtml(JSON.stringify(problem.annotations || []))}">${this.escapeHtml(problem.code)}</code></pre>
+                            <pre><code class="${langClass}" data-annotations="${this.escapeHtml(JSON.stringify(problem.annotations || []))}">${this.escapeHtml(problem.code)}</code></pre>
                           </div>`
             });
         }
@@ -1127,7 +1199,7 @@ const ProblemRenderer = {
                     ${quiz ? renderQuiz(quiz, idx, problem.id) : ''}
                     <div class="explanation-section gated-section ${isLocked ? 'locked' : ''}" 
                          data-section-index="${idx}" data-problem-id="${problem.id}">
-                        <h4>${section.title}</h4>
+                         <h4>${section.title}</h4>
                         ${section.content}
                     </div>
                 `;
@@ -1138,7 +1210,7 @@ const ProblemRenderer = {
             <div id="${problem.id}" class="problem-card detailed-walkthrough collapsed" data-has-quizzes="${hasQuizzes}">
                 <div class="card-header" onclick="this.parentElement.classList.toggle('collapsed')">
                     <h3>
-                        ${problem.tags.includes('bridges') ? '<i class="fas fa-archway" style="color:var(--accent-primary); margin-right:8px; font-size:0.9em;" title="Graph Bridge Problem"></i>' : ''}
+                        ${(problem.tags || []).includes('bridges') ? '<i class="fas fa-archway" style="color:var(--accent-primary); margin-right:8px; font-size:0.9em;" title="Graph Bridge Problem"></i>' : ''}
                         ${LanguageSystem.getProblemTitle(problem.id, problem.title)}
                     </h3>
                     <div class="header-right">
@@ -1183,14 +1255,11 @@ const ProblemRenderer = {
                     <!-- Quiz-Gated Sections -->
                     ${renderSections()}
 
+
                     <!-- Senior Follow-up -->
                     ${renderFollowUp(problem.follow_up)}
 
-
-
-
-
-                    ${problem.leetcode_url ? `
+                    ${(problem.leetcode_url && (problem.leetcode_url.includes('leetcode.com') || problem.leetcode_url.includes('lintcode.com'))) ? `
                     <div class="practice-actions">
                         <a href="${problem.leetcode_url}" target="_blank" rel="noopener noreferrer" class="btn-leetcode">
                             <i class="fas fa-code"></i> ${LanguageSystem.t('problem.solveOnLeetcode') || 'Solve on LeetCode'}
@@ -1220,6 +1289,7 @@ const ProblemRenderer = {
         const difficultyClass = this.getDifficultyClass(problem.difficulty);
         const tags = problem.tags || [];
         const tagsHtml = tags.join(', ');
+        const langClass = `language-${problem.language || 'javascript'}`;
 
         return `
             <div class="problem-card">
@@ -1233,7 +1303,7 @@ const ProblemRenderer = {
                 <p><strong>Problem:</strong> ${problem.description}</p>
                 <p><strong>Complexity:</strong> <code class="language-text">Time: ${problem.complexity.time} | Space: ${problem.complexity.space}</code></p>
                 <div class="code-snippet">
-                    <pre><code class="language-javascript">${this.escapeHtml(problem.code)}</code></pre>
+                    <pre><code class="${langClass}">${this.escapeHtml(problem.code)}</code></pre>
                 </div>
                 <div class="insights">
                     <strong>Key Insight:</strong> ${problem.insight}
@@ -1450,6 +1520,7 @@ const ProblemRenderer = {
             'design.html': 'design',
             'optimization.html': 'optimization',
             'physics.html': 'physics',
+            'concurrency.html': 'concurrency',
             'specialized.html': 'specialized'
         };
         return categoryMap[filename] || null;

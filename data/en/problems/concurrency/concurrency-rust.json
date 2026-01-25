@@ -1,0 +1,104 @@
+{
+    "id": "concurrency-rust",
+    "title": "Concurrent Key-Value Store",
+    "difficulty": "Hard",
+    "leetcode_url": "https://doc.rust-lang.org/std/sync/struct.RwLock.html",
+    "related": [
+        {
+            "id": "concurrency-java",
+            "title": "Bounded Blocking Queue",
+            "category": "concurrency"
+        }
+    ],
+    "tags": [
+        "rust",
+        "arc",
+        "rwlock",
+        "thread-safety"
+    ],
+    "follow_up": {
+        "scenario": "Read-heavy workload (99% reads, 1% writes).",
+        "trade_off": "`Mutex` locks everything, forcing readers to wait for other readers.",
+        "strategy": "Use `RwLock` (Read-Write Lock) which allows multiple simultaneous readers but exclusive writer. For even higher scale, use **Sharding** (DashMap) to reduce lock contention.",
+        "answering_guide": "Highlight Rust's **compile-time guarantees**. You literally *cannot* misuse the data without locking it. Suggest `DashMap` as the production-grade answer."
+    },
+    "content": {
+        "problem_statement": "Implement a thread-safe Key-Value Store in Rust that supports simultaneous reads but exclusive writes.\n\n**Requirements:**\n1.  `new()`: Creates a new store.\n2.  `insert(key, value)`: Insert a pair. Thread-safe.\n3.  `get(key)`: Returns the value. Multithreaded friendly (multiple readers allowed).\n4.  The store must be shareable across threads (implying `Arc`).",
+        "explanation": {
+            "understanding_the_problem": "We need to share a `HashMap` across threads. In Rust, ownership rules prevent simple sharing. We need `Arc` (Atomic Reference Counted) pointer for shared ownership and interior mutability pattern for modification.",
+            "brute_force": "Wrap a `HashMap` in a `Mutex`. `Arc<Mutex<HashMap>>`. This works safe, but kills performance on read-heavy loads because a reader blocks other readers.",
+            "bottleneck": "Lock contention on a single Mutex.",
+            "optimized_approach": "Use `RwLock` (Read-Write Lock). It allows multiple readers to access the data concurrently. Writers get exclusive access. The type becomes `Arc<RwLock<HashMap<K, V>>>`.",
+            "algorithm_steps": "1.  Struct `KVStore` holds an `inner` field of type `Arc<RwLock<HashMap<String, String>>>`.\n2.  `insert`: \n    a.  Acquire write lock: `self.inner.write().unwrap()`.\n    b.  Insert data.\n3.  `get`:\n    a.  Acquire read lock: `self.inner.read().unwrap()`.\n    b.  Read data. Clone it if returning owned data, or return reference if lifetime permits."
+        },
+        "quizzes": [
+            {
+                "question": "What does Arc do?",
+                "options": [
+                    "Locks the data",
+                    "Provides shared ownership via thread-safe reference counting",
+                    "Prevents data races",
+                    "Allocates on stack"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Why use RwLock vs Mutex?",
+                "options": [
+                    "RwLock is always faster",
+                    "RwLock allows multiple concurrent readers",
+                    "Mutex cannot be shared",
+                    "RwLock doesn't panic"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "What happens if a thread panics while holding a lock?",
+                "options": [
+                    "Deadlock",
+                    "Lock poisoning",
+                    "Memory leak",
+                    "System crash"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "code": {
+        "rust": {
+            "solution": "use std::collections::HashMap;\nuse std::sync::{Arc, RwLock};\nuse std::thread;\n\n#[derive(Clone)]\nstruct KVStore {\n    // Arc for shared ownership, RwLock for interior mutability\n    inner: Arc<RwLock<HashMap<String, String>>>,\n}\n\nimpl KVStore {\n    fn new() -> Self {\n        KVStore {\n            inner: Arc::new(RwLock::new(HashMap::new())),\n        }\n    }\n\n    fn insert(&self, key: String, value: String) {\n        // Acquire write lock - blocks all other readers/writers\n        let mut map = self.inner.write().unwrap();\n        map.insert(key, value);\n    }\n\n    fn get(&self, key: &str) -> Option<String> {\n        // Acquire read lock - allows other readers\n        let map = self.inner.read().unwrap();\n        map.get(key).cloned()\n    }\n}\n\nfn main() {\n    let store = KVStore::new();\n    let mut handles = vec![];\n\n    // Spawn 10 writer threads\n    for i in 0..10 {\n        let store_clone = store.clone();\n        handles.push(thread::spawn(move || {\n            store_clone.insert(format!(\"key{}\", i), format!(\"val{}\", i));\n        }));\n    }\n\n    // Spawn 10 reader threads\n    for i in 0..10 {\n        let store_clone = store.clone();\n        handles.push(thread::spawn(move || {\n            match store_clone.get(&format!(\"key{}\", i)) {\n                Some(v) => println!(\"Read: {}\", v),\n                None => println!(\"Key not found\"),\n            }\n        }));\n    }\n\n    for h in handles {\n        h.join().unwrap();\n    }\n}",
+            "annotations": [
+                {
+                    "lines": [
+                        7
+                    ],
+                    "text": "The Holy Trinity of Rust concurrency: Arc (Share) + RwLock (Mutate) + HashMap (Data)."
+                },
+                {
+                    "lines": [
+                        16
+                    ],
+                    "text": ".write() blocks until no readers or writers exist. Returns a RAII guard."
+                },
+                {
+                    "lines": [
+                        22
+                    ],
+                    "text": ".read() allows multiple threads to enter efficiently."
+                },
+                {
+                    "lines": [
+                        34
+                    ],
+                    "text": "store.clone() only increments the atomic reference count, it is cheap."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(1) average",
+        "space": "O(N) data size",
+        "explanation_time": "HashMap operations are O(1). Locking overhead is minimal unless high contention.",
+        "explanation_space": "Standard HashMap memory usage."
+    }
+}

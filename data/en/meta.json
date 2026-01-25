@@ -54,6 +54,33 @@
         "description": "Advanced Graph Algorithms for senior-level FAANG interviews: flows, matching, shortest paths."
       }
     },
+    "concurrency": {
+      "id": "concurrency",
+      "name": "Concurrency & Multithreading",
+      "shortName": "Concurrency",
+      "description": "Master the art of parallel execution. From Java's Monitors to Go's Channels and Rust's safety guarantees, understand how to build high-performance, thread-safe systems.",
+      "sectionTitle": "Key Concurrency Patterns",
+      "problemIds": [
+        "concurrency-js",
+        "concurrency-java",
+        "concurrency-rust",
+        "concurrency-go",
+        "concurrency-python"
+      ],
+      "stats": {
+        "priority": "Critical Priority",
+        "priorityColor": "#e74c3c",
+        "metric": "12,504",
+        "metricLabel": "Frequency",
+        "trend": "Growing",
+        "successRate": "45.8%",
+        "metricDivider": 1
+      },
+      "seo": {
+        "title": "Concurrency Patterns - L5 FAANG Algorithms Guide",
+        "description": "Advanced Concurrency and Multithreading interview problems for Senior Engineers."
+      }
+    },
     "trees": {
       "id": "trees",
       "name": "Advanced Tree Algorithms",

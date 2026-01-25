@@ -1,0 +1,113 @@
+{
+    "id": "concurrency-js",
+    "title": "Власний Пул Воркерів",
+    "difficulty": "Важкий",
+    "leetcode_url": "https://nodejs.org/api/worker_threads.html",
+    "related": [
+        {
+            "id": "concurrency-go",
+            "title": "Розподілений Планувальник Задач",
+            "category": "concurrency"
+        },
+        {
+            "id": "concurrency-python",
+            "title": "Асинхронний Веб-Кроулер",
+            "category": "concurrency"
+        }
+    ],
+    "tags": [
+        "nodejs",
+        "worker-threads",
+        "багатопотоковість",
+        "event-loop"
+    ],
+    "follow_up": {
+        "scenario": "Задачі мають різні пріоритети (Високий/Низький).",
+        "trade_off": "Пріоритетні черги створюють ризик голодування для задач з низьким пріоритетом.",
+        "strategy": "Реалізуйте **Багаторівневу Чергу зі Зворотним Зв'язком (MLFQ)** або просту Пріоритетну Чергу. Забезпечте 'старіння' (aging), щоб запобігти голодуванню.",
+        "answering_guide": "Згадайте **'Блокування Event Loop'** як головне зло. Поясніть, що `worker_threads` мають спільну пам'ять (на відміну від `child_process`), що робить їх легшими, але вимагає ручного забезпечення потокобезпеки (буфери)."
+    },
+    "content": {
+        "problem_statement": "Node.js є однопотоковим (Event Loop). Задачі, інтенсивні для CPU (як криптографія, обробка зображень або матрична математика), **блокуватимуть** головний потік, роблячи сервер нечутливим до нових запитів.\n\nРозробіть універсальний клас `WorkerPool` використовуючи модуль `worker_threads` для розвантаження цих задач.\n\n**Вимоги:**\n1.  Ініціалізація з фіксованим розміром пулу (наприклад, кількістю ядер CPU).\n2.  `run(taskData)`: Повертає Promise, який виконується, коли воркер завершує задачу.\n3.  **Черга**: Якщо всі воркери зайняті, задача має ставати в чергу і виконуватися, як тільки звільниться воркер.\n4.  **Управління ресурсами**: Воркери повинні використовуватися повторно, а не створюватися заново для кожної задачі.\n\n**Приклад використання:**\n```javascript\nconst pool = new WorkerPool(4); // 4 потоки\n\npool.run({ type: 'encrypt', data: 'secret' })\n  .then(result => console.log(result))\n  .catch(err => console.error(err));\n```",
+        "explanation": {
+            "understanding_the_problem": "У Node.js Event Loop ефективно обробляє ввід/вивід, але `while(true)` або `fibonacci(45)` на головному потоці зупиняє все. Нам потрібні 'справжні' потоки для роботи з CPU. `worker_threads` надає нам це. Створення воркера є дорогий, тому патерн **Pool** є важливим для повторного використання потоків.",
+            "brute_force": "Створення нового `Worker` для кожного вхідного запиту. \n**Чому це погано**: Накладні витрати на створення потоків високі (пам'ять + час запуску). Якщо надходить 1000 запитів, створення 1000 потоків призведе до падіння сервера (OOM). Нам потрібно обмежувати конкурентність.",
+            "bottleneck": "Кількість одночасних потоків, що підтримуються ОС/апаратним забезпеченням. Спроба запустити більше потоків, ніж є ядер, призводить до надмірного перемикання контексту.",
+            "optimized_approach": "1.  **Ініціалізація Пулу**: Створіть `N` воркерів на старті. Тримайте їх у стані очікування.\n2.  **Черга Задач**: Використовуйте FIFO чергу (масив) для зберігання задач (`{ taskData, resolve, reject }`), коли немає вільних воркерів.\n3.  **Планування**: Як тільки воркер завершує роботу (через подію `message`), перевірте чергу. Якщо в ній є елементи, призначте наступний елемент цьому воркеру негайно. Якщо порожня, позначте воркера як 'вільного'.",
+            "algorithm_steps": "1.  **Конструктор**: створення `numThreads` воркерів. Зберігайте їх у масиві `workers`. Також підтримуйте список `freeWorkers` (або прапорці) та чергу `tasks`.\n2.  **`run(data)`**: повернути новий `Promise`. \n    a. Якщо є вільний воркер, візьміть його, призначте задачу (надішліть `postMessage`) і збережіть колбеки `resolve`/`reject` промісу.\n    b. Якщо немає вільного воркера, додайте об'єкт `{ data, resolve, reject }` до черги `tasks`.\n3.  **Комунікація Воркерів**: Слухайте події `'message'`, `'error'` та `'exit'` на воркерах.\n4.  **Завершення**: Коли воркер надсилає результат:\n    a. Виконайте проміс, пов'язаний з поточною задачею.\n    b. Перевірте чергу `tasks`. \n    c. Якщо черга має задачі, візьміть одну і запустіть на цьому воркері.\n    d. Якщо черга порожня, поверніть воркера до `freeWorkers`."
+        },
+        "quizzes": [
+            {
+                "question": "Чому варто використовувати worker_threads замість child_process?",
+                "options": [
+                    "Вони швидше запускаються",
+                    "Вони мають спільну пам'ять",
+                    "Вони однопотокові",
+                    "Вони не мають накладних витрат"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Що станеться, якщо заблокувати Event Loop?",
+                "options": [
+                    "Нічого, все добре",
+                    "Нові запити вводу/виводу зависнуть",
+                    "Потоки створяться автоматично",
+                    "Пам'ять очиститься"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Навіщо нам потрібна Черга в Пулі?",
+                "options": [
+                    "Щоб зберігати результати",
+                    "Щоб обробляти навантаження, коли всі потоки зайняті",
+                    "Щоб сортувати задачі за розміром",
+                    "Щоб логувати помилки"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "code": {
+        "javascript": {
+            "solution": "const { Worker } = require('worker_threads');\nconst path = require('path');\n\nclass WorkerPool {\n  constructor(numThreads) {\n    this.numThreads = numThreads;\n    this.workers = [];\n    this.freeWorkers = [];\n    this.tasks = [];\n\n    for (let i = 0; i < numThreads; i++) {\n      this.addNewWorker();\n    }\n  }\n\n  addNewWorker() {\n    const worker = new Worker(path.resolve(__dirname, 'task_processor.js'));\n    \n    worker.on('message', (result) => {\n      // 1. Resolve the *current* task for this worker\n      if (worker.currentTask) {\n        worker.currentTask.resolve(result);\n        worker.currentTask = null;\n      }\n      // 2. Check for more work\n      this.processNextTask(worker);\n    });\n\n    worker.on('error', (err) => {\n      if (worker.currentTask) worker.currentTask.reject(err);\n      // Replace dead worker\n      this.replaceWorker(worker);\n    });\n\n    this.workers.push(worker);\n    this.freeWorkers.push(worker);\n  }\n\n  run(taskData) {\n    return new Promise((resolve, reject) => {\n      if (this.freeWorkers.length > 0) {\n        const worker = this.freeWorkers.pop();\n        this.executeTask(worker, { taskData, resolve, reject });\n      } else {\n        this.tasks.push({ taskData, resolve, reject });\n      }\n    });\n  }\n\n  executeTask(worker, task) {\n    worker.currentTask = task;\n    worker.postMessage(task.taskData);\n  }\n\n  processNextTask(worker) {\n    if (this.tasks.length > 0) {\n      const nextTask = this.tasks.shift();\n      this.executeTask(worker, nextTask);\n    } else {\n      this.freeWorkers.push(worker);\n    }\n  }\n\n  replaceWorker(deadWorker) {\n    const idx = this.workers.indexOf(deadWorker);\n    if (idx !== -1) this.workers.splice(idx, 1);\n    deadWorker.terminate();\n    this.addNewWorker();\n  }\n}",
+            "annotations": [
+                {
+                    "lines": [
+                        2,
+                        10
+                    ],
+                    "text": "Кожен воркер запускає скрипт ('task_processor.js') в окремому контексті потоку."
+                },
+                {
+                    "lines": [
+                        6,
+                        7
+                    ],
+                    "text": "Управління станом: 'freeWorkers' відстежує вільні потоки, 'tasks' обробляє переповнення."
+                },
+                {
+                    "lines": [
+                        46,
+                        50
+                    ],
+                    "text": "run(): Повертає Promise негайно. Або виконує зараз (якщо вільно), або ставить у чергу."
+                },
+                {
+                    "lines": [
+                        62,
+                        66
+                    ],
+                    "text": "Планувальник: Коли воркер завершує, він негайно бере наступну задачу з черги. Жодного простою, якщо є робота."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(1) планування",
+        "space": "O(N) розмір пулу",
+        "explanation_time": "Відправка задачі - O(1) (пуш в чергу або поп воркера). Виконання залежить від самої задачі.",
+        "explanation_space": "Ми зберігаємо N екземплярів воркерів та чергу очікуваних задач."
+    }
+}

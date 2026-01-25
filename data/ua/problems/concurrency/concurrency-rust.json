@@ -1,0 +1,104 @@
+{
+    "id": "concurrency-rust",
+    "title": "Конкурентне Key-Value Сховище",
+    "difficulty": "Важкий",
+    "leetcode_url": "https://doc.rust-lang.org/std/sync/struct.RwLock.html",
+    "related": [
+        {
+            "id": "concurrency-java",
+            "title": "Обмежена Блокуюча Черга",
+            "category": "concurrency"
+        }
+    ],
+    "tags": [
+        "rust",
+        "arc",
+        "rwlock",
+        "потокобезпека"
+    ],
+    "follow_up": {
+        "scenario": "Навантаження з перевагою читання (99% читання, 1% запис).",
+        "trade_off": "`Mutex` блокує все, змушуючи читачів чекати інших читачів.",
+        "strategy": "Використовуйте `RwLock` (Блокування Читання-Запису), яке дозволяє одночасно працювати декільком читачам, але лише одному письменнику. Для ще більшого масштабування використовуйте **Шардінг** (DashMap), щоб зменшити конкуренцію за блокування.",
+        "answering_guide": "Підкресліть **гарантії часу компіляції** в Rust. Ви буквально *не можете* неправильно використовувати дані, не заблокувавши їх. Запропонуйте `DashMap` як рішення для production."
+    },
+    "content": {
+        "problem_statement": "Реалізуйте потокобезпечне Key-Value Сховище (Словник) мовою Rust, яке підтримує одночасне читання, але ексклюзивний запис.\n\n**Вимоги:**\n1.  `new()`: Створює нове сховище.\n2.  `insert(key, value)`: Вставка пари. Потокобезпечна.\n3.  `get(key)`: Повертає значення. Дружня до багатопотоковості (дозволено кілька читачів).\n4.  Сховище має бути спільним для потоків (передбачається використання `Arc`).",
+        "explanation": {
+            "understanding_the_problem": "Нам потрібно спільно використовувати `HashMap` між потоками. У Rust правила володіння забороняють просте спільне використання. Нам потрібен `Arc` (Atomic Reference Counted) вказівник для спільного володіння та патерн внутрішньої змінності (interior mutability) для модифікації.",
+            "brute_force": "Огорнути `HashMap` у `Mutex`. `Arc<Mutex<HashMap>>`. Це працює безпечно, але вбиває продуктивність при великому навантаженні на читання, оскільки один читач блокує інших.",
+            "bottleneck": "Конкуренція за блокування на одному Mutex.",
+            "optimized_approach": "Використовуйте `RwLock` (Блокування Читання-Запису). Воно дозволяє декільком читачам отримувати доступ до даних одночасно. Письменники отримують ексклюзивний доступ. Тип стає `Arc<RwLock<HashMap<K, V>>>`.",
+            "algorithm_steps": "1.  Структура `KVStore` містить поле `inner` типу `Arc<RwLock<HashMap<String, String>>>`.\n2.  `insert`: \n    a.  Захопити блокування запису: `self.inner.write().unwrap()`.\n    b.  Вставити дані.\n3.  `get`:\n    a.  Захопити блокування читання: `self.inner.read().unwrap()`.\n    b.  Прочитати дані. Клонувати, якщо повертаєте дані у власність, або повернути посилання, якщо час життя дозволяє."
+        },
+        "quizzes": [
+            {
+                "question": "Що робить Arc?",
+                "options": [
+                    "Блокує дані",
+                    "Забезпечує спільне володіння через потокобезпечний лічильник посилань",
+                    "Запобігає гонці даних (data races)",
+                    "Виділяє пам'ять на стеку"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Чому RwLock замість Mutex?",
+                "options": [
+                    "RwLock завжди швидший",
+                    "RwLock дозволяє декільком конкурентним читачам",
+                    "Mutex не можна використовувати спільно",
+                    "RwLock не панікує"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Що станеться, якщо потік запанікує, утримуючи блокування?",
+                "options": [
+                    "Взаємоблокування (Deadlock)",
+                    "Отруєння блокування (Lock poisoning)",
+                    "Витік пам'яті",
+                    "Збій системи"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "code": {
+        "rust": {
+            "solution": "use std::collections::HashMap;\nuse std::sync::{Arc, RwLock};\nuse std::thread;\n\n#[derive(Clone)]\nstruct KVStore {\n    // Arc for shared ownership, RwLock for interior mutability\n    inner: Arc<RwLock<HashMap<String, String>>>,\n}\n\nimpl KVStore {\n    fn new() -> Self {\n        KVStore {\n            inner: Arc::new(RwLock::new(HashMap::new())),\n        }\n    }\n\n    fn insert(&self, key: String, value: String) {\n        // Acquire write lock - blocks all other readers/writers\n        let mut map = self.inner.write().unwrap();\n        map.insert(key, value);\n    }\n\n    fn get(&self, key: &str) -> Option<String> {\n        // Acquire read lock - allows other readers\n        let map = self.inner.read().unwrap();\n        map.get(key).cloned()\n    }\n}\n\nfn main() {\n    let store = KVStore::new();\n    let mut handles = vec![];\n\n    // Spawn 10 writer threads\n    for i in 0..10 {\n        let store_clone = store.clone();\n        handles.push(thread::spawn(move || {\n            store_clone.insert(format!(\"key{}\", i), format!(\"val{}\", i));\n        }));\n    }\n\n    // Spawn 10 reader threads\n    for i in 0..10 {\n        let store_clone = store.clone();\n        handles.push(thread::spawn(move || {\n            match store_clone.get(&format!(\"key{}\", i)) {\n                Some(v) => println!(\"Read: {}\", v),\n                None => println!(\"Key not found\"),\n            }\n        }));\n    }\n\n    for h in handles {\n        h.join().unwrap();\n    }\n}",
+            "annotations": [
+                {
+                    "lines": [
+                        7
+                    ],
+                    "text": "Свята трійця конкурентності в Rust: Arc (Спільний доступ) + RwLock (Змінюваність) + HashMap (Дані)."
+                },
+                {
+                    "lines": [
+                        16
+                    ],
+                    "text": ".write() блокує, поки не зникнуть читачі або письменники. Повертає RAII guard."
+                },
+                {
+                    "lines": [
+                        22
+                    ],
+                    "text": ".read() дозволяє декільком потокам ефективно входити."
+                },
+                {
+                    "lines": [
+                        34
+                    ],
+                    "text": "store.clone() лише збільшує атомарний лічильник посилань, це дешево."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(1) в середньому",
+        "space": "O(N) розмір даних",
+        "explanation_time": "Операції HashMap є O(1). Накладні витрати на блокування мінімальні, якщо немає високої конкуренції.",
+        "explanation_space": "Стандартне використання пам'яті HashMap."
+    }
+}
