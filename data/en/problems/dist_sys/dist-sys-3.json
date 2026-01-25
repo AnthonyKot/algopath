@@ -1,0 +1,94 @@
+{
+    "id": "dist-sys-3",
+    "title": "Raft Log Replication (Safety)",
+    "difficulty": "Hard",
+    "leetcode_url": "https://raft.github.io/",
+    "tags": [
+        "distributed-systems",
+        "consensus",
+        "consistency",
+        "raft"
+    ],
+    "content": {
+        "problem_statement": "In the Raft consensus algorithm, the Leader replicates its log to Followers. To ensure consistency, a Follower must only accept a new log entry if its previous log entry matches the Leader's assumptions (the **Log Matching Property**).\n\nImplement the `handle_append_entries` function for a Follower node that:\n1.  Rejects the request if `term < current_term`.\n2.  **Safety Check**: Verifies that the log contains an entry at `prevLogIndex` with `prevLogTerm`. If not, it rejects.\n3.  **Conflict Resolution**: If an existing entry conflicts with a new one (same index, different term), deletes the existing entry and all that follow it.\n4.  **Append**: Appends the new entries.\n5.  **Commit**: Updates `commitIndex`.\n\n**Schema**:\n`log` is a list of entries: `[{'term': 1, 'cmd': 'SET X=1'}, ...]`. Indices are 0-based.",
+        "explanation": {
+            "understanding_the_problem": "Raft guarantees that if two logs contain an entry with the same index and term, then the logs are identical in all entries up to that index. The Follower must guard this property by rejecting mismatched appends.",
+            "brute_force": "Blindly overwriting the log with whatever the Leader sends.\n**Why it's bad**: If a partitioned (old) Leader wakes up and overwrites committed data, you lose consistency (Split Brain data corruption).",
+            "bottleneck": "Network RTT. We optimize by sending batches of entries. If a check fails, the Leader must decrement `nextIndex` and retry (backtracking).",
+            "optimized_approach": "1.  **Term Check**: If `req.term < self.currentTerm`, return False (obsolete leader).\n2.  **PrevLog Check**: Check if `self.log[req.prevLogIndex].term == req.prevLogTerm`. If index out of bounds or term mismatch, return False.\n3.  **Truncate & Append**: If check passes, we append. If we have a conflict at index `i`, we delete `log[i:]`.",
+            "algorithm_steps": "1.  If `term < currentTerm`, fail.\n2.  If `log` doesn't have `prevLogIndex`, fail.\n3.  If `log[prevLogIndex].term != prevLogTerm`, fail.\n4.  For each new entry, if it conflicts with existing log entry, truncate log.\n5.  Append new entries.\n6.  Update `commitIndex` = min(leaderCommit, lastNewEntryIndex)."
+        },
+        "quizzes": [
+            {
+                "question": "What happens if the Follower rejects an AppendEntries request?",
+                "options": [
+                    "The Leader crashes",
+                    "The Leader retries with a lower prevLogIndex (backtracking)",
+                    "The Follower becomes a Candidate",
+                    "The cluster shuts down"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Why do we check 'term' before 'prevLogIndex'?",
+                "options": [
+                    "To prevent accepting data from an old partitioned Leader",
+                    "It's faster",
+                    "Because term is an integer",
+                    "Raft specification requires it purely for style"
+                ],
+                "correct": 0
+            },
+            {
+                "question": "If an entry is 'committed', what does that mean?",
+                "options": [
+                    "It is written to disk",
+                    "It is replicated to a majority of nodes",
+                    "The client has seen it",
+                    "The leader likes it"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "follow_up": {
+        "scenario": "Network is flaky, causing many rejections and retries.",
+        "trade_off": "Latency spikes due to step-down backtracking.",
+        "strategy": "Implement **Optimistic Pipelining** or a binary search-like backtracking (send `conflictTerm` and `conflictIndex` in the failure response) to find the divergence point faster.",
+        "answering_guide": "Mention the 'NextIndex' optimization where the Follower returns the index of the conflicting term to skip many RPCs."
+    },
+    "code": {
+        "python": {
+            "solution": "class RaftNode:\n    def __init__(self, log, current_term, commit_index):\n        self.log = log  # List of {'term': t, 'cmd': c}\n        self.current_term = current_term\n        self.commit_index = commit_index\n\n    def handle_append_entries(self, term, leader_id, prev_log_index, prev_log_term, entries, leader_commit):\n        # 1. Reply false if term < currentTerm\n        if term < self.current_term:\n            return False\n        \n        # Update term logic would go here (omitted for brevity)\n\n        # 2. Reply false if log doesn't contain an entry at prevLogIndex whose term matches prevLogTerm\n        # Note: -1 is a dummy index for 'beginning of log'\n        if prev_log_index >= 0:\n            if prev_log_index >= len(self.log):\n                return False # Log is too short\n            if self.log[prev_log_index]['term'] != prev_log_term:\n                return False # Term mismatch\n\n        # 3. If an existing entry conflicts with a new one (same index but different terms),\n        #    delete the existing entry and all that follow it\n        for i, entry in enumerate(entries):\n            index = prev_log_index + 1 + i\n            if index < len(self.log):\n                if self.log[index]['term'] != entry['term']:\n                    self.log = self.log[:index] # Truncate\n                    self.log.append(entry)\n            else:\n                self.log.append(entry)\n\n        # 4. Append any new entries not already in the log\n        # (Handled by the loop above combined with log length check)\n\n        # 5. If leaderCommit > commitIndex, set commitIndex = min(leaderCommit, index of last new entry)\n        if leader_commit > self.commit_index:\n            last_new_index = prev_log_index + len(entries)\n            self.commit_index = min(leader_commit, last_new_index)\n\n        return True",
+            "annotations": [
+                {
+                    "lines": [
+                        22,
+                        23,
+                        24
+                    ],
+                    "text": "The Induction Step: We only accept extension of the log if the 'prefix' matches what the leader thinks we have."
+                },
+                {
+                    "lines": [
+                        33,
+                        34
+                    ],
+                    "text": "Self-Healing: This is how Raft forces followers to match the Leader's log. It blindly overwrites conflicts."
+                },
+                {
+                    "lines": [
+                        46
+                    ],
+                    "text": "Safety: We validly moved the commit pointer forward. Now we can apply these to the State Machine."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(K) where K is number of new entries",
+        "space": "O(K) for log storage",
+        "explanation_time": "We iterate over the new entries to append them. Verification is O(1).",
+        "explanation_space": "Increasing log size."
+    }
+}

@@ -1,0 +1,88 @@
+{
+    "id": "dist-sys-5",
+    "title": "Обробка 'Ефективно Один Раз'",
+    "difficulty": "Важкий",
+    "leetcode_url": "https://kafka.apache.org/documentation/#semantics",
+    "tags": [
+        "distributed-systems",
+        "idempotency",
+        "fault-tolerance",
+        "kafka"
+    ],
+    "content": {
+        "problem_statement": "У розподіленому потоковому процесорі (наприклад, Kafka Streams або Flink) ми хочемо обробляти кожну подію точно один раз. Однак, істинне 'Exactly-Once' неможливе в асинхронній мережі (Результат FLP).\n\nМи досягаємо семантики **Effectively-Once** шляхом поєднання:\n1.  **At-Least-Once** доставки (повторні спроби).\n2.  **Idempotency** (ігнорування дублікатів).\n\nРеалізуйте `IdempotentProcessor`, який:\n1.  Приймає події з унікальним `event_id`.\n2.  Перевіряє `idempotency_store` (БД), чи була подія оброблена.\n3.  Обробляє подію (побічний ефект).\n4.  Зберігає ID у сховище.\n5.  Обробляє **збої (crashes)**, що відбуваються між обробкою та збереженням.",
+        "explanation": {
+            "understanding_the_problem": "Якщо ми обробляємо, а потім падаємо до збереження зміщення $\\rightarrow$ ми повторюємо спробу і подвоюємо обробку. Якщо ми зберігаємо зміщення, а потім падаємо до обробки $\\rightarrow$ втрата даних. Рішення полягає в тому, щоб робити обидва дії атомарно (Транзакція) АБО зробити крок обробки ідемпотентним, щоб виконання його двічі було безпечним.",
+            "brute_force": "Просто обробка. \n**Чому це погано**: Дублювання платежів або електронних листів при втраті ACK.",
+            "bottleneck": "Пропускна здатність бази даних для перевірки дублікатів. Ми зазвичай використовуємо швидке Key-Value сховище (Redis) або bloom-фільтри для первинної фільтрації.",
+            "optimized_approach": "1.  **Перевірка**: Якщо `id` є в `completed_txns`, підтвердити і повернути.\n2.  **Виконання**: Виконати ефект (наприклад, `balance += amount`).\n3.  **Збереження**: Записати `id` в `completed_txns`. \n    *   *Примітка*: У продакшені кроки 2 і 3 повинні бути в одній транзакції БД (ACID), щоб бути по-справжньому безпечними. Тут ми симулюємо логічний потік.",
+            "algorithm_steps": "1.  Отримати `event`.\n2.  Почати Транзакцію.\n3.  Перевірити, чи існує `event.id`. Якщо так, Перервати (Abort).\n4.  Обчислити Зміну Стану.\n5.  Вставити `event.id` і Зафіксувати (Commit) Зміну Стану.\n6.  Зафіксувати Транзакцію."
+        },
+        "quizzes": [
+            {
+                "question": "Що таке 'Ідемпотентність'?",
+                "options": [
+                    "Можливість швидко перезапустити сервер",
+                    "f(f(x)) = f(x) - Застосування операції кілька разів має такий самий ефект, як і один раз",
+                    "Шифрування даних у стані спокою",
+                    "Обробка повідомлень паралельно"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Яка комбінація дає семантику Effectively-Once?",
+                "options": [
+                    "At-Most-Once + Retries",
+                    "At-Least-Once + Idempotency",
+                    "UDP + TCP",
+                    "Round Robin + Random"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Чому 'Exactly-Once' теоретично неможливе?",
+                "options": [
+                    "Комп'ютери занадто повільні",
+                    "Проблема Двох Генералів / FLP Impossibility (неможливо допустити втрату повідомлень + збій + обмежений час)",
+                    "Розробники ліниві",
+                    "Це можливо, ми просто ще не знаємо як"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "follow_up": {
+        "scenario": "Ваша база даних не підтримує транзакції між кроками 'Process' та 'Save ID' (проблема Dual Writes).",
+        "trade_off": "Ризик часткового збою (Zombie Write).",
+        "strategy": "Використовуйте **Outbox Pattern**. Запишіть побічний ефект і ID події в *одну і ту ж* базу даних в одній транзакції, а потім нехай фоновий воркер відправляє побічний ефект у зовнішній світ.",
+        "answering_guide": "Згадайте Outbox Pattern або 2PC (якщо хочете, щоб вас заблокували)."
+    },
+    "code": {
+        "python": {
+            "solution": "class IdempotentProcessor:\n    def __init__(self):\n        self.balance = 0\n        self.processed_ids = set()\n        \n    def process_event(self, event_id, amount):\n        # 1. Idempotency Check\n        if event_id in self.processed_ids:\n            print(f\"Skipping duplicate {event_id}\")\n            return self.balance\n            \n        # 2. Start Transaction (Simulated)\n        try:\n            # 3. Apply Business Logic\n            new_balance = self.balance + amount\n            \n            # ... Crash Point A (If we crashed here without saving ID, we would re-process on restart)\n            \n            # 4. Save State & ID Atomically\n            self.balance = new_balance\n            self.processed_ids.add(event_id)\n            \n            print(f\"Processed {event_id}: +{amount}\")\n            return self.balance\n            \n        except Exception as e:\n            print(f\"Transaction failed: {e}\")\n            raise e\n\n# Example Usage\n# p = IdempotentProcessor()\n# p.process_event('txn_1', 100) # Balance: 100\n# p.process_event('txn_1', 100) # Duplicate, Balance: 100\n# p.process_event('txn_2', 50)  # Balance: 150",
+            "annotations": [
+                {
+                    "lines": [
+                        7,
+                        8
+                    ],
+                    "text": "Бар'єр Дедуплікації: Ми повинні перевірити нашу історію перед виконанням будь-якої роботи."
+                },
+                {
+                    "lines": [
+                        20,
+                        21,
+                        22
+                    ],
+                    "text": "Атомарний Коміт: В РЕАЛЬНОСТІ, 'self.balance' та 'self.processed_ids' ПОВИННІ зберігатися в одному рядку БД/документі ACID."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(1) з Hash Set",
+        "space": "O(N) історія",
+        "explanation_time": "Пошук у Set є константним часом.",
+        "explanation_space": "Ми повинні зберігати ID кожної обробленої події назавжди (або до закінчення терміну дії)."
+    }
+}

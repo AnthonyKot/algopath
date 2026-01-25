@@ -1521,6 +1521,7 @@ const ProblemRenderer = {
             'optimization.html': 'optimization',
             'physics.html': 'physics',
             'concurrency.html': 'concurrency',
+            'dist_sys.html': 'dist_sys',
             'specialized.html': 'specialized'
         };
         return categoryMap[filename] || null;

@@ -1,0 +1,94 @@
+{
+    "id": "dist-sys-2",
+    "title": "Vector Clocks & Causality",
+    "difficulty": "Hard",
+    "leetcode_url": "https://docs.basho.com/riak/kv/2.2.3/learn/concepts/causal-context/",
+    "tags": [
+        "distributed-systems",
+        "logical-clocks",
+        "causality",
+        "conflict-resolution"
+    ],
+    "content": {
+        "problem_statement": "In a distributed system without a central clock, we cannot rely on physical timestamps (wall clock time) to determine the order of events due to clock skew. We must use **Logical Clocks** to capture causality.\n\nImplement a `VectorClock` class that can:\n1.  **Increment** its own counter for a new local event.\n2.  **Merge** with an incoming vector clock (from a message).\n3.  **Compare** with another clock to determine if events are:\n    *   `CAUSAL` (one happened before the other)\n    *   `CONCURRENT` (neither happened before the other)\n    *   `IDENTICAL`\n\n**Schema**:\nA vector clock is a dictionary mapping Node IDs to integer counters: `{'A': 1, 'B': 2}`.",
+        "explanation": {
+            "understanding_the_problem": "If Event A happened before Event B, then A might have influenced B. If neither happened before the other, they are concurrent and might represent a conflict (sibling data) that needs resolution.",
+            "brute_force": "Using `time.time()`. \n**Why it's bad**: NTP synchronization is not perfect; clock skew can be 100ms+. You might think Event B happened before A just because B's server clock is fast, leading to data loss (LWW).",
+            "bottleneck": "Storing the vector. The size grows with the number of participating nodes (actors). Pruning is required for large clusters.",
+            "optimized_approach": "1.  On local event: `VC[my_id]++`.\n2.  On receive message with `VC_msg`: `VC[id] = max(VC[id], VC_msg[id])` for all IDs.\n3.  Comparison:\n    *   `A < B` if all counters in A <= B and at least one is strict <.\n    *   `A > B` if all counters in A >= B and at least one is strict >.\n    *   Otherwise, they are Concurrent.",
+            "algorithm_steps": "1.  Define a comparison logic that checks 'strictly greater' and 'strictly less'.\n2.  If `A < B`, return `happened-before`.\n3.  If `B < A`, return `happened-after`.\n4.  If A == B, return `identical`.\n5.  Else, return `concurrent`."
+        },
+        "quizzes": [
+            {
+                "question": "If VC_A = {X:1, Y:2} and VC_B = {X:1, Y:3}, what is the relationship?",
+                "options": [
+                    "Concurrent",
+                    "A happened before B",
+                    "B happened before A",
+                    "Identical"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "If VC_A = {X:2, Y:0} and VC_B = {X:0, Y:2}, what is the relationship?",
+                "options": [
+                    "Concurrent",
+                    "A happened before B",
+                    "B happened before A",
+                    "Impossible state"
+                ],
+                "correct": 0
+            },
+            {
+                "question": "What is the main downside of Vector Clocks?",
+                "options": [
+                    "They are slow to compare",
+                    "Size grows linearly with the number of nodes",
+                    "They cannot handle network partitions",
+                    "They require a central server"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "follow_up": {
+        "scenario": "Your cluster has 10,000 dynamic nodes (mobile devices). The Vector Clock is too huge.",
+        "trade_off": "Precision vs Metadata Size.",
+        "strategy": "Use **Dotted Version Vectors** or introduce a mechanism to prune old entries (though this risks false concurrency). Ideally, move ID generation to the server side.",
+        "answering_guide": "Acknowledge the O(N) size problem. Mention Dotted Version Vectors (Riak) as an optimization."
+    },
+    "code": {
+        "python": {
+            "solution": "class VectorClock:\n    def __init__(self, node_id, clock=None):\n        self.node_id = node_id\n        self.clock = clock.copy() if clock else {}\n        # Ensure own entry exists\n        if node_id not in self.clock:\n            self.clock[node_id] = 0\n            \n    def increment(self):\n        self.clock[self.node_id] += 1\n        return self\n        \n    def merge(self, other_vc):\n        # Take the element-wise max of both keys\n        all_keys = set(self.clock.keys()) | set(other_vc.clock.keys())\n        for key in all_keys:\n            self.clock[key] = max(self.clock.get(key, 0), other_vc.clock.get(key, 0))\n        return self\n        \n    def compare(self, other):\n        # Returns: 'BEFORE', 'AFTER', 'CONCURRENT', 'IDENTICAL'\n        \n        # Missing keys are treated as 0\n        all_keys = set(self.clock.keys()) | set(other.clock.keys())\n        \n        has_greater = False\n        has_smaller = False\n        \n        for key in all_keys:\n            v1 = self.clock.get(key, 0)\n            v2 = other.clock.get(key, 0)\n            \n            if v1 > v2:\n                has_greater = True\n            elif v1 < v2:\n                has_smaller = True\n                \n        if has_greater and has_smaller:\n            return 'CONCURRENT'\n        if has_greater:\n            return 'AFTER'\n        if has_smaller:\n            return 'BEFORE'\n        return 'IDENTICAL'\n\n# Example Usage\n# vc1 = VectorClock('A', {'A': 1, 'B': 2})\n# vc2 = VectorClock('B', {'A': 1, 'B': 3})\n# print(vc1.compare(vc2))  # 'BEFORE'\n#\n# vc3 = VectorClock('C', {'A': 2, 'B': 1})\n# print(vc1.compare(vc3))  # 'CONCURRENT'",
+            "annotations": [
+                {
+                    "lines": [
+                        23,
+                        24,
+                        25
+                    ],
+                    "text": "Merge property: causality is transitive. By taking the max, we capture the latest known history from all branches."
+                },
+                {
+                    "lines": [
+                        40,
+                        41
+                    ],
+                    "text": "Concurrent means 'Conflict'. Neither node knew about the other's update. This is where you create a 'Sibling'."
+                },
+                {
+                    "lines": [
+                        30
+                    ],
+                    "text": "If I have seen more events from A, but you have seen more events from B, then our histories split and we are concurrent."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(N)",
+        "space": "O(N)",
+        "explanation_time": "Comparisons and merges require iterating over all Node IDs (N).",
+        "explanation_space": "We store an integer for every actor in the system."
+    }
+}

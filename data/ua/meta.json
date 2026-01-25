@@ -68,13 +68,12 @@
                 "concurrency-python"
             ],
             "stats": {
-                "priority": "Критичний",
+                "priority": "Високий",
                 "priorityColor": "#e74c3c",
-                "metric": "12,504",
+                "metric": "1219",
                 "metricLabel": "Частота",
-                "trend": "Зростає",
-                "successRate": "45.8%",
-                "metricDivider": 1
+                "trend": "Стабільно",
+                "successRate": "38.5%"
             },
             "seo": {
                 "title": "Патерни Багатопотоковості - Посібник з Алгоритмів FAANG L5",
@@ -174,7 +173,7 @@
                 "design-5"
             ],
             "stats": {
-                "priority": "Критичний",
+                "priority": "Дуже Високий",
                 "priorityColor": "#e74c3c",
                 "metric": "1,314",
                 "metricLabel": "Частота",
@@ -211,6 +210,32 @@
                 "title": "Техніки Оптимізації - Посібник з Алгоритмів FAANG L4/L5",
                 "description": "Техніки оптимізації: два вказівники, бінарний пошук, розділяй і володарюй."
             }
+        },
+        "dist_sys": {
+            "id": "dist_sys",
+            "name": "Розподілені Системи Даних",
+            "shortName": "Розподілені Системи",
+            "description": "Опануйте внутрішню будову розподілених баз даних. Від реплікації без лідера та векторних годин до консенсусу Raft та стратегій хешування.",
+            "sectionTitle": "Основні Розподілені Патерни",
+            "problemIds": [
+                "dist-sys-1",
+                "dist-sys-2",
+                "dist-sys-3",
+                "dist-sys-4",
+                "dist-sys-5"
+            ],
+            "stats": {
+                "priority": "Staff",
+                "priorityColor": "#8e44ad",
+                "metric": "1,102",
+                "metricLabel": "Частота",
+                "trend": "Стабільно",
+                "successRate": "32.4%"
+            },
+            "seo": {
+                "title": "Розподілені Системи - L5/L6 FAANG Алгоритми",
+                "description": "Складні задачі з розподілених систем: Кворуми, Векторні Години, Raft для Staff інженерів."
+            }
         }
     },
     "ui": {
@@ -221,7 +246,8 @@
             "frequency": "Частота",
             "trend": "Тренд",
             "successRate": "Успішність",
-            "monthlyFrequency": "Запитано разів за місяць"
+            "monthlyFrequency": "Запитано разів за місяць",
+            "interviewPriority": "Пріоритет інтерв'ю"
         },
         "nav": {
             "home": "Головна",

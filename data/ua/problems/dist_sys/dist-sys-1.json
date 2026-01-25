@@ -1,0 +1,95 @@
+{
+    "id": "dist-sys-1",
+    "title": "Кворуми та Реплікація без Лідера",
+    "difficulty": "Середній",
+    "leetcode_url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html",
+    "tags": [
+        "distributed-systems",
+        "replication",
+        "dynamo",
+        "consistency"
+    ],
+    "content": {
+        "problem_statement": "У системі реплікації без лідера (як DynamoDB або Cassandra) клієнти пишуть на декілька вузлів безпосередньо. Щоб забезпечити сильну узгодженість без центрального лідера, ми використовуємо **Кворуми**.\n\nРеалізуйте систему `ReadRepair`, яка:\n1.  Читає з $N$ реплік.\n2.  Визначає, чи досягнуто Кворум ($R$).\n3.  Визначає найновіші дані за версіями (Last-Write-Wins).\n4.  **Виправляє** застарілі репліки, повертаючи команду на їх оновлення.\n\n**Параметри**:\n*   `N = 3` (Фактор реплікації)\n*   `R = 2` (Кворум читання)\n*   `W = 2` (Кворум запису)\n\n**Вхідні дані**:\nМасив відповідей від 3 вузлів: `[{ val: 'A', ver: 1 }, { val: 'B', ver: 2 }, null]` (null означає таймаут).",
+        "explanation": {
+            "understanding_the_problem": "У розподіленій системі вузли можуть виходити з ладу або можуть виникати мережеві розділення. Реплікація без лідера дозволяє забезпечити високу доступність, читаючи/пишучи на підмножину вузлів (Кворум). Якщо $R + W > N$, ми гарантовано побачимо останній запис. Однак читання може повернути застарілі дані з деяких вузлів. 'Read Repair' (Виправлення при читанні) — це процес виправлення цього на стороні клієнта.",
+            "brute_force": "Чекати на всі $N$ відповідей. Якщо хоч одна не вдалася, відхилити запит.\n**Чому це погано**: Це руйнує Доступність (система CP). Ми хочемо систему AP (в основному), яка толерує збої.",
+            "bottleneck": "Мережева затримка. Очікування на найповільніший вузол (straggler) збільшує хвостову затримку. Ми повинні повертати результат, як тільки отримаємо $R$ відповідей.",
+            "optimized_approach": "1.  Надіслати запити на всі $N$ вузлів.\n2.  Чекати на перші $R$ успішних відповідей.\n3.  Порівняти версії. Найвища версія є 'найновішою'.\n4.  Якщо будь-яка отримана відповідь має старішу версію, видати команду 'repair' для цього вузла.\n5.  Повернути найновіше значення клієнту.",
+            "algorithm_steps": "1.  Відфільтрувати невдалі запити (null).\n2.  Перевірити, чи `success_count < R`. Якщо так, викинути помилку 'Quorum failure'.\n3.  Знайти `max_version` серед відповідей.\n4.  Визначити `stale_nodes` (відповіді з `ver < max_version`) та `missing_nodes` (null).\n5.  Сформувати `repair_commands` для застарілих вузлів."
+        },
+        "quizzes": [
+            {
+                "question": "Чому має виконуватися R + W > N?",
+                "options": [
+                    "Щоб запобігти поділу мережі (network partitions)",
+                    "Щоб гарантувати, що множина читання та множина запису перетинаються",
+                    "Щоб зробити запис швидшим",
+                    "Щоб зекономити місце на диску"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Що таке 'Sloppy Quorum' (Нечіткий Кворум)?",
+                "options": [
+                    "Коли ми приймаємо записи на вузли, які не є власниками (hinted handoff), щоб зберегти доступність",
+                    "Коли R + W < N",
+                    "Коли ми ігноруємо версії",
+                    "Коли ми використовуємо UDP замість TCP"
+                ],
+                "correct": 0
+            },
+            {
+                "question": "Що відбувається з одночасними записами в Last-Write-Wins (LWW)?",
+                "options": [
+                    "Вони об'єднуються",
+                    "Обидва зберігаються як siblings (брати/сестри)",
+                    "Той, що має меншу часову мітку, тихо відкидається",
+                    "База даних падає"
+                ],
+                "correct": 2
+            }
+        ]
+    },
+    "follow_up": {
+        "scenario": "Вам потрібно обробляти одночасні редагування кошика покупок (без LWW).",
+        "trade_off": "LWW втрачає дані. Siblings вимагають злиття (merge) на стороні клієнта.",
+        "strategy": "Використовуйте **Векторні Годинники** або CRDT (Conflict-free Replicated Data Types), щоб зберегти всі одночасні операції та об'єднати їх пізніше.",
+        "answering_guide": "Почніть з Кворумів. Визнайте втрату даних при LWW. Перехід до Векторних Годинників/CRDT показує глибину знань рівня Staff."
+    },
+    "code": {
+        "python": {
+            "solution": "class ReadRepairSystem:\n    def __init__(self, N=3, R=2):\n        self.N = N\n        self.R = R\n\n    def resolve_read(self, responses):\n        # responses: list of dicts {'id': node_id, 'val': val, 'ver': v} or None\n        \n        valid_responses = [r for r in responses if r is not None]\n        \n        # 1. Check Quorum\n        if len(valid_responses) < self.R:\n            raise Exception(\"Read Quorum Failure\")\n\n        # 2. Find latest version (LWW)\n        latest = max(valid_responses, key=lambda x: x['ver'])\n        \n        # 3. Identify repairs\n        repairs = []\n        for r in valid_responses:\n            if r['ver'] < latest['ver']:\n                repairs.append({\n                    'node_id': r['id'],\n                    'action': 'REPAIR_WRITE',\n                    'payload': {'val': latest['val'], 'ver': latest['ver']}\n                })\n                \n        return {\n            'final_value': latest['val'],\n            'version': latest['ver'],\n            'repairs': repairs\n        }\n\n# Example Usage\n# system = ReadRepairSystem()\n# resps = [\n#   {'id': 1, 'val': 'B', 'ver': 2}, \n#   {'id': 2, 'val': 'A', 'ver': 1}, \n#   None\n# ]\n# print(system.resolve_read(resps))",
+            "annotations": [
+                {
+                    "lines": [
+                        9,
+                        10,
+                        11
+                    ],
+                    "text": "Критично: Швидко впасти, якщо ми не досягли гарантії узгодженості (R)."
+                },
+                {
+                    "lines": [
+                        14
+                    ],
+                    "text": "LWW (Last Write Wins): Простий, але небезпечний. Припускає, що вища версія/мітка часу завжди є 'правильною'."
+                },
+                {
+                    "lines": [
+                        23,
+                        24,
+                        25
+                    ],
+                    "text": "Read Repair: Клієнт активно лікує кластер. Це 'ліниве' виправлення проти 'активної' ентропії (Merkle trees)."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(N)",
+        "space": "O(N)",
+        "explanation_time": "Ми проходимо по N відповідям один раз, щоб знайти максимум, і один раз, щоб згенерувати виправлення.",
+        "explanation_space": "Зберігання валідних відповідей."
+    }
+}

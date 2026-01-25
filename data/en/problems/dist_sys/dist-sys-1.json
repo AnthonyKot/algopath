@@ -1,0 +1,102 @@
+{
+    "id": "dist-sys-1",
+    "title": "Quorums & Leaderless Replication",
+    "difficulty": "Medium",
+    "leetcode_url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html",
+    "related": [
+        {
+            "id": "design-1",
+            "title": "Design Rate Limiter",
+            "category": "design"
+        }
+    ],
+    "tags": [
+        "distributed-systems",
+        "replication",
+        "dynamo",
+        "consistency"
+    ],
+    "content": {
+        "problem_statement": "In a Leaderless Replication system (like DynamoDB or Cassandra), clients write to multiple nodes directly. To ensure strong consistency without a central leader, we use **Quorums**.\n\nImplement a `ReadRepair` system that:\n1.  Reads from $N$ replicas.\n2.  Determines if a Quorum ($R$) is met.\n3.  Identifies the latest data using versions (Last-Write-Wins).\n4.  **Repairs** stale replicas by returning a command to update them.\n\n**Parameters**:\n*   `N = 3` (Replication Factor)\n*   `R = 2` (Read Quorum)\n*   `W = 2` (Write Quorum)\n\n**Input**:\nAn array of responses from 3 nodes: `[{ val: 'A', ver: 1 }, { val: 'B', ver: 2 }, null]` (null means timeout).",
+        "explanation": {
+            "understanding_the_problem": "In a distributed system, nodes can be down or network partitions can occur. Leaderless replication allows high availability by reading/writing to a subset of nodes (Quorum). If $R + W > N$, we are guaranteed to see the latest write. However, reads may return stale data from some nodes. 'Read Repair' is the process of fixing this client-side.",
+            "brute_force": "Wait for all $N$ responses. If any fail, fail the request.\n**Why it's bad**: This destroys Availability (CP system). We want an AP system (mostly) that tolerates failures.",
+            "bottleneck": "Network latency. Waiting for the slowest node (straggler) increases tail latency. We should return as soon as we have $R$ responses.",
+            "optimized_approach": "1.  Send requests to all $N$ nodes.\n2.  Wait for the first $R$ successful responses.\n3.  Compare versions. The highest version is the 'latest'.\n4.  If any returned response has an older version, issue a 'repair' write to that node.\n5.  Return the latest value to the client.",
+            "algorithm_steps": "1.  Filter out failures (nulls).\n2.  Check if `success_count < R`. If yes, throw 'Quorum failure'.\n3.  Find `max_version` among responses.\n4.  Identify `stale_nodes` (responses with `ver < max_version`) and `missing_nodes` (nulls).\n5.  Construct `repair_commands` for stale nodes."
+        },
+        "quizzes": [
+            {
+                "question": "Why must R + W > N?",
+                "options": [
+                    "To prevent network partitions",
+                    "To ensure the Read set and Write set overlap",
+                    "To make writes faster",
+                    "To save disk space"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "What is 'Sloppy Quorum'?",
+                "options": [
+                    "When we accept writes to non-owner nodes (hinted handoff) to maintain availability",
+                    "When R + W < N",
+                    "When we ignore versions",
+                    "When we use UDP instead of TCP"
+                ],
+                "correct": 0
+            },
+            {
+                "question": "In Last-Write-Wins (LWW), what happens to concurrent writes?",
+                "options": [
+                    "They are merged",
+                    "Both are kept as siblings",
+                    "The one with the lower timestamp is silently discarded",
+                    "The database crashes"
+                ],
+                "correct": 2
+            }
+        ]
+    },
+    "follow_up": {
+        "scenario": "You need to handle concurrent edits to a shopping cart (no LWW).",
+        "trade_off": "LWW loses data. Siblings require client-side merging.",
+        "strategy": "Use **Vector Clocks** or CRDTs (Conflict-free Replicated Data Types) to preserve all concurrent operations and merge them later.",
+        "answering_guide": "Start with Quorums. Acknowledge LWW data loss. Pivoting to Vector Clocks/CRDTs shows Staff-level depth."
+    },
+    "code": {
+        "python": {
+            "solution": "class ReadRepairSystem:\n    def __init__(self, N=3, R=2):\n        self.N = N\n        self.R = R\n\n    def resolve_read(self, responses):\n        # responses: list of dicts {'id': node_id, 'val': val, 'ver': v} or None\n        \n        valid_responses = [r for r in responses if r is not None]\n        \n        # 1. Check Quorum\n        if len(valid_responses) < self.R:\n            raise Exception(\"Read Quorum Failure\")\n\n        # 2. Find latest version (LWW)\n        latest = max(valid_responses, key=lambda x: x['ver'])\n        \n        # 3. Identify repairs\n        repairs = []\n        for r in valid_responses:\n            if r['ver'] < latest['ver']:\n                repairs.append({\n                    'node_id': r['id'],\n                    'action': 'REPAIR_WRITE',\n                    'payload': {'val': latest['val'], 'ver': latest['ver']}\n                })\n                \n        return {\n            'final_value': latest['val'],\n            'version': latest['ver'],\n            'repairs': repairs\n        }\n\n# Example Usage\n# system = ReadRepairSystem()\n# resps = [\n#   {'id': 1, 'val': 'B', 'ver': 2}, \n#   {'id': 2, 'val': 'A', 'ver': 1}, \n#   None\n# ]\n# print(system.resolve_read(resps))",
+            "annotations": [
+                {
+                    "lines": [
+                        9,
+                        10,
+                        11
+                    ],
+                    "text": "Critical: Fail fast if we don't meet the consistency guarantee (R)."
+                },
+                {
+                    "lines": [
+                        14
+                    ],
+                    "text": "LWW (Last Write Wins): Simple but dangerous. Assumes higher version/timestamp is always 'correct'."
+                },
+                {
+                    "lines": [
+                        23,
+                        24,
+                        25
+                    ],
+                    "text": "Read Repair: The client actively heals the cluster. This is 'lazy' repair vs 'active' anti-entropy (Merkle trees)."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(N)",
+        "space": "O(N)",
+        "explanation_time": "We iterate through N responses once to find the max and once to generate repairs.",
+        "explanation_space": "Storing valid responses."
+    }
+}

@@ -1,0 +1,100 @@
+{
+    "id": "dist-sys-4",
+    "title": "Dynamic Rebalancing & Hotspots",
+    "difficulty": "Medium",
+    "leetcode_url": "https://cassandra.apache.org/doc/latest/cassandra/architecture/dynamo.html#consistent-hashing",
+    "related": [
+        {
+            "id": "design-4",
+            "title": "Design Load Balancer",
+            "category": "design"
+        }
+    ],
+    "tags": [
+        "distributed-systems",
+        "sharding",
+        "consistent-hashing",
+        "scalability"
+    ],
+    "content": {
+        "problem_statement": "In a sharded key-value store, we want to distribute data evenly across $N$ nodes. However, simple Modulo Hashing `hash(key) % N` causes mass data movement when a node is added/removed.\n\nFurthermore, some keys (e.g., 'Justin Bieber') are **Hotspots** that receive 1000x traffic.\n\nImplement a `ConsistentHashRing` that:\n1.  Uses **Virtual Nodes** (e.g., 3 virtual tokens per physical node) to improve balance.\n2.  Implements `get_node(key)`: Finding the correct node using Binary Search.\n3.  Handling **Hotkeys**: If a key is 'hot', split it across multiple replicas.",
+        "explanation": {
+            "understanding_the_problem": "Consistent Hashing treats the hash space as a ring ($0 - 2^{32}$). Nodes are placed on this ring. a Key belongs to the first Node found clockwise. Virtual Nodes ensure that if a physical node dies, its load is scattered to many other nodes (smoothing), not just one.",
+            "brute_force": "Static Modulo Hashing.\n**Why it's bad**: Adding Node 5 changes the destination of almost all keys (remapping). Consistent Hashing limits remapping to $K/N$ keys.",
+            "bottleneck": "O(log N) lookup time. Hot partitions can melt a single server ('celebrity' problem).",
+            "optimized_approach": "1.  **Ring**: `sorted_keys` list of `(hash, node_id)` tuples.\n2.  **Lookup**: `bisect_right` to find the position.\n3.  **Virtual Nodes**: `Node A` maps to hashes `H1, H2, H3`. This spreads A's data ranges.\n4.  **Hotspot**: If `is_hot(key)` is true, append a suffix `key -> key#1`..`key#N` and allow random reads from any of them.",
+            "algorithm_steps": "1.  `add_node(node_id)`: Hash `id` with replicas (e.g. `id#1`, `id#2`) and insert into ring.\n2.  `get_node(key)`: Hash key. Binary search in ring.\n3.  `handle_hot(key)`: Detect heat. If hot, return a list of nodes (Scatter-Gather) instead of one."
+        },
+        "quizzes": [
+            {
+                "question": "What is the primary benefit of Virtual Nodes (VNodes)?",
+                "options": [
+                    "They allow us to use more RAM",
+                    "They distribute load more evenly and smooth out failure impact",
+                    "They make hashing faster",
+                    "They prevent network partitions"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "What happens when you add a node in Consistent Hashing?",
+                "options": [
+                    "All keys are moved",
+                    "Only keys belonging to the new node's range are moved from its successor",
+                    "Only keys belonging to the new node's range are moved from its predecessor",
+                    "No keys are moved"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "How do we handle a 'Hot Key' (Celebrity problem)?",
+                "options": [
+                    "Buying a bigger server",
+                    "Deleting the key",
+                    "Salting/Splitting the key to multiple shards",
+                    "Caching it in the client only"
+                ],
+                "correct": 2
+            }
+        ]
+    },
+    "follow_up": {
+        "scenario": "One physical node is much more powerful (2x CPU) than others.",
+        "trade_off": "Uniform distribution wastes the powerful node's potential.",
+        "strategy": "Assign **more Virtual Nodes** (tokens) to the powerful physical node so it claims a larger range of the hash ring.",
+        "answering_guide": "Mention weighting VNodes by capacity."
+    },
+    "code": {
+        "python": {
+            "solution": "import hashlib\nimport bisect\n\nclass ConsistentHashRing:\n    def __init__(self, num_replicas=3):\n        self.num_replicas = num_replicas\n        self.ring = [] # List of (hash, node_id)\n        self.sorted_hashes = []\n\n    def _hash(self, key):\n        return int(hashlib.md5(key.encode('utf-8')).hexdigest(), 16)\n\n    def add_node(self, node_id):\n        for i in range(self.num_replicas):\n            v_node_id = f\"{node_id}#{i}\"\n            h = self._hash(v_node_id)\n            # Insert into ring maintaining order\n            # (In production, use a BST. Here, sorting O(N*logN) is fine for demo)\n            self.ring.append((h, node_id))\n        \n        self.ring.sort() # Keep ring sorted by hash\n        self.sorted_hashes = [x[0] for x in self.ring]\n\n    def get_node(self, key):\n        if not self.ring:\n            return None\n        \n        h = self._hash(key)\n        # Binary search for the first node clockwise\n        idx = bisect.bisect_right(self.sorted_hashes, h)\n        \n        if idx == len(self.ring):\n            idx = 0 # Wrap around\n            \n        return self.ring[idx][1]\n        \n    def get_nodes_for_hot_key(self, key, num_splits=3):\n        # For hot keys, 'salt' them to spread load\n        nodes = set()\n        for i in range(num_splits):\n            salted_key = f\"{key}#{i}\"\n            nodes.add(self.get_node(salted_key))\n        return list(nodes)",
+            "annotations": [
+                {
+                    "lines": [
+                        16,
+                        17
+                    ],
+                    "text": "Virtual Nodes: We insert 'node_id#0', 'node_id#1'... to create multiple points on the ring for this single physical server."
+                },
+                {
+                    "lines": [
+                        23
+                    ],
+                    "text": "Wrap Around: The ring topology is circular. If hash > largest node hash, we go back to index 0."
+                },
+                {
+                    "lines": [
+                        32,
+                        33
+                    ],
+                    "text": "Hot Key Strategy: We treat 'JustinBieber' as 3 separate keys ('JustinBieber#0'...). This splits read/write volume across shards."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(log K) where K is total virtual nodes",
+        "space": "O(K)",
+        "explanation_time": "Binary search on the ring.",
+        "explanation_space": "Storing the ring structure."
+    }
+}

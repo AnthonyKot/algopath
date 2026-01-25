@@ -1,0 +1,95 @@
+{
+    "id": "dist-sys-4",
+    "title": "Динамічне Ребалансування та Гарячі Точки",
+    "difficulty": "Середній",
+    "leetcode_url": "https://cassandra.apache.org/doc/latest/cassandra/architecture/dynamo.html#consistent-hashing",
+    "tags": [
+        "distributed-systems",
+        "sharding",
+        "consistent-hashing",
+        "scalability"
+    ],
+    "content": {
+        "problem_statement": "У шардованому сховищі ключ-значення ми хочемо розподілити дані рівномірно між $N$ вузлами. Проте, просте хешування за модулем `hash(key) % N` спричиняє масове переміщення даних при додаванні або видаленні вузла.\n\nКрім того, деякі ключі (наприклад, 'Джастін Бібер') є **Гарячими Точками (Hotspots)**, які отримують у 1000 разів більше трафіку.\n\nРеалізуйте `ConsistentHashRing` (Кільце Узгодженого Хешування), що:\n1.  Використовує **Віртуальні Вузли** (наприклад, 3 віртуальні токени на фізичний вузол) для покращення балансу.\n2.  Реалізує `get_node(key)`: Знаходження правильного вузла за допомогою бінарного пошуку.\n3.  Обробка **Hotkeys**: Якщо ключ 'гарячий', розділіть його між кількома репліками.",
+        "explanation": {
+            "understanding_the_problem": "Узгоджене хешування (Consistent Hashing) розглядає простір хешів як кільце ($0 - 2^{32}$). Вузли розміщуються на цьому кільці. Ключ належить першому вузлу, знайденому за годинниковою стрілкою. Віртуальні вузли гарантують, що якщо фізичний вузол помирає, його навантаження розсіюється на багато інших вузлів (згладжування), а не лише на один.",
+            "brute_force": "Статичне Хешування за Модулем.\n**Чому це погано**: Додавання Вузла 5 змінює призначення майже всіх ключів (remappping). Узгоджене хешування обмежує remapping до $K/N$ ключів.",
+            "bottleneck": "Час пошуку O(log N). Гарячі розділи (partitions) можуть 'розплавити' один сервер (проблема 'знаменитості').",
+            "optimized_approach": "1.  **Кільце**: `sorted_keys` список кортежів `(hash, node_id)`.\n2.  **Пошук**: `bisect_right` для знаходження позиції.\n3.  **Віртуальні Вузли**: `Node A` відображається на хеші `H1, H2, H3`. Це розширює діапазони даних A.\n4.  **Hotspot**: Якщо `is_hot(key)` істина, додайте суфікс `key -> key#1`..`key#N` і дозвольте випадкові читання з будь-якого з них.",
+            "algorithm_steps": "1.  `add_node(node_id)`: Хешувати `id` з репліками (наприклад, `id#1`, `id#2`) і вставити в кільце.\n2.  `get_node(key)`: Хешувати ключ. Бінарний пошук у кільці.\n3.  `handle_hot(key)`: Виявлення 'жару'. Якщо гарячий, повернути список вузлів (Scatter-Gather) замість одного."
+        },
+        "quizzes": [
+            {
+                "question": "Яка головна перевага Віртуальних Вузлів (VNodes)?",
+                "options": [
+                    "Вони дозволяють використовувати більше RAM",
+                    "Вони розподіляють навантаження більш рівномірно і згладжують вплив збоїв",
+                    "Вони роблять хешування швидшим",
+                    "Вони запобігають поділу мережі"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Що відбувається, коли ви додаєте вузол в Узгодженому Хешуванні?",
+                "options": [
+                    "Усі ключі переміщуються",
+                    "Лише ключі, що належать діапазону нового вузла, переміщуються від його наступника",
+                    "Лише ключі, що належать діапазону нового вузла, переміщуються від його попередника",
+                    "Жодні ключі не переміщуються"
+                ],
+                "correct": 2
+            },
+            {
+                "question": "Як ми обробляємо 'Гарячий Ключ' (проблема Знаменитості)?",
+                "options": [
+                    "Купуємо більший сервер",
+                    "Видаляємо ключ",
+                    "Salting/Розділення ключа на кілька шардів",
+                    "Кешуємо його тільки на клієнті"
+                ],
+                "correct": 2
+            }
+        ]
+    },
+    "follow_up": {
+        "scenario": "Один фізичний вузол є набагато потужнішим (2x CPU) за інші.",
+        "trade_off": "Рівномірний розподіл марнує потенціал потужного вузла.",
+        "strategy": "Призначте **більше Віртуальних Вузлів** (токенів) потужному фізичному вузлу, щоб він захопив більший діапазон хеш-кільця.",
+        "answering_guide": "Згадайте зважування VNodes за ємністю."
+    },
+    "code": {
+        "python": {
+            "solution": "import hashlib\nimport bisect\n\nclass ConsistentHashRing:\n    def __init__(self, num_replicas=3):\n        self.num_replicas = num_replicas\n        self.ring = [] # List of (hash, node_id)\n        self.sorted_hashes = []\n\n    def _hash(self, key):\n        return int(hashlib.md5(key.encode('utf-8')).hexdigest(), 16)\n\n    def add_node(self, node_id):\n        for i in range(self.num_replicas):\n            v_node_id = f\"{node_id}#{i}\"\n            h = self._hash(v_node_id)\n            # Insert into ring maintaining order\n            # (In production, use a BST. Here, sorting O(N*logN) is fine for demo)\n            self.ring.append((h, node_id))\n        \n        self.ring.sort() # Keep ring sorted by hash\n        self.sorted_hashes = [x[0] for x in self.ring]\n\n    def get_node(self, key):\n        if not self.ring:\n            return None\n        \n        h = self._hash(key)\n        # Binary search for the first node clockwise\n        idx = bisect.bisect_right(self.sorted_hashes, h)\n        \n        if idx == len(self.ring):\n            idx = 0 # Wrap around\n            \n        return self.ring[idx][1]\n        \n    def get_nodes_for_hot_key(self, key, num_splits=3):\n        # For hot keys, 'salt' them to spread load\n        nodes = set()\n        for i in range(num_splits):\n            salted_key = f\"{key}#{i}\"\n            nodes.add(self.get_node(salted_key))\n        return list(nodes)",
+            "annotations": [
+                {
+                    "lines": [
+                        16,
+                        17,
+                        18
+                    ],
+                    "text": "Віртуальні Вузли: Ми вставляємо 'node_id#0', 'node_id#1'... щоб створити кілька точок на кільці для цього одного фізичного сервера."
+                },
+                {
+                    "lines": [
+                        23
+                    ],
+                    "text": "Wrap Around (Замикання): Топологія кільця кругова. Якщо хеш > хеш найбільшого вузла, ми повертаємося до індексу 0."
+                },
+                {
+                    "lines": [
+                        32,
+                        33,
+                        34
+                    ],
+                    "text": "Стратегія Гарячого Ключа: Ми розглядаємо 'JustinBieber' як 3 окремих ключа ('JustinBieber#0'...). Це розподіляє обсяг читання/запису по шардах."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(log K), де K - загальна кількість віртуальних вузлів",
+        "space": "O(K)",
+        "explanation_time": "Бінарний пошук по кільцю.",
+        "explanation_space": "Зберігання структури кільця."
+    }
+}

@@ -1,0 +1,96 @@
+{
+    "id": "dist-sys-2",
+    "title": "Векторні Годинники та Причинність",
+    "difficulty": "Важкий",
+    "leetcode_url": "https://docs.basho.com/riak/kv/2.2.3/learn/concepts/causal-context/",
+    "tags": [
+        "distributed-systems",
+        "logical-clocks",
+        "causality",
+        "conflict-resolution"
+    ],
+    "content": {
+        "problem_statement": "У розподіленій системі без центрального годинника ми не можемо покладатися на фізичні мітки часу (wall clock time) для визначення порядку подій через розсинхронізацію годинників. Ми повинні використовувати **Логічні Годинники** для фіксації причинності.\n\nРеалізуйте клас `VectorClock`, який може:\n1.  **Інкрементувати** власний лічильник для нової локальної події.\n2.  **Об'єднувати (Merge)** з вхідним векторним годинником (з повідомлення).\n3.  **Порівнювати** з іншим годинником для визначення, чи події є:\n    *   `CAUSAL` (одна відбулася перед іншою)\n    *   `CONCURRENT` (жодна не відбулася перед іншою)\n    *   `IDENTICAL` (ідентичні)\n\n**Схема**:\nВекторний годинник — це словник, що відображає ID вузлів у цілочисельні лічильники: `{'A': 1, 'B': 2}`.",
+        "explanation": {
+            "understanding_the_problem": "Якщо Подія A відбулася перед Подією B, то A могла вплинути на B. Якщо жодна не відбулася перед іншою, вони є конкурентними і можуть представляти конфлікт (дані-siblings), який потребує вирішення.",
+            "brute_force": "Використання `time.time()`. \n**Чому це погано**: Синхронізація NTP не є ідеальною; розбіжність годинників може досягати 100мс+. Ви можете подумати, що Подія B відбулася перед A лише тому, що годинник сервера B поспішає, що призведе до втрати даних (LWW).",
+            "bottleneck": "Зберігання вектора. Розмір зростає з кількістю вузлів-учасників (акторів). Для великих кластерів потрібне очищення (pruning).",
+            "optimized_approach": "1.  На локальній події: `VC[my_id]++`.\n2.  При отриманні повідомлення з `VC_msg`: `VC[id] = max(VC[id], VC_msg[id])` для всіх ID.\n3.  Порівняння:\n    *   `A < B` якщо всі лічильники в A <= B і хоча б один строго <.\n    *   `A > B` якщо всі лічильники в A >= B і хоча б один строго >.\n    *   Інакше, вони Конкурентні (Concurrent).",
+            "algorithm_steps": "1.  Визначити логіку порівняння, яка перевіряє 'строго більше' та 'строго менше'.\n2.  Якщо `A < B`, повернути `happened-before`.\n3.  Якщо `B < A`, повернути `happened-after`.\n4.  Якщо A == B, повернути `identical`.\n5.  Інакше, повернути `concurrent`."
+        },
+        "quizzes": [
+            {
+                "question": "Якщо VC_A = {X:1, Y:2} і VC_B = {X:1, Y:3}, яке відношення?",
+                "options": [
+                    "Конкурентні (Concurrent)",
+                    "A було перед B",
+                    "B було перед A",
+                    "Ідентичні"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Якщо VC_A = {X:2, Y:0} і VC_B = {X:0, Y:2}, яке відношення?",
+                "options": [
+                    "Конкурентні (Concurrent)",
+                    "A було перед B",
+                    "B було перед A",
+                    "Неможливий стан"
+                ],
+                "correct": 0
+            },
+            {
+                "question": "Який головний недолік Векторних Годинників?",
+                "options": [
+                    "Вони повільні для порівняння",
+                    "Розмір зростає лінійно з кількістю вузлів",
+                    "Вони не можуть обробляти розділення мережі",
+                    "Вони вимагають центрального сервера"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "follow_up": {
+        "scenario": "Ваш кластер має 10,000 динамічних вузлів (мобільні пристрої). Векторний Годинник занадто великий.",
+        "trade_off": "Точність проти Розміру Метаданих.",
+        "strategy": "Використовуйте **Dotted Version Vectors** або запровадьте механізм очищення старих записів (хоча це створює ризик помилкової конкурентності). В ідеалі, перенесіть генерацію ID на сторону сервера.",
+        "answering_guide": "Визнайте проблему розміру O(N). Згадайте Dotted Version Vectors (Riak) як оптимізацію."
+    },
+    "code": {
+        "python": {
+            "solution": "class VectorClock:\n    def __init__(self, node_id, clock=None):\n        self.node_id = node_id\n        self.clock = clock.copy() if clock else {}\n        # Ensure own entry exists\n        if node_id not in self.clock:\n            self.clock[node_id] = 0\n            \n    def increment(self):\n        self.clock[self.node_id] += 1\n        return self\n        \n    def merge(self, other_vc):\n        # Take the element-wise max of both keys\n        all_keys = set(self.clock.keys()) | set(other_vc.clock.keys())\n        for key in all_keys:\n            self.clock[key] = max(self.clock.get(key, 0), other_vc.clock.get(key, 0))\n        return self\n        \n    def compare(self, other):\n        # Returns: 'BEFORE', 'AFTER', 'CONCURRENT', 'IDENTICAL'\n        \n        # Missing keys are treated as 0\n        all_keys = set(self.clock.keys()) | set(other.clock.keys())\n        \n        has_greater = False\n        has_smaller = False\n        \n        for key in all_keys:\n            v1 = self.clock.get(key, 0)\n            v2 = other.clock.get(key, 0)\n            \n            if v1 > v2:\n                has_greater = True\n            elif v1 < v2:\n                has_smaller = True\n                \n        if has_greater and has_smaller:\n            return 'CONCURRENT'\n        if has_greater:\n            return 'AFTER'\n        if has_smaller:\n            return 'BEFORE'\n        return 'IDENTICAL'\n\n# Example Usage\n# vc1 = VectorClock('A', {'A': 1, 'B': 2})\n# vc2 = VectorClock('B', {'A': 1, 'B': 3})\n# print(vc1.compare(vc2))  # 'BEFORE'\n#\n# vc3 = VectorClock('C', {'A': 2, 'B': 1})\n# print(vc1.compare(vc3))  # 'CONCURRENT'",
+            "annotations": [
+                {
+                    "lines": [
+                        23,
+                        24,
+                        25,
+                        26
+                    ],
+                    "text": "Властивість Merge: причинність є транзитивною. Беручи максимум, ми захоплюємо найновішу відому історію з усіх гілок."
+                },
+                {
+                    "lines": [
+                        40,
+                        41,
+                        42
+                    ],
+                    "text": "Concurrent означає 'Конфлікт'. Жоден вузол не знав про оновлення іншого. Саме тут ви створюєте 'Sibling'."
+                },
+                {
+                    "lines": [
+                        30
+                    ],
+                    "text": "Якщо я бачив більше подій від A, але ти бачив більше подій від B, то наші історії розходяться, і ми конкурентні."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(N)",
+        "space": "O(N)",
+        "explanation_time": "Порівняння та злиття вимагають ітерації по всіх ID вузлів (N).",
+        "explanation_space": "Ми зберігаємо ціле число для кожного актора в системі."
+    }
+}

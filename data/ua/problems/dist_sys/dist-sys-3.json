@@ -1,0 +1,94 @@
+{
+    "id": "dist-sys-3",
+    "title": "Реплікація Логу Raft (Безпека)",
+    "difficulty": "Важкий",
+    "leetcode_url": "https://raft.github.io/",
+    "tags": [
+        "distributed-systems",
+        "consensus",
+        "consistency",
+        "raft"
+    ],
+    "content": {
+        "problem_statement": "В алгоритмі консенсусу Raft лідер реплікує свій лог послідовникам. Щоб забезпечити узгодженість, Послідовник (Follower) повинен приймати новий запис логу лише в тому випадку, якщо його попередній запис збігається з припущеннями Лідера (Властивість **Log Matching**).\n\nРеалізуйте функцію `handle_append_entries` для вузла-послідовника, яка:\n1.  Відхиляє запит, якщо `term < current_term`.\n2.  **Перевірка безпеки**: Перевіряє, чи містить лог запис за індексом `prevLogIndex` з терміном `prevLogTerm`. Якщо ні — відхиляє.\n3.  **Вирішення конфліктів**: Якщо існуючий запис конфліктує з новим (той самий індекс, інший термін), видаляє існуючий запис і всі наступні за ним.\n4.  **Додавання**: Додає нові записи.\n5.  **Коміт**: Оновлює `commitIndex`.\n\n**Схема**:\n`log` — це список записів: `[{'term': 1, 'cmd': 'SET X=1'}, ...]`. Індексація з 0.",
+        "explanation": {
+            "understanding_the_problem": "Raft гарантує, що якщо два логи містять запис з одним і тим же індексом і терміном, то логи ідентичні у всіх записах до цього індексу. Послідовник повинен захищати цю властивість, відхиляючи невідповідні додавання.",
+            "brute_force": "Сліпе перезаписування логу тим, що відправляє Лідер.\n**Чому це погано**: Якщо старий (розділений) Лідер прокинеться і перезапише зафіксовані (committed) дані, ви втратите узгодженість (пошкодження даних типу Split Brain).",
+            "bottleneck": "RTT мережі. Ми оптимізуємо, надсилаючи пакети записів. Якщо перевірка не вдається, Лідер повинен зменшити `nextIndex` і повторити спробу (backtracking).",
+            "optimized_approach": "1.  **Перевірка терміну**: Якщо `req.term < self.currentTerm`, повернути False (застарілий лідер).\n2.  **Перевірка попереднього логу**: Перевірити, чи `self.log[req.prevLogIndex].term == req.prevLogTerm`. Якщо індекс виходить за межі або термін не збігається, повернути False.\n3.  **Урізання та Додавання**: Якщо перевірка пройдена, ми додаємо. Якщо у нас є конфлікт на індексі `i`, ми видаляємо `log[i:]`.",
+            "algorithm_steps": "1.  Якщо `term < currentTerm`, повернути помилку.\n2.  Якщо `log` не має `prevLogIndex`, повернути помилку.\n3.  Якщо `log[prevLogIndex].term != prevLogTerm`, повернути помилку.\n4.  Для кожного нового запису: якщо він конфліктує з існуючим записом логу, урізати лог.\n5.  Додати нові записи.\n6.  Оновити `commitIndex` = min(leaderCommit, lastNewEntryIndex)."
+        },
+        "quizzes": [
+            {
+                "question": "Що станеться, якщо Послідовник відхилить запит AppendEntries?",
+                "options": [
+                    "Лідер впаде (crash)",
+                    "Лідер повторить спробу з меншим prevLogIndex (backtracking)",
+                    "Послідовник стане Кандидатом",
+                    "Кластер вимкнеться"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Чому ми перевіряємо 'term' перед 'prevLogIndex'?",
+                "options": [
+                    "Щоб запобігти прийому даних від старого розділеного Лідера",
+                    "Це швидше",
+                    "Тому що термін — це ціле число",
+                    "Специфікація Raft вимагає цього чисто для стилю"
+                ],
+                "correct": 0
+            },
+            {
+                "question": "Якщо запис 'committed' (зафіксований), що це означає?",
+                "options": [
+                    "Він записаний на диск",
+                    "Він реплікований на більшість вузлів",
+                    "Клієнт це побачив",
+                    "Лідеру це подобається"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "follow_up": {
+        "scenario": "Мережа ненадійна, що викликає багато відмов і повторних спроб.",
+        "trade_off": "Сплески затримки через покрокове повернення назад (backtracking).",
+        "strategy": "Реалізуйте **Оптимістичний Конвеєр (Pipelining)** або бінарний пошук для backtracking (повертайте `conflictTerm` та `conflictIndex` у відповіді про помилку), щоб швидше знайти точку розходження.",
+        "answering_guide": "Згадайте оптимізацію 'NextIndex', де Послідовник повертає індекс конфліктуючого терміну, щоб пропустити багато RPC викликів."
+    },
+    "code": {
+        "python": {
+            "solution": "class RaftNode:\n    def __init__(self, log, current_term, commit_index):\n        self.log = log  # List of {'term': t, 'cmd': c}\n        self.current_term = current_term\n        self.commit_index = commit_index\n\n    def handle_append_entries(self, term, leader_id, prev_log_index, prev_log_term, entries, leader_commit):\n        # 1. Reply false if term < currentTerm\n        if term < self.current_term:\n            return False\n        \n        # Update term logic would go here (omitted for brevity)\n\n        # 2. Reply false if log doesn't contain an entry at prevLogIndex whose term matches prevLogTerm\n        # Note: -1 is a dummy index for 'beginning of log'\n        if prev_log_index >= 0:\n            if prev_log_index >= len(self.log):\n                return False # Log is too short\n            if self.log[prev_log_index]['term'] != prev_log_term:\n                return False # Term mismatch\n\n        # 3. If an existing entry conflicts with a new one (same index but different terms),\n        #    delete the existing entry and all that follow it\n        for i, entry in enumerate(entries):\n            index = prev_log_index + 1 + i\n            if index < len(self.log):\n                if self.log[index]['term'] != entry['term']:\n                    self.log = self.log[:index] # Truncate\n                    self.log.append(entry)\n            else:\n                self.log.append(entry)\n\n        # 4. Append any new entries not already in the log\n        # (Handled by the loop above combined with log length check)\n\n        # 5. If leaderCommit > commitIndex, set commitIndex = min(leaderCommit, index of last new entry)\n        if leader_commit > self.commit_index:\n            last_new_index = prev_log_index + len(entries)\n            self.commit_index = min(leader_commit, last_new_index)\n\n        return True",
+            "annotations": [
+                {
+                    "lines": [
+                        22,
+                        23,
+                        24
+                    ],
+                    "text": "Індуктивний крок: Ми приймаємо розширення логу лише в тому випадку, якщо 'префікс' збігається з тим, що думає лідер."
+                },
+                {
+                    "lines": [
+                        33,
+                        34
+                    ],
+                    "text": "Самолікування: Так Raft змушує послідовників відповідати журналу Лідера. Він сліпо перезаписує конфлікти."
+                },
+                {
+                    "lines": [
+                        46
+                    ],
+                    "text": "Безпека: Ми валідно перемістили вказівник коміту вперед. Тепер ми можемо застосувати це до State Machine."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(K), де K - кількість нових записів",
+        "space": "O(K) для зберігання логу",
+        "explanation_time": "Ми ітеруємо по нових записах, щоб додати їх. Верифікація O(1).",
+        "explanation_space": "Зростаючий розмір логу."
+    }
+}

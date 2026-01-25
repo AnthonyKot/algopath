@@ -1,7 +1,7 @@
 {
     "id": "concurrency-go",
     "title": "Distributed Task Scheduler",
-    "difficulty": "Hard",
+    "difficulty": "Medium",
     "leetcode_url": "https://gobyexample.com/worker-pools",
     "related": [
         {

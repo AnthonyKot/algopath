@@ -68,13 +68,12 @@
         "concurrency-python"
       ],
       "stats": {
-        "priority": "Critical Priority",
+        "priority": "Medium",
         "priorityColor": "#e74c3c",
-        "metric": "12,504",
+        "metric": "1219",
         "metricLabel": "Frequency",
-        "trend": "Growing",
-        "successRate": "45.8%",
-        "metricDivider": 1
+        "trend": "Stable",
+        "successRate": "38.5%"
       },
       "seo": {
         "title": "Concurrency Patterns - L5 FAANG Algorithms Guide",
@@ -174,7 +173,7 @@
         "design-5"
       ],
       "stats": {
-        "priority": "Critical Priority",
+        "priority": "Very High",
         "priorityColor": "#e74c3c",
         "metric": "1,314",
         "metricLabel": "Frequency",
@@ -200,7 +199,7 @@
         "optimization-5"
       ],
       "stats": {
-        "priority": "Medium Priority",
+        "priority": "Medium",
         "priorityColor": "#f1c40f",
         "metric": "2,561",
         "metricLabel": "Frequency",
@@ -210,6 +209,32 @@
       "seo": {
         "title": "Optimization Techniques - L4/L5 FAANG Algorithms Guide",
         "description": "Optimization techniques: two pointers, binary search, divide and conquer, meet in the middle for Codeforces."
+      }
+    },
+    "dist_sys": {
+      "id": "dist_sys",
+      "name": "Distributed Data Systems",
+      "shortName": "Dist. Systems",
+      "description": "Master the internals of distributed databases. From Leaderless Replication and Vector Clocks to Raft Consensus and Consistent Hashing strategies.",
+      "sectionTitle": "Core Distributed Patterns",
+      "problemIds": [
+        "dist-sys-1",
+        "dist-sys-2",
+        "dist-sys-3",
+        "dist-sys-4",
+        "dist-sys-5"
+      ],
+      "stats": {
+        "priority": "Staff",
+        "priorityColor": "#8e44ad",
+        "metric": "8,102",
+        "metricLabel": "Frequency",
+        "trend": "Stable",
+        "successRate": "32.4%"
+      },
+      "seo": {
+        "title": "Distributed Systems - L5/L6 FAANG Algorithms Guide",
+        "description": "Advanced Distributed Systems problems: Quorums, Vector Clocks, Raft, and more for Staff Engineer interviews."
       }
     }
   },
@@ -221,7 +246,8 @@
       "frequency": "Frequency",
       "trend": "Trend",
       "successRate": "Success Rate",
-      "monthlyFrequency": "Times asked this month"
+      "monthlyFrequency": "Times asked this month",
+      "interviewPriority": "Interview Priority"
     },
     "nav": {
       "home": "Home",

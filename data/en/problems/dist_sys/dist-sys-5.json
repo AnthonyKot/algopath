@@ -1,0 +1,87 @@
+{
+    "id": "dist-sys-5",
+    "title": "Effectively-Once Processing",
+    "difficulty": "Hard",
+    "leetcode_url": "https://kafka.apache.org/documentation/#semantics",
+    "tags": [
+        "distributed-systems",
+        "idempotency",
+        "fault-tolerance",
+        "kafka"
+    ],
+    "content": {
+        "problem_statement": "In a distributed stream processor (like Kafka Streams or Flink), we want to process each event exactly once. However, true 'Exactly-Once' is impossible in an asynchronous network (FLP Result).\n\nWe achieve **Effectively-Once** semantics by combining:\n1.  **At-Least-Once** delivery (retries).\n2.  **Idempotency** (ignoring duplicates).\n\nImplement an `IdempotentProcessor` that:\n1.  Accepts events with a unique `event_id`.\n2.  Checks an `idempotency_store` (DB) to see if processed.\n3.  Processes the event (side effect).\n4.  Saves the ID to the store.\n5.  Handles **crashes** happening between processing and saving.",
+        "explanation": {
+            "understanding_the_problem": "If we process then crash before saving offset $\\rightarrow$ we retry and double-process. If we save offset then crash before processing $\\rightarrow$ data loss. The solution is to do both atomically (Transaction) OR make the processing step idempotent so doing it twice is safe.",
+            "brute_force": "Just processing. \n**Why it's bad**: Duplicate payments or emails when ACKs are lost.",
+            "bottleneck": "Database throughput for checking duplications. We typically use a fast K-V store (Redis) or bloom filters for first-pass filtering.",
+            "optimized_approach": "1.  **Check**: If `id` in `completed_txns`, acknowledge and return.\n2.  **Execute**: Perform effect (e.g., `balance += amount`).\n3.  **Persist**: Write `id` to `completed_txns`. \n    *   *Note*: In production, Steps 2 and 3 should be in a single DB Transaction (ACID) to be truly safe. Here, we simulate the logic flow.",
+            "algorithm_steps": "1.  Receive `event`.\n2.  Transaction Start.\n3.  Check if `event.id` exists. If yes, Abort.\n4.  Compute State Change.\n5.  Insert `event.id` and Commit State Change.\n6.  Transaction Commit."
+        },
+        "quizzes": [
+            {
+                "question": "What is 'Idempotency'?",
+                "options": [
+                    "Being able to restart a server quickly",
+                    "f(f(x)) = f(x) - Applying an operation multiple times has the same effect as once",
+                    "Encrypting data at rest",
+                    "Processing messages in parallel"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Which combination yields Effectively-Once semantics?",
+                "options": [
+                    "At-Most-Once + Retries",
+                    "At-Least-Once + Idempotency",
+                    "UDP + TCP",
+                    "Round Robin + Random"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Why is 'Exactly-Once' theoretically impossible?",
+                "options": [
+                    "Computers are too slow",
+                    "Two Generals' Problem / FLP Impossibility (cannot allow message loss + crash + bounded time)",
+                    "Developers are lazy",
+                    "It is possible, we just don't know how yet"
+                ],
+                "correct": 1
+            }
+        ]
+    },
+    "follow_up": {
+        "scenario": "Your database doesn't support transactions across the 'Process' and 'Save ID' steps (Dual Writes problem).",
+        "trade_off": "Risk of partial failure (Zombie Write).",
+        "strategy": "Use the **Outbox Pattern**. Write the side-effect and the event ID to the *same* database in one transaction, then have a background worker push the side-effect to the external world.",
+        "answering_guide": "Mention Outbox Pattern or 2PC (if you want to be blocked)."
+    },
+    "code": {
+        "python": {
+            "solution": "class IdempotentProcessor:\n    def __init__(self):\n        self.balance = 0\n        self.processed_ids = set()\n        \n    def process_event(self, event_id, amount):\n        # 1. Idempotency Check\n        if event_id in self.processed_ids:\n            print(f\"Skipping duplicate {event_id}\")\n            return self.balance\n            \n        # 2. Start Transaction (Simulated)\n        try:\n            # 3. Apply Business Logic\n            new_balance = self.balance + amount\n            \n            # ... Crash Point A (If we crashed here without saving ID, we would re-process on restart)\n            \n            # 4. Save State & ID Atomically\n            self.balance = new_balance\n            self.processed_ids.add(event_id)\n            \n            print(f\"Processed {event_id}: +{amount}\")\n            return self.balance\n            \n        except Exception as e:\n            print(f\"Transaction failed: {e}\")\n            raise e\n\n# Example Usage\n# p = IdempotentProcessor()\n# p.process_event('txn_1', 100) # Balance: 100\n# p.process_event('txn_1', 100) # Duplicate, Balance: 100\n# p.process_event('txn_2', 50)  # Balance: 150",
+            "annotations": [
+                {
+                    "lines": [
+                        7,
+                        8
+                    ],
+                    "text": "The Deduplication Barrier: We must check our history before doing any work."
+                },
+                {
+                    "lines": [
+                        20,
+                        21
+                    ],
+                    "text": "Atomic Commit: IN REALITY, 'self.balance' and 'self.processed_ids' MUST be stored in the same ACID DB row/document."
+                }
+            ]
+        }
+    },
+    "complexity": {
+        "time": "O(1) with Hash Set",
+        "space": "O(N) history",
+        "explanation_time": "Set lookups are constant time.",
+        "explanation_space": "We must store the ID of every processed event forever (or until expiry)."
+    }
+}
